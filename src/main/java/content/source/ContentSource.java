@@ -1,5 +1,7 @@
 package content.source;
 
-public interface ContentSource {
+import content.ContentData;
 
+public interface ContentSource {
+    ContentData retrieve(ContentData data);
 }

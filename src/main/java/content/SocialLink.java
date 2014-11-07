@@ -3,6 +3,7 @@ package content;
 
 public class SocialLink {
     public static enum LinkType {
+        NONE,
         VK,
         FB
     }

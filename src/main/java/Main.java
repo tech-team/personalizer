@@ -1,6 +1,5 @@
 import content.AsyncContentProvider;
 import content.Request;
-import content.Response;
 import server.WebServer;
 
 public class Main {
@@ -11,5 +10,6 @@ public class Main {
 
         WebServer server = new WebServer(8083);
         server.start();
+        
     }
 }

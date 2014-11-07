@@ -4,7 +4,7 @@ import util.ThreadPool;
 
 public class AsyncContentProvider {
     public static interface ContentCallback {
-        void onReady(Response response);
+        void onReady(ContentData contentData);
     }
 
 
@@ -15,7 +15,7 @@ public class AsyncContentProvider {
     public void execute(Request request, ContentCallback cb) {
         try {
             threadPool.execute(() -> {
-                Response resp = contentProvider.execute(request);
+                ContentData resp = contentProvider.execute(request);
                 cb.onReady(resp);
             });
         } catch (InterruptedException e) {
