@@ -2,7 +2,7 @@ package content;
 
 public class ContentProvider {
 
-    public ContentData execute(Request request) {
-        return new ContentData();
+    public PersonCard execute(Request request) {
+        return new PersonCard();
     }
 }

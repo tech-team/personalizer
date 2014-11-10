@@ -1,11 +1,17 @@
 package content.source.linkedin;
 
-import content.ContentData;
+import content.PersonCard;
+import content.Persons;
 import content.source.ContentSource;
 
 public class LinkedIn implements ContentSource {
     @Override
-    public ContentData retrieve(ContentData data) {
+    public Persons retrieve(Persons data) {
+        return null;
+    }
+
+    @Override
+    public Persons retrieve(PersonCard data) {
         return null;
     }
 }
