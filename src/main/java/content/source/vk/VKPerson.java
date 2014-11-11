@@ -1,7 +1,10 @@
 package content.source.vk;
 
 
+import content.SocialLink;
 import org.json.JSONObject;
+
+import java.util.Map;
 
 public class VKPerson {
     public static final String fields =
@@ -18,6 +21,7 @@ public class VKPerson {
     private Integer graduation;
     private Integer id;
     private String mobilePhone;
+    private Map<SocialLink.LinkType, String> socialLinks;
 
 
     public String getLastName() {
@@ -144,5 +148,16 @@ public class VKPerson {
         if (person.optString("mobile_phone") != null){
             setMobilePhone(person.optString("mobile_phone"));
         }
+        if (person.optString("skype") != null){
+            socialLinks.put(SocialLink.LinkType.Skype, person.getString("skype"));
+        }
+        if (person.optString("facebook") != null){
+            socialLinks.put(SocialLink.LinkType.FB, person.getString("facebook"));
+        }
+        if (person.optString("twitter") != null){
+            socialLinks.put(SocialLink.LinkType.Twitter, person.getString("twitter"));
+        }
+
     }
+
 }

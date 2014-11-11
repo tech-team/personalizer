@@ -34,7 +34,7 @@ public class RequestHelper {
         return "";
     }
 
-    public static JSONArray getResponseJSON(String response){
+    public static JSONArray getResponseJSONitems(String response){
         /*
         Возвращает массив items из ответа
          */
@@ -42,6 +42,7 @@ public class RequestHelper {
         jsonObject = jsonObject.getJSONObject("response");
         return jsonObject.getJSONArray("items");
     }
+
 
     public static int getCount(String response){
         /*
