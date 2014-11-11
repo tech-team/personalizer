@@ -5,7 +5,8 @@ public class SocialLink {
     public static enum LinkType {
         NONE,
         VK,
-        FB
+        FB,
+        LINKED_ID
     }
 
     private String id;
