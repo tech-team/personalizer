@@ -4,6 +4,7 @@ package content.source.vk;
 import content.SocialLink;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class VKPerson {
@@ -21,7 +22,7 @@ public class VKPerson {
     private Integer graduation;
     private Integer id;
     private String mobilePhone;
-    private Map<SocialLink.LinkType, String> socialLinks;
+    private Map<SocialLink.LinkType, String> socialLinks = new HashMap<>();
 
 
     public String getLastName() {
@@ -127,35 +128,38 @@ public class VKPerson {
         if (person.optInt("sex") != 0){
             setSex(person.optInt("sex"));
         }
-        if (person.optString("photo_100") != null){
+        if (!person.optString("photo_100").equals("")){
             setPhoto(person.optString("photo_100"));
         }
-        if (person.optString("university_name") != null){
+        if (!person.optString("university_name").equals("")){
             setUniversity(person.optString("university_name"));
         }
         if (person.optInt("graduation") != 0){
             setGraduation(person.optInt("graduation"));
         }
-        if (person.optString("bdate") != null){
+        if (!person.optString("bdate").equals("")){
             setBdate(person.optString("bdate"));
         }
-        if (person.optString("first_name") != null){
+        if (!person.optString("first_name").equals("")){
             setFirstName(person.optString("first_name"));
         }
-        if (person.optString("last_name") != null){
+        if (!person.optString("last_name").equals("")){
             setLastName(person.optString("last_name"));
         }
-        if (person.optString("mobile_phone") != null){
+        if (!person.optString("mobile_phone").equals("")){
             setMobilePhone(person.optString("mobile_phone"));
         }
-        if (person.optString("skype") != null){
-            socialLinks.put(SocialLink.LinkType.Skype, person.getString("skype"));
+        if (!person.optString("skype").equals("")){
+            String skype = person.optString("skype");
+            socialLinks.put(SocialLink.LinkType.Skype, skype);
         }
-        if (person.optString("facebook") != null){
-            socialLinks.put(SocialLink.LinkType.FB, person.getString("facebook"));
+        if (!person.optString("facebook").equals("")){
+            String facebook = person.optString("facebook");
+            socialLinks.put(SocialLink.LinkType.FB, facebook);
+
         }
-        if (person.optString("twitter") != null){
-            socialLinks.put(SocialLink.LinkType.Twitter, person.getString("twitter"));
+        if (!person.optString("twitter").equals("")){
+            socialLinks.put(SocialLink.LinkType.Twitter, person.optString("twitter"));
         }
 
     }

@@ -1,6 +1,8 @@
 package content.source.vk;
 
 
+import javafx.util.Pair;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -48,5 +50,7 @@ public class UsersSearchRequest {
         return request + String.format("&fields=%s",
                 URLEncoder.encode(VKPerson.fields, "UTF-8"));
     }
+
+
 
 }
