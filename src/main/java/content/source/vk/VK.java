@@ -4,12 +4,14 @@ import content.PersonCard;
 import content.Persons;
 import content.source.ContentSource;
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 
 public class VK implements ContentSource {
 
@@ -24,12 +26,13 @@ public class VK implements ContentSource {
 
     @Override
     public Persons retrieve(Persons data) {
-        usersSearch("Сергей Чернобровкин");
+
         return null;
     }
 
     @Override
     public Persons retrieve(PersonCard data) {
+        usersSearch("Вася Бабич");
         return null;
     }
 
@@ -37,17 +40,34 @@ public class VK implements ContentSource {
 
     }
 
-    public void usersSearch(String query){
+    public ArrayList<VKPerson> usersSearch(String query){
         try {
-            String parameters = String.format("q=%s",
-                    URLEncoder.encode(query, "UTF-8"));
+            String parameters = "";
+            parameters = UsersSearchRequest.addQueryParameter(parameters, query);
+            parameters = UsersSearchRequest.addAgeToParameter(parameters, 25);
+            parameters = UsersSearchRequest.addFieldsParameter(parameters);
+
             String request = usersSearchUrl + "&" + parameters;
             String response = RequestHelper.getResponse(request);
             JSONArray responseArray = RequestHelper.getResponseJSON(response);
             System.out.print(response);
+
+            return getPersonsByArray(responseArray);
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        return new ArrayList<>();
+    }
+
+    public ArrayList<VKPerson> getPersonsByArray(JSONArray response){
+        ArrayList<VKPerson> persons = new ArrayList<>();
+        for (int i = 0; i < response.length(); i++){
+            JSONObject item = response.getJSONObject(i);
+            VKPerson vkPerson = new VKPerson(item);
+            persons.add(vkPerson);
+        }
+        return persons;
     }
 
 }

@@ -13,6 +13,9 @@ import java.net.URL;
 
 public class RequestHelper {
     public static String getResponse(String url){
+        /*
+        Получает ответ по урлу
+         */
         HttpURLConnection httpConnection = null;
         try {
             httpConnection = (HttpURLConnection) new URL(url).openConnection();
@@ -32,8 +35,21 @@ public class RequestHelper {
     }
 
     public static JSONArray getResponseJSON(String response){
+        /*
+        Возвращает массив items из ответа
+         */
         JSONObject jsonObject = new JSONObject(response);
         jsonObject = jsonObject.getJSONObject("response");
         return jsonObject.getJSONArray("items");
     }
+
+    public static int getCount(String response){
+        /*
+        Возвращает count из ответа
+         */
+        JSONObject jsonObject = new JSONObject(response);
+        jsonObject = jsonObject.getJSONObject("response");
+        return jsonObject.getInt("count");
+    }
+
 }
