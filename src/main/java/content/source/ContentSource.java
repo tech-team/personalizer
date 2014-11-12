@@ -1,7 +1,9 @@
 package content.source;
 
-import content.ContentData;
+import content.PersonCard;
+import content.Persons;
 
 public interface ContentSource {
-    ContentData retrieve(ContentData data);
+    Persons retrieve(Persons data);
+    Persons retrieve(PersonCard card);
 }

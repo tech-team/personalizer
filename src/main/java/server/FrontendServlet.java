@@ -1,5 +1,7 @@
 package server;
 
+import content.source.linkedin.Request;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +18,7 @@ public class FrontendServlet extends HttpServlet {
         public static final String INDEX = "/index";
         public static final String POLL = "/poll";
         public static final String STOP = "/stop";
+        public static final String LINKED_IN = "/linkedin";
     }
 
     public abstract class Templates {
@@ -53,7 +56,11 @@ public class FrontendServlet extends HttpServlet {
 
                 return;
             }
-
+            case Locations.LINKED_IN: {
+                //пока так
+                String code = request.getParameter("code");
+                Request.token = Request.requestAccessToken(code);
+            }
 
             default: {
                 response.sendRedirect(Locations.INDEX);
