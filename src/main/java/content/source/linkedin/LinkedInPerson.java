@@ -1,26 +1,27 @@
 package content.source.linkedin;
 
 public class LinkedInPerson {
-    private String last_name;
-    private String first_name;
+    private String lastName;
+    private String firstName;
     private String country;
     private String headline;
     private String url;
+    private String id;
 
-    public String getLast_name() {
-        return last_name;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLast_name(String last_name) {
-        this.last_name = last_name;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
-    public String getFirst_name() {
-        return first_name;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirst_name(String first_name) {
-        this.first_name = first_name;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public String getCountry() {
@@ -45,5 +46,13 @@ public class LinkedInPerson {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

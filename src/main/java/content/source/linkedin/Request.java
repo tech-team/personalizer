@@ -14,17 +14,19 @@ public class Request {
     public static final String HEADER_HOST = "Host";
     public static final String HEADER_CONNECTION = "Connection";
     public static final String HEADER_AUTHORIZATION = "Authorization";
+    public static final String HEADER_FORMAT = "x-li-format";
 
-    public static String token = "token";
+    public static String token = "AQX7E09cq7vo9kWHPyz70ENZdYOmcG0xHr1yI0QDNtjZr5DaTIIxb33uWpdvk2DYSVmchi4sBdJs6pUO6qlEo42nSR8ENawmn6KEDC9xoDaTqfwDOtIqhqmr0shc46RcpPU-GW5bRa1rERXlB3at2_K5EWmren84lE8bE_WEbsW5tEjYP1c";
 
     public static final String URL_PROFILE = "https://api.linkedin.com/v1/people";
     public static final String URL_ACCESS_TOKEN = "https://www.linkedin.com/uas/oauth2/accessToken";
 
-    public HttpDownloader.Request makeRequest(String url, UrlParams params) {
+    public static HttpDownloader.Request makeRequest(String url, UrlParams params) {
         Headers headers = new Headers();
         headers.add(HEADER_HOST, "api.linkedin.com");
         headers.add(HEADER_CONNECTION, "Keep-Alive");
         headers.add(HEADER_AUTHORIZATION, "Bearer " + token);
+        headers.add(HEADER_FORMAT, "json");
         return new HttpDownloader.Request(url, params, headers);
     }
 
