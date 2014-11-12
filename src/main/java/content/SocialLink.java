@@ -6,10 +6,14 @@ public class SocialLink {
         NONE,
         VK,
         FB,
-        LINKED_ID
+        LINKED_ID,
+        Skype,
+        Twitter
     }
 
     private String id;
+
+    private String url;
 
     public SocialLink(String id) {
         this.id = id;
