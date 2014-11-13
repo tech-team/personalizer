@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Personalizer</title>
+
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap-slider.min.css" rel="stylesheet">
+    <link href="../css/index.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Request page -->
+        <section id="request_page">
+            <ol class="breadcrumb">
+                <li class="active">Запрос</li>
+                <li>Обработка</li>
+                <li>Результаты</li>
+            </ol>
+            <h4>Заполните известную информацию</h4>
+            <form class="form-horizontal" role="form">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#section_basic" aria-expanded="true" aria-controls="section_basic">
+                                    Общая информация
+                                </a>
+                            </h3>
+                        </div>
+                        <div id="section_basic" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="section_basic">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="input_name" class="col-sm-2 control-label">ФИО</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="input_name" placeholder="Иванов Иван Иванович">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input_age" class="col-sm-2 control-label">Возраст</label>
+                                    <div class="col-sm-10 form-group" id="input_age">
+                                        <div class="row form-inline">
+                                            <label for="input_age_from" class="col-sm-1 control-label">от:</label>
+                                            <input type="text" class="col-sm-2 form-control" id="input_age_from" placeholder="18">
+                                        </div>
+                                        <div class="row form-inline">
+                                            <label for="input_age_to" class="col-sm-1 control-label">до:</label>
+                                            <input type="text" class="col-sm-2 form-control" id="input_age_to" placeholder="150">
+                                        </div>
+
+                                        <!--0-->
+                                        <!--<input id="input_age" type="text" value="" data-slider-min="0" data-slider-max="150" data-slider-step="1" data-slider-value="[18,35]"/>-->
+                                        <!--150-->
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input_email" class="col-sm-2 control-label">Email</label>
+                                    <div class="col-sm-10">
+                                        <input type="email" class="form-control" id="input_email" placeholder="ivanov.ivan@gmail.com">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="col-sm-offset-2 col-sm-10">
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" id="input_famous"> Известная личность
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#section_social" aria-expanded="true" aria-controls="section_social">
+                                    Социальные сети
+                                </a>
+                            </h3>
+                        </div>
+                        <div id="section_social" class="panel-collapse collapse" role="tabpanel" aria-labelledby="section_social">
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label for="input_vk" class="col-sm-2 control-label">VK</label>
+                                    <div class="col-sm-10">
+                                        <input type=text class="form-control" id="input_vk" placeholder="id1010001 или ivanov.ivan">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input_fb" class="col-sm-2 control-label">Facebook</label>
+                                    <div class="col-sm-10">
+                                        <input type=text class="form-control" id="input_fb" placeholder="id1010001 или ivanov.ivan">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="input_li" class="col-sm-2 control-label">LinkedIn</label>
+                                    <div class="col-sm-10">
+                                        <input type=text class="form-control" id="input_li" placeholder="id1010001 или ivanov.ivan">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group text-center">
+                    <button type="submit" class="btn btn-primary" id="start_search_button">Начать поиск</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script src="../js/jquery.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/underscore.min.js"></script>
+    <script src="../js/index.js"></script>
+</body>
+</html>

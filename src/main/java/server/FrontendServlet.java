@@ -15,14 +15,23 @@ import java.util.Map;
 
 public class FrontendServlet extends HttpServlet {
     public abstract class Locations {
-        public static final String INDEX = "/index";
-        public static final String POLL = "/poll";
-        public static final String STOP = "/stop";
+        //static
+        public static final String INDEX = "/";
+        public static final String REQUEST = "/request";
+        public static final String SEARCHING = "/searching";
+        public static final String RESULTS = "/results";
+
+        //AJAX
+        public static final String STATUS = "/status";
+
+        //not needed
         public static final String LINKED_IN = "/linkedin";
     }
 
     public abstract class Templates {
-        public static final String INDEX = "index.html";
+        public static final String REQUEST = "request.html";
+        public static final String SEARCHING = "searching.html";
+        public static final String RESULTS = "results.html";
     }
 
     private WebServer webServer;
@@ -37,36 +46,35 @@ public class FrontendServlet extends HttpServlet {
         response.setStatus(HttpServletResponse.SC_OK);
 
         switch (request.getPathInfo()) {
-            case Locations.INDEX: {
-                indexView(request, response);
-
+            case Locations.INDEX:
+                response.sendRedirect(Locations.REQUEST);
                 return;
-            }
-            case Locations.POLL: {
-                pollView(request, response);
 
+            case Locations.REQUEST:
+                staticView(request, response, Templates.REQUEST);
                 return;
-            }
-            case Locations.STOP: {
-                try {
-                    webServer.stop();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
+            case Locations.SEARCHING:
+                staticView(request, response, Templates.SEARCHING);
                 return;
-            }
+
+            case Locations.RESULTS:
+                staticView(request, response, Templates.RESULTS);
+                return;
+
+            case Locations.STATUS:
+                statusView(request, response);
+                return;
+
+
             case Locations.LINKED_IN: {
                 //пока так
                 String code = request.getParameter("code");
                 Request.token = Request.requestAccessToken(code);
             }
 
-            default: {
-                response.sendRedirect(Locations.INDEX);
-
-                return;
-            }
+            default:
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
@@ -78,14 +86,14 @@ public class FrontendServlet extends HttpServlet {
 
 
 
-    private void indexView(HttpServletRequest request, HttpServletResponse response)
+    private void staticView(HttpServletRequest request, HttpServletResponse response, String templateName)
             throws ServletException, IOException  {
         Map<String, Object> pageVariables = new HashMap<>();
 
-        response.getWriter().println(PageGenerator.getPage(Templates.INDEX, pageVariables));
+        response.getWriter().println(PageGenerator.getPage(templateName, pageVariables));
     }
 
-    private void pollView(HttpServletRequest request, HttpServletResponse response)
+    private void statusView(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
         response.addHeader("Cache-Control", "no-cache");
         response.getWriter().println(getTime());
