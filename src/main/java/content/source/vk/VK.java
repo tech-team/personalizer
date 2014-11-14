@@ -6,6 +6,7 @@ import content.source.ContentSource;
 import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.net.HttpDownloader;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -19,7 +20,7 @@ public class VK implements ContentSource {
 //    private static Boolean isAuthorized = false;
 
     public static final String token =
-            "d7254a38f3ca97c9f901ef135809d3d0719261092da4c8c5f103483994fae28479c9dada8bcba15f51461";
+            "31d47b0e6b04ffec3380fffa06c92803936104da61e53ff1fed6988cbe8b318d059a26b9562e773df9dd7";
     private static final String usersSearchUrl =
             "https://api.vk.com/method/users.search?&access_token="+token+"&v=5.26&count=5";
     private static final String usersGetUrl =
@@ -33,6 +34,8 @@ public class VK implements ContentSource {
             }
 
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -63,7 +66,7 @@ public class VK implements ContentSource {
             parameters = addParam(parameters, new Pair<>("user_ids", ids));
             parameters = addParam(parameters, new Pair<>("fields", VKPerson.fields + ",connections"));
             String request = usersGetUrl + "&" + parameters;
-            String response = RequestHelper.getResponse(request);
+            String response = HttpDownloader.httpGet(request);
             JSONArray responseArray = new JSONObject(response).getJSONArray("response");
 
             ArrayList<VKPerson> persons = new ArrayList<>();
@@ -76,6 +79,8 @@ public class VK implements ContentSource {
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return new ArrayList<>();
     }
@@ -87,12 +92,14 @@ public class VK implements ContentSource {
                 parameters = addParam(parameters, param);
 
             String request = usersSearchUrl + "&" + parameters;
-            String response = RequestHelper.getResponse(request);
+            String response = HttpDownloader.httpGet(request);
             JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
 
             return getPersonsIdsByArray(responseArray);
 
         } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return "";
@@ -130,12 +137,14 @@ public class VK implements ContentSource {
                 params.add(new Pair<>("country", countryId));
                 if (!city.equals("")){
                     Integer cityId = VKDataMaps.getCityId(countryId, city);
-                    params.add(new Pair<>("city", cityId));
+                    if (cityId != -1)
+                        params.add(new Pair<>("city", cityId));
                 }
             }
             if (!university.equals("")){
                 Integer universityId = VKDataMaps.getUniversityId(university);
-                params.add(new Pair<>("university", universityId));
+                if (universityId != -1)
+                    params.add(new Pair<>("university", universityId));
             }
             if (ageFrom != null){
                 params.add(new Pair<>("age_from", ageFrom));

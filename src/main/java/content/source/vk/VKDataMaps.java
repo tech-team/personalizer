@@ -3,7 +3,9 @@ package content.source.vk;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import util.net.HttpDownloader;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -21,11 +23,11 @@ public class VKDataMaps {
             "https://api.vk.com/method/database.getUniversities?&v=5.26&count=1";
 
 
-    public static Map<String, Integer> getCountries() throws UnsupportedEncodingException {
+    public static Map<String, Integer> getCountries() throws IOException {
         String parameters = String.format("&need_all=%s",
                 URLEncoder.encode("1", "UTF-8"));
         String request = getCountriesUrl + "&" + parameters;
-        String response = RequestHelper.getResponse(request);
+        String response = HttpDownloader.httpGet(request);
         JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
         Map <String, Integer> countries = new HashMap<>();
         for (int i = 0; i < responseArray.length(); i++){
@@ -52,10 +54,17 @@ public class VKDataMaps {
     }
 
     public static int getId(String request){
-        String response = RequestHelper.getResponse(request);
-        JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
-        JSONObject entityObj = responseArray.getJSONObject(0);
-        return entityObj.getInt("id");
+        String response = null;
+        try {
+            response = HttpDownloader.httpGet(request);
+            JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
+            JSONObject entityObj = responseArray.optJSONObject(0);
+            if (entityObj != null)
+                return entityObj.getInt("id");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return -1;
     }
 
 }
