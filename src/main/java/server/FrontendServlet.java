@@ -1,6 +1,6 @@
 package server;
 
-import content.source.linkedin.Request;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -12,20 +12,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class FrontendServlet extends HttpServlet {
     public abstract class Locations {
         //static
         public static final String INDEX = "/";
         public static final String REQUEST = "/request";
-        public static final String SEARCHING = "/searching";
+        public static final String SEARCHING = "/filter";
         public static final String RESULTS = "/results";
 
         //AJAX
-        public static final String STATUS = "/status";
-
-        //not needed
-        public static final String LINKED_IN = "/linkedin";
+        public static final String START_SEARCH = "/api/start_search";
+        public static final String GET_CARDS = "/api/get_cards";
+        public static final String FILTER_CARDS = "/api/filter_cards";
     }
 
     public abstract class Templates {
@@ -34,10 +34,14 @@ public class FrontendServlet extends HttpServlet {
         public static final String RESULTS = "results.html";
     }
 
-    private WebServer webServer;
+    public abstract class ApiRequestStatus {
+        public static final String OK = "OK";
+        public static final String ERROR = "ERROR";
+        public static final String WAIT = "WAIT";
+        public static final String FINISHED = "FINISHED";
+    }
 
-    public FrontendServlet(WebServer webServer) {
-        this.webServer = webServer;
+    public FrontendServlet() {
     }
 
     public void doGet(HttpServletRequest request,
@@ -51,52 +55,89 @@ public class FrontendServlet extends HttpServlet {
                 return;
 
             case Locations.REQUEST:
-                staticView(request, response, Templates.REQUEST);
+                staticHandler(request, response, Templates.REQUEST);
                 return;
 
             case Locations.SEARCHING:
-                staticView(request, response, Templates.SEARCHING);
+                staticHandler(request, response, Templates.SEARCHING);
                 return;
 
             case Locations.RESULTS:
-                staticView(request, response, Templates.RESULTS);
+                staticHandler(request, response, Templates.RESULTS);
                 return;
 
-            case Locations.STATUS:
-                statusView(request, response);
+            case Locations.START_SEARCH:
+                startSearchHandler(request, response);
                 return;
 
+            case Locations.GET_CARDS:
+                getCardsHandler(request, response);
+                return;
 
-            case Locations.LINKED_IN: {
-                //пока так
-                String code = request.getParameter("code");
-                Request.token = Request.requestAccessToken(code);
-            }
+            case Locations.FILTER_CARDS:
+                filterCardsHandler(request, response);
+                return;
 
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
-    public void doPost(HttpServletRequest request,
-                       HttpServletResponse response) throws ServletException, IOException {
-        response.setContentType("text/html;charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-    }
-
-
-
-    private void staticView(HttpServletRequest request, HttpServletResponse response, String templateName)
+    private void staticHandler(HttpServletRequest request, HttpServletResponse response, String templateName)
             throws ServletException, IOException  {
         Map<String, Object> pageVariables = new HashMap<>();
 
         response.getWriter().println(PageGenerator.getPage(templateName, pageVariables));
     }
 
-    private void statusView(HttpServletRequest request, HttpServletResponse response)
+    private void startSearchHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
         response.addHeader("Cache-Control", "no-cache");
+
+        //start async CP here and put it to the map
+
+        JSONObject json = new JSONObject();
+        json.append("status", ApiRequestStatus.OK);
+
+        String qid = UUID.randomUUID().toString();
+        json.append("qid", qid);
+
+        response.getWriter().println(json.toString());
+    }
+
+
+    private void getCardsHandler(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException  {
+        response.addHeader("Cache-Control", "no-cache");
+
+        //obtain new cards from CP
+        boolean newCardsReady = false;
+
+        if (newCardsReady) {
+            JSONObject json = new JSONObject();
+            json.append("status", ApiRequestStatus.OK);
+
+            //TODO: form JSON from cards
+
+            response.getWriter().println(json.toString());
+        } else {
+            JSONObject json = new JSONObject();
+            json.append("status", ApiRequestStatus.WAIT);
+
+            response.getWriter().println(json.toString());
+        }
+
+
         response.getWriter().println(getTime());
+    }
+
+
+    private void filterCardsHandler(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException  {
+        JSONObject json = new JSONObject();
+        json.append("status", ApiRequestStatus.OK);
+
+        response.getWriter().println(json.toString());
     }
 
     private static String getTime() {
