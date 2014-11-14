@@ -12,7 +12,7 @@ public class WebServer {
     boolean running = false;
 
     public WebServer(int port) throws Exception {
-        FrontendServlet frontendServlet = new FrontendServlet(this);
+        FrontendServlet frontendServlet = new FrontendServlet();
 
         server = new Server(port);
 
