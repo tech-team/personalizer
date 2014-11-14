@@ -6,9 +6,10 @@ import content.source.ContentSource;
 
 public class LinkedIn implements ContentSource {
 
+
     @Override
-    public PersonList retrieve(PersonCard data) {
-        return null;
+    public void retrieve(PersonCard card, PersonList dest) {
+
     }
 
     @Override

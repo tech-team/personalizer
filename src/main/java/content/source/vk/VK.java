@@ -39,8 +39,7 @@ public class VK implements ContentSource {
 
 
     @Override
-    public PersonList retrieve(PersonCard data) {
-        PersonList personCards = new PersonList();
+    public void retrieve(PersonCard data, PersonList dest) {
 //        personCards.setInitial(data);
 
         ArrayList<Pair<Object, Object>> params = getQueryParams(data);
@@ -48,9 +47,9 @@ public class VK implements ContentSource {
         ArrayList<VKPerson> persons = getPersonsByIds(usersIds);
 
         for (VKPerson person: persons){
-            personCards.addPerson(transformVKPersonToPersonCard(person, data));
+            dest.addPerson(transformVKPersonToPersonCard(person, data));
         }
-        return personCards;
+//        return personCards;
     }
 
     @Override

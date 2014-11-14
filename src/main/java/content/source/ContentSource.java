@@ -10,6 +10,6 @@ public interface ContentSource {
         FB,
         LINKED_IN
     }
-    PersonList retrieve(PersonCard card);
+    void retrieve(PersonCard card, PersonList dest);
     Type getType();
 }
