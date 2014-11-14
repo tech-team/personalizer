@@ -1,24 +1,18 @@
 package content.source.linkedin;
 
 import content.PersonCard;
-import content.Persons;
+import content.PersonList;
 import content.source.ContentSource;
-import org.json.JSONException;
-import org.json.JSONObject;
-import util.net.Headers;
-import util.net.HttpDownloader;
-import util.net.UrlParams;
-
-import java.io.IOException;
 
 public class LinkedIn implements ContentSource {
 
-    public Persons retrieve(Persons data) {
+    @Override
+    public PersonList retrieve(PersonCard data) {
         return null;
     }
 
     @Override
-    public Persons retrieve(PersonCard data) {
-        return null;
+    public Type getType() {
+        return Type.LINKED_IN;
     }
 }

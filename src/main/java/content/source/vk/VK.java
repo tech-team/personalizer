@@ -1,7 +1,7 @@
 package content.source.vk;
 
 import content.PersonCard;
-import content.Persons;
+import content.PersonList;
 import content.source.ContentSource;
 import javafx.util.Pair;
 import org.json.JSONArray;
@@ -10,9 +10,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class VK implements ContentSource {
 
@@ -41,14 +39,9 @@ public class VK implements ContentSource {
 
 
     @Override
-    public Persons retrieve(Persons data) {
-        return null;
-    }
-
-    @Override
-    public Persons retrieve(PersonCard data) {
-        Persons personCards = new Persons();
-        personCards.setInitial(data);
+    public PersonList retrieve(PersonCard data) {
+        PersonList personCards = new PersonList();
+//        personCards.setInitial(data);
 
         ArrayList<Pair<Object, Object>> params = getQueryParams(data);
         String usersIds = usersSearch(params);
@@ -58,6 +51,11 @@ public class VK implements ContentSource {
             personCards.addPerson(transformVKPersonToPersonCard(person, data));
         }
         return personCards;
+    }
+
+    @Override
+    public Type getType() {
+        return Type.VK;
     }
 
     public ArrayList<VKPerson> getPersonsByIds(String ids){

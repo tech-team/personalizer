@@ -1,9 +1,15 @@
 package content.source;
 
 import content.PersonCard;
-import content.Persons;
+import content.PersonList;
 
 public interface ContentSource {
-    Persons retrieve(Persons data);
-    Persons retrieve(PersonCard card);
+    public static enum Type {
+        NONE,
+        VK,
+        FB,
+        LINKED_IN
+    }
+    PersonList retrieve(PersonCard card);
+    Type getType();
 }

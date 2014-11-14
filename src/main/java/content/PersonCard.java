@@ -1,10 +1,12 @@
 package content;
 
+import content.source.ContentSource;
+
 import java.util.EnumMap;
 import java.util.Map;
 
 public class PersonCard {
-    private int id = -1;
+    private PersonId id = null;
     private Map<SocialLink.LinkType, String> name = new EnumMap<>(SocialLink.LinkType.class);
     private Map<SocialLink.LinkType, String> surname = new EnumMap<>(SocialLink.LinkType.class);
     private Map<SocialLink.LinkType, Integer> ageFrom = new EnumMap<>(SocialLink.LinkType.class);
@@ -23,7 +25,7 @@ public class PersonCard {
         this.socialLinks = socialLinks;
     }
 
-    public PersonCard(int id) {
+    public PersonCard(PersonId id) {
         this.id = id;
     }
 
@@ -124,11 +126,15 @@ public class PersonCard {
         return this;
     }
 
-    public int getId() {
+    public PersonId getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(PersonId id) {
         this.id = id;
+    }
+
+    public void setType(ContentSource.Type type) {
+        this.id.setType(type);
     }
 }
