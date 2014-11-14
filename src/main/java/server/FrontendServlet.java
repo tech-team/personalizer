@@ -14,12 +14,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+//NB: Locations and ApiRequestStatus classes
+// should be same as in static/js/common.js
+
 public class FrontendServlet extends HttpServlet {
     public abstract class Locations {
         //static
         public static final String INDEX = "/";
         public static final String REQUEST = "/request";
-        public static final String SEARCHING = "/filter";
+        public static final String FILTER = "/filter";
         public static final String RESULTS = "/results";
 
         //AJAX
@@ -30,7 +33,7 @@ public class FrontendServlet extends HttpServlet {
 
     public abstract class Templates {
         public static final String REQUEST = "request.html";
-        public static final String SEARCHING = "searching.html";
+        public static final String FILTER = "filter.html";
         public static final String RESULTS = "results.html";
     }
 
@@ -58,8 +61,8 @@ public class FrontendServlet extends HttpServlet {
                 staticHandler(request, response, Templates.REQUEST);
                 return;
 
-            case Locations.SEARCHING:
-                staticHandler(request, response, Templates.SEARCHING);
+            case Locations.FILTER:
+                staticHandler(request, response, Templates.FILTER);
                 return;
 
             case Locations.RESULTS:
@@ -97,10 +100,10 @@ public class FrontendServlet extends HttpServlet {
         //start async CP here and put it to the map
 
         JSONObject json = new JSONObject();
-        json.append("status", ApiRequestStatus.OK);
+        json.put("status", ApiRequestStatus.OK);
 
         String qid = UUID.randomUUID().toString();
-        json.append("qid", qid);
+        json.put("qid", qid);
 
         response.getWriter().println(json.toString());
     }
@@ -115,14 +118,14 @@ public class FrontendServlet extends HttpServlet {
 
         if (newCardsReady) {
             JSONObject json = new JSONObject();
-            json.append("status", ApiRequestStatus.OK);
+            json.put("status", ApiRequestStatus.OK);
 
             //TODO: form JSON from cards
 
             response.getWriter().println(json.toString());
         } else {
             JSONObject json = new JSONObject();
-            json.append("status", ApiRequestStatus.WAIT);
+            json.put("status", ApiRequestStatus.WAIT);
 
             response.getWriter().println(json.toString());
         }
@@ -135,7 +138,7 @@ public class FrontendServlet extends HttpServlet {
     private void filterCardsHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
         JSONObject json = new JSONObject();
-        json.append("status", ApiRequestStatus.OK);
+        json.put("status", ApiRequestStatus.OK);
 
         response.getWriter().println(json.toString());
     }
