@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Personalizer</title>
 
+    <link href="../css/lib/jquery-ui.min.css" rel="stylesheet">
     <link href="../css/lib/bootstrap.min.css" rel="stylesheet">
     <link href="../css/lib/bootstrap-slider.min.css" rel="stylesheet">
-    <link href="../css/index.css" rel="stylesheet">
+    <link href="../css/common.css" rel="stylesheet">
+    <link href="../css/pages/filter.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
@@ -22,14 +24,54 @@
                 <li>Результаты</li>
             </ol>
             <h4>Пожалуйста, удалите левых людей и объедините профили одного и того же человека в разных соц. сетях</h4>
+
+
+            <div class="sources">
+                <div class="column">
+
+                    <div class="portlet">
+                        <div class="portlet-header">Feeds</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+
+                    <div class="portlet">
+                        <div class="portlet-header">News</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+
+                </div>
+
+                <div class="column">
+
+                    <div class="portlet">
+                        <div class="portlet-header">Feeds</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+
+                    <div class="portlet">
+                        <div class="portlet-header">News</div>
+                        <div class="portlet-content">Lorem ipsum dolor sit amet, consectetuer adipiscing elit</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="destinations">
+                <div class="column">
+
+                </div>
+            </div>
+
             <button type="submit" class="btn btn-primary" id="continue_button">Продолжить</button>
         </section>
     </div>
 
     <script src="../js/lib/jquery.js"></script>
+    <script src="../js/lib/jquery-ui.min.js"></script>
     <script src="../js/lib/bootstrap.min.js"></script>
     <script src="../js/lib/underscore-min.js"></script>
     <script src="../js/common.js"></script>
-    <script src="../js/pages/request.js"></script>
+    <script src="../js/pages/filter.js"></script>
 </body>
 </html>
