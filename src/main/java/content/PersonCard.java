@@ -1,6 +1,7 @@
 package content;
 
 import content.source.ContentSource;
+import org.json.JSONObject;
 
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -53,6 +54,12 @@ public class PersonCard {
     }
 
     public PersonCard() {
+    }
+
+    public String toJsonString() {
+        JSONObject json = new JSONObject();
+
+        json.put()
     }
 
     public String getName() {

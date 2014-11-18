@@ -21,7 +21,7 @@ $(document).ready(function() {
         connectWith: ".sources .column",
         handle: ".card-header",
         cancel: ".card-remove",
-        placeholder: "card-placeholder ui-corner-all"
+        placeholder: "card-placeholder ui-corner-all",
     });
 
     $(".card")
