@@ -23,6 +23,7 @@ public class VK implements ContentSource {
 
     public VK(){
         VKDataHelper.initCountries();
+        VKConst.countries.put("Россия", 1);
         searcher = new VKUserSearcher();
     }
 
@@ -33,7 +34,6 @@ public class VK implements ContentSource {
         for (VKPerson person: persons){
             dest.addPerson(transformVKPersonToPersonCard(person, data));
         }
-//        return personCards;
     }
 
     @Override

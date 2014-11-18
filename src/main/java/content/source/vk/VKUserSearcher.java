@@ -19,34 +19,60 @@ public class VKUserSearcher {
 
     public UrlParams getQueryParams(PersonCard data){
         //TODO получить все параметры из карты
-        String name = "Игорь";
-        String second_name = "Латкин";
-        String country = "Россия";
-        String city = "Москва";
-        String university = "МГТУ им. Баумана";
-        Integer ageFrom = 5;
-        Integer ageTo = 25;
+//        String name = "Игорь";
+//        String second_name = "Латкин";
+//        String country = "Россия";
+//        String city = "Москва";
+//        String university = "МГТУ им. Баумана";
+//        Integer ageFrom = 5;
+//        Integer ageTo = 25;
+//        Integer birthDay = null;
+//        Integer birthMonth = null;
+//        Integer birthYear = null;
+//        Integer universityYear = null;
+//        String company = null;
+        String name = data.getName();
+        String second_name = data.getSurname();
+        String country = data.getCountry();
+        String city = data.getCity();
+        String university = null;
+        Integer universityYear = null;
+        if (!data.getUniversities().isEmpty()) {
+            university = data.getUniversities().get(0).getName();
+            universityYear = data.getUniversities().get(0).getGraduation();
+        }
+        Integer ageFrom = data.getAgeFrom();
+        Integer ageTo = data.getAgeTo();
+        PersonCard.Date bdate = data.getBirthDate();
         Integer birthDay = null;
         Integer birthMonth = null;
         Integer birthYear = null;
-        Integer universityYear = null;
+        if (bdate != null){
+            birthDay = bdate.getDay();
+            birthMonth = bdate.getMonth();
+            birthYear = bdate.getYear();
+        }
+
         String company = null;
+        if (!data.getJobs().isEmpty()){
+            company = data.getJobs().get(0);
+        }
 
         UrlParams params = new UrlParams();
         try {
 
-            if (!country.equals("") &&
+            if (country != null && !country.equals("") &&
                     VKConst.countries != null &&
                     VKConst.countries.containsKey(country)){
                 Integer countryId = VKConst.countries.get(country);
                 params.add("country", countryId.toString());
-                if (!city.equals("")){
+                if (city != null && !city.equals("")){
                     Integer cityId = VKDataHelper.getCityId(countryId, city);
                     if (cityId != -1)
                         params.add("city", cityId.toString());
                 }
             }
-            if (!university.equals("")){
+            if (university != null && !university.equals("")){
                 Integer universityId = VKDataHelper.getUniversityId(university);
                 if (universityId != -1)
                     params.add("university", universityId.toString());
@@ -109,6 +135,8 @@ public class VKUserSearcher {
             UrlParams urlParams = new UrlParams();
             urlParams.add("user_ids", ids);
             urlParams.add("fields", VKPerson.fields + ",connections");
+            VKConst.addVersionParam(urlParams);
+            VKConst.addAccessTokenParam(urlParams);
             String request = VKConst.getUsersGetUrl(VKConst.token);
             String response = HttpDownloader.httpGet(request, urlParams).getBody();
             JSONArray responseArray = new JSONObject(response).getJSONArray("response");
