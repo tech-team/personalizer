@@ -82,6 +82,8 @@ public class VKUserSearcher {
     public String usersSearch(UrlParams params){
         try {
             String request = VKConst.getUsersSearchUrl(VKConst.token);
+            VKConst.addAccessTokenParam(params);
+            VKConst.addVersionParam(params);
             String response = HttpDownloader.httpGet(request, params);
             JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
 

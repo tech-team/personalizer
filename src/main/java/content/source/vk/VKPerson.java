@@ -118,7 +118,7 @@ public class VKPerson {
     }
 
     public VKPerson(JSONObject person){
-        setId(person.getInt("id"));
+        setId(person.getInt("uid"));
         if (person.optJSONObject("country") != null){
             setCountry(person.optJSONObject("country").getString("title"));
         }
