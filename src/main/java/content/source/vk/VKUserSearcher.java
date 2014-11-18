@@ -84,7 +84,7 @@ public class VKUserSearcher {
             String request = VKConst.getUsersSearchUrl(VKConst.token);
             VKConst.addAccessTokenParam(params);
             VKConst.addVersionParam(params);
-            String response = HttpDownloader.httpGet(request, params);
+            String response = HttpDownloader.httpGet(request, params).getBody();
             JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
 
             return getPersonsIdsByArray(responseArray);
@@ -110,7 +110,7 @@ public class VKUserSearcher {
             urlParams.add("user_ids", ids);
             urlParams.add("fields", VKPerson.fields + ",connections");
             String request = VKConst.getUsersGetUrl(VKConst.token);
-            String response = HttpDownloader.httpGet(request, urlParams);
+            String response = HttpDownloader.httpGet(request, urlParams).getBody();
             JSONArray responseArray = new JSONObject(response).getJSONArray("response");
 
             ArrayList<VKPerson> persons = new ArrayList<>();
