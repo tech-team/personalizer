@@ -1,39 +1,46 @@
 package util.net;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Headers implements Iterable<Headers.Header> {
 
-    private List<Header> headers = new LinkedList<Header>();
+    private Map<String, Header> headers = new HashMap<>();
 
     public Headers() {
     }
 
-    @Override
-    public Iterator<Header> iterator() {
-        return headers.iterator();
-    }
-
     public Headers add(String name, String value) {
-        headers.add(new Header(name, value));
+        Header header = headers.get(name);
+        if (header == null) {
+            header = new Header(name, value);
+            headers.put(name, header);
+        } else {
+            header.set(name, value);
+        }
         return this;
     }
 
     public Headers add(Header h) {
-        headers.add(h);
-        return this;
+        return add(h.getName(), h.getValue());
+    }
+
+    public Header getHeader(String name) {
+        return headers.get(name);
+    }
+
+    @Override
+    public Iterator<Header> iterator() {
+        return headers.values().iterator();
     }
 
 
     public class Header {
         private String name;
-        private String value;
+        private List<String> value = new LinkedList<>();
 
         public Header(String name, String value) {
             this.name = name;
-            this.value = value;
+            this.value.add(value);
         }
 
         public String getName() {
@@ -41,6 +48,17 @@ public class Headers implements Iterable<Headers.Header> {
         }
 
         public String getValue() {
+            return value.get(0);
+        }
+
+        public void set(String name, String value) {
+            if (!name.equals(this.name)) {
+                throw new RuntimeException("Name is not valid");
+            }
+            this.value.add(value);
+        }
+
+        public List<String> getValues() {
             return value;
         }
 
