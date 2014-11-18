@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public class PersonCard {
+
+
     public static class Date {
         private int day;
         private int month;
@@ -33,6 +35,7 @@ public class PersonCard {
     }
 
     private PersonId id = null;
+    private SocialLink personLink;
     private String name;
     private String surname;
     private Integer ageFrom;
@@ -54,6 +57,10 @@ public class PersonCard {
     }
 
     public PersonCard() {
+    }
+
+    public SocialLink getPersonLink() {
+        return personLink;
     }
 
     public String getName() {
@@ -106,6 +113,11 @@ public class PersonCard {
 
     public List<String> getAvatars() {
         return avatars;
+    }
+
+    public PersonCard setPersonLink(SocialLink personLink) {
+        this.personLink = personLink;
+        return this;
     }
 
     public PersonCard setName(String name) {
