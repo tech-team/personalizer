@@ -2,9 +2,9 @@
 $(document).ready(function() {
     $(".sources .column").sortable({
         connectWith: ".destinations .column",
-        handle: ".portlet-header",
-        cancel: ".portlet-toggle",
-        placeholder: "portlet-placeholder ui-corner-all",
+        handle: ".card-header",
+        cancel: ".card-remove",
+        placeholder: "card-placeholder ui-corner-all",
 
         receive: function(e, ui) {
             //TODO: test is it possible to place that item that column
@@ -19,20 +19,18 @@ $(document).ready(function() {
 
     $(".destinations .column").sortable({
         connectWith: ".sources .column",
-        handle: ".portlet-header",
-        cancel: ".portlet-toggle",
-        placeholder: "portlet-placeholder ui-corner-all"
+        handle: ".card-header",
+        cancel: ".card-remove",
+        placeholder: "card-placeholder ui-corner-all"
     });
 
-    $(".portlet")
+    $(".card")
         .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
-        .find(".portlet-header")
+        .find(".card-header")
         .addClass("ui-widget-header ui-corner-all")
-        .prepend("<span class='ui-icon ui-icon-minusthick portlet-toggle'></span>");
+        .prepend("<span class='ui-icon ui-icon-closethick card-remove'></span>");
 
-    $(".portlet-toggle").click(function () {
-        var icon = $(this);
-        icon.toggleClass("ui-icon-minusthick ui-icon-plusthick");
-        icon.closest(".portlet").find(".portlet-content").toggle();
+    $(".card-remove").click(function () {
+        $(this).closest(".card").remove();
     });
 });

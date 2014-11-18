@@ -8,37 +8,35 @@ body {
 }
 
 .column {
-    width: 170px;
-    float: left;
     padding-bottom: 100px;
 
     height: 350px;
     overflow-y: scroll;
 }
 
-.portlet {
+.card {
     margin: 0 1em 1em 0;
     padding: 0.3em;
 }
 
-.portlet-header {
+.card-header {
     padding: 0.2em 0.3em;
     margin-bottom: 0.5em;
     position: relative;
 }
 
-.portlet-toggle {
+.card-remove {
     position: absolute;
     top: 50%;
-    right: 0;
+    right: 6px;
     margin-top: -8px;
 }
 
-.portlet-content {
+.card-content {
     padding: 0.4em;
 }
 
-.portlet-placeholder {
+.card-placeholder {
     border: 1px dotted black;
     margin: 0 1em 1em 0;
     height: 50px;
