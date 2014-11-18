@@ -6,6 +6,7 @@ import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.net.HttpDownloader;
+import util.net.UrlParams;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -17,7 +18,7 @@ public class VKUserSearcher {
         return getPersonsByIds((usersSearch(getQueryParams(data))));
     }
 
-    public ArrayList<Pair<Object, Object>> getQueryParams(PersonCard data){
+    public UrlParams getQueryParams(PersonCard data){
         //TODO получить все параметры из карты
         String name = "Игорь";
         String second_name = "Латкин";
@@ -32,61 +33,57 @@ public class VKUserSearcher {
         Integer universityYear = null;
         String company = null;
 
-        ArrayList<Pair<Object, Object>> params = new ArrayList<>();
+        UrlParams params = new UrlParams();
         try {
 
             if (!country.equals("") &&
                     VKConst.countries != null &&
                     VKConst.countries.containsKey(country)){
                 Integer countryId = VKConst.countries.get(country);
-                params.add(new Pair<>("country", countryId));
+                params.add("country", countryId.toString());
                 if (!city.equals("")){
                     Integer cityId = VKDataHelper.getCityId(countryId, city);
                     if (cityId != -1)
-                        params.add(new Pair<>("city", cityId));
+                        params.add("city", cityId.toString());
                 }
             }
             if (!university.equals("")){
                 Integer universityId = VKDataHelper.getUniversityId(university);
                 if (universityId != -1)
-                    params.add(new Pair<>("university", universityId));
+                    params.add("university", universityId.toString());
             }
             if (ageFrom != null){
-                params.add(new Pair<>("age_from", ageFrom));
+                params.add("age_from", ageFrom.toString());
             }
             if (ageTo != null){
-                params.add(new Pair<>("age_to", ageTo));
+                params.add("age_to", ageTo.toString());
             }
             if (birthDay != null){
-                params.add(new Pair<>("birth_day", birthDay));
+                params.add("birth_day", birthDay.toString());
             }
             if (birthMonth != null){
-                params.add(new Pair<>("birth_month", birthMonth));
+                params.add("birth_month", birthMonth.toString());
             }
             if (birthYear != null){
-                params.add(new Pair<>("birth_year", birthYear));
+                params.add("birth_year", birthYear.toString());
             }
             if (universityYear != null){
-                params.add(new Pair<>("university_year", universityYear));
+                params.add("university_year", universityYear.toString());
             }
             if (company != null){
-                params.add(new Pair<>("company", company));
+                params.add("company", company.toString());
             }
-            params.add(new Pair<>("q", (name!=null?name:"") + (second_name!=null?" "+second_name:"")));
+            params.add("q", (name!=null?name:"") + (second_name!=null?" "+second_name:""));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return params;
     }
 
-    public String usersSearch(ArrayList<Pair<Object, Object>> params){
+    public String usersSearch(UrlParams params){
         try {
-            String parameters = "";
-            for (Pair<Object, Object> param: params)
-                parameters = RequestHelper.addParam(parameters, param);
-
-            String request = VKConst.getUsersSearchUrl(VKConst.token)+ "&" + parameters;
-            String response = HttpDownloader.httpGet(request);
+            String request = VKConst.getUsersSearchUrl(VKConst.token);
+            String response = HttpDownloader.httpGet(request, params);
             JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
 
             return getPersonsIdsByArray(responseArray);
