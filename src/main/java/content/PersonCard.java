@@ -205,7 +205,7 @@ public class PersonCard {
         return id;
     }
 
-    public void setId(PersonId id) {
+    void setId(PersonId id) {
         this.id = id;
     }
 
