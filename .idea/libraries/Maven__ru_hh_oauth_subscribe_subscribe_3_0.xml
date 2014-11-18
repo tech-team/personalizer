@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Maven: ru.hh.oauth.subscribe:subscribe:3.0">
+    <CLASSES />
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/ru/hh/oauth/subscribe/subscribe/3.0/subscribe-3.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/ru/hh/oauth/subscribe/subscribe/3.0/subscribe-3.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

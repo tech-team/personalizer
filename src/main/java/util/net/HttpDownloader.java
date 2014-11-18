@@ -1,14 +1,10 @@
 package util.net;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 
 public class HttpDownloader {
@@ -25,6 +21,10 @@ public class HttpDownloader {
 
         public Request(String url, String encoding) {
             this(url, null, null, encoding);
+        }
+
+        public Request(String url, UrlParams params) {
+            this(url, params, null, DEFAULT_ENCODING);
         }
 
         public Request(String url, UrlParams params, Headers headers) {
@@ -59,12 +59,16 @@ public class HttpDownloader {
         return httpGet(url, null, null, DEFAULT_ENCODING);
     }
 
+    public static String httpGet(String url, UrlParams params) throws IOException {
+        return httpGet(url, params, null, DEFAULT_ENCODING);
+    }
+
     public static String httpGet(Request request) throws IOException {
         return httpGet(request.getUrl(), request.getParams(), request.getHeaders(), request.getEncoding());
     }
 
     public static String httpGet(String url, UrlParams params, Headers headers, String encoding) throws IOException {
-        URL urlObj = constructUrl(url, params);
+        URL urlObj = constructUrl(url, params, encoding);
         HttpURLConnection connection = null;
         InputStream in = null;
 
@@ -101,7 +105,7 @@ public class HttpDownloader {
     }
 
     public static String httpPost(String url, UrlParams data, Headers headers, String encoding) throws IOException {
-        URL urlObj = constructUrl(url, null);
+        URL urlObj = constructUrl(url, null, encoding);
         HttpURLConnection connection = null;
         InputStream in = null;
         OutputStream out = null;
@@ -116,7 +120,7 @@ public class HttpDownloader {
 
             connection.connect();
 
-            String dataString = constructParams(data);
+            String dataString = constructParams(data, encoding);
             out = new BufferedOutputStream(connection.getOutputStream());
             out.write(dataString.getBytes());
             //clean up
@@ -143,21 +147,21 @@ public class HttpDownloader {
         }
     }
 
-    private static URL constructUrl(String url, UrlParams params) throws MalformedURLException {
+    private static URL constructUrl(String url, UrlParams params, String encoding) throws MalformedURLException, UnsupportedEncodingException {
         if (params == null || params.isEmpty()) {
             return new URL(url);
         }
-        return new URL(url + "?" + constructParams(params));
+        return new URL(url + "?" + constructParams(params, encoding));
     }
 
-    private static String constructParams(UrlParams params) {
+    private static String constructParams(UrlParams params, String encoding) throws UnsupportedEncodingException {
         if (params == null) {
             return "";
         }
 
         String newUrl = "";
         for (UrlParams.UrlParam p : params) {
-            newUrl += p.getKey() + "=" + p.getValue() + "&";
+            newUrl += URLEncoder.encode(p.getKey(), encoding) + "=" + URLEncoder.encode(p.getValue(), encoding) + "&";
         }
         return newUrl.substring(0, newUrl.length() - 1);
     }
