@@ -1,7 +1,5 @@
 package util.net;
 
-import org.eclipse.jetty.http.HttpHeader;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -140,39 +138,6 @@ public class HttpDownloader {
         }
     }
 
-    private static Response parseConnection(HttpURLConnection connection, String encoding) throws IOException {
-        InputStream in = null;
-        try {
-            String protocol = null;
-            String body = null;
-            int status = connection.getResponseCode();
-            Headers headers = new Headers();
-
-            for (Map.Entry<String, List<String>> e : connection.getHeaderFields().entrySet()) {
-                String key = e.getKey();
-                if (key == null) {
-                    protocol = connection.getHeaderField(null).split("\\s")[0];
-                } else {
-                    headers.add(key, connection.getHeaderField(key));
-                }
-            }
-
-            if (status == HttpURLConnection.HTTP_OK) {
-                in = connection.getInputStream();
-            } else {
-                in = connection.getErrorStream();
-            }
-            body = handleInputStream(in, encoding);
-
-            return new Response(status, protocol, headers, body);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
-
-    }
-
     public static Response httpPost(String url) throws IOException {
         return httpPost(url, null, null, DEFAULT_ENCODING);
     }
@@ -251,5 +216,40 @@ public class HttpDownloader {
             sb.append(line);
         }
         return sb.toString();
+    }
+
+    private static Response parseConnection(HttpURLConnection connection, String encoding) throws IOException {
+        InputStream in = null;
+        try {
+            String protocol = null;
+            String body = null;
+            int status = connection.getResponseCode();
+            Headers headers = new Headers();
+
+            for (Map.Entry<String, List<String>> e : connection.getHeaderFields().entrySet()) {
+                String key = e.getKey();
+                if (key == null) {
+                    protocol = connection.getHeaderField(null).split("\\s")[0];
+                } else {
+                    for (String v : e.getValue()) {
+                        headers.add(key, v);
+                    }
+                }
+            }
+
+            if (status == HttpURLConnection.HTTP_OK) {
+                in = connection.getInputStream();
+            } else {
+                in = connection.getErrorStream();
+            }
+            body = handleInputStream(in, encoding);
+
+            return new Response(status, protocol, headers, body);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+
     }
 }

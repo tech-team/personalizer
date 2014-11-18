@@ -25,7 +25,6 @@ public class FrontendServlet extends HttpServlet {
         public static final String FILTER = "/filter";
         public static final String RESULTS = "/results";
 
-        //AJAX
         public static final String START_SEARCH = "/api/start_search";
         public static final String GET_CARDS = "/api/get_cards";
         public static final String FILTER_CARDS = "/api/filter_cards";
@@ -80,7 +79,6 @@ public class FrontendServlet extends HttpServlet {
             case Locations.FILTER_CARDS:
                 filterCardsHandler(request, response);
                 return;
-
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
