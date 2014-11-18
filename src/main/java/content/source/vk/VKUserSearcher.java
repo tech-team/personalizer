@@ -107,8 +107,10 @@ public class VKUserSearcher {
     public ArrayList<VKPerson> getPersonsByIds(String ids){
         try {
             UrlParams urlParams = new UrlParams();
-            urlParams.add("user_ids", ids);
+            urlParams.add("user_ids", "13062691");
             urlParams.add("fields", VKPerson.fields + ",connections");
+            VKConst.addVersionParam(urlParams);
+            VKConst.addAccessTokenParam(urlParams);
             String request = VKConst.getUsersGetUrl(VKConst.token);
             String response = HttpDownloader.httpGet(request, urlParams);
             JSONArray responseArray = new JSONObject(response).getJSONArray("response");
