@@ -36,7 +36,7 @@ public class Parser {
     public static void main(String[] args) {
         HttpDownloader.Request request = Request.makeRequest(Request.URL_PROFILE + "/~:(first-name,headline,last-name,location,id,industry,educations,site-standard-profile-request)", null);
         try {
-            String response = HttpDownloader.httpGet(request);
+            String response = HttpDownloader.httpGet(request).getBody();
             LinkedInPerson person = parsePerson(response);
             System.out.println();
         } catch (IOException e) {

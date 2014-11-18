@@ -34,7 +34,7 @@ public class Request {
         HttpDownloader.Request request = makeRequest(URL_PROFILE + "/id=" + id, null);
         String response = null;
         try {
-            response= HttpDownloader.httpGet(request);
+            response= HttpDownloader.httpGet(request).getBody();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -51,7 +51,7 @@ public class Request {
             params.add(Parameters.CLIENT_SECRET, "YOUR_SECRET");
             HttpDownloader.Request request = new HttpDownloader.Request(URL_ACCESS_TOKEN, params, null);
             try {
-                String response = HttpDownloader.httpPost(request);
+                String response = HttpDownloader.httpPost(request).getBody();
                 if (response != null) {
                     return getTokenFromResponse(response);
                 }

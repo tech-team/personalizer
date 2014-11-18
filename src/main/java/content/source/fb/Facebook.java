@@ -35,7 +35,7 @@ public class Facebook implements ContentSource {
         HttpDownloader.Request request = new HttpDownloader.Request( baseUrl + "search", searchParams);
 
         try {
-
+            HttpDownloader.Response resp = HttpDownloader.httpGet(request);
             JSONArray ids = new JSONObject(HttpDownloader.httpGet(request)).getJSONArray("data");
 
             params = new UrlParams();
@@ -71,4 +71,7 @@ public class Facebook implements ContentSource {
         return Type.FB;
     }
 
+    public static void main(String[] args) {
+        new Facebook().retrieve(null, new PersonList());
+    }
 }
