@@ -27,6 +27,53 @@ public class VKPerson {
     private Map<SocialLink.LinkType, String> socialLinks = new HashMap<>();
 
 
+    public Integer getBDay(){
+        if (bdate != null){
+
+            String[] bdates = bdate.split("\\.");
+            if (bdates.length >= 1){
+                return Integer.parseInt(bdates[0]);
+            }
+        }
+        return null;
+    }
+    public Integer getBMonth(){
+        if (bdate != null){
+            String[] bdates = bdate.split("\\.");
+            if (bdates.length >= 2){
+                return Integer.parseInt(bdates[1]);
+            }
+        }
+        return null;
+    }
+    public Integer getBYear(){
+        if (bdate != null){
+            String[] bdates = bdate.split("\\.");
+            if (bdates.length >= 3){
+                return Integer.parseInt(bdates[2]);
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<University> getUniversities() {
+        return universities;
+    }
+
+    public void setUniversities(ArrayList<University> universities) {
+        this.universities = universities;
+    }
+
+    public Map<SocialLink.LinkType, String> getSocialLinks() {
+        return socialLinks;
+    }
+
+    public void setSocialLinks(Map<SocialLink.LinkType, String> socialLinks) {
+        this.socialLinks = socialLinks;
+    }
+
+
+
     public String getLastName() {
         return lastName;
     }

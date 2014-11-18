@@ -11,6 +11,7 @@ public class VKTest {
             personCard.setName("Игорь");
             personCard.setSurname("Латкин");
             personCard.setCountry("Россия");
+            personCard.setCity("Москва");
             //personCard.setUniversities(new University("МГТУ им"))
             vk.retrieve(personCard, new PersonList());
         }
