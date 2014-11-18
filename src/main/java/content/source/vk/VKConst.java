@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class VKConst {
     public static final String token =
-            "f42b8812d15eeeaa84740414e0831d17bc65fcb502d077dd4e6c48465c975d3c9cb50d63b16cd9d14fcaa";
+            "398328ae3cd3840bf3dab5dba3455def86bd74268cddb9ae5a39ade988b41635df5b663d5c4e6188ad6ae";
     private static final String usersSearchUrl =
             "https://api.vk.com/method/users.search?&v=5.26&count=5";
     private static final String usersGetUrl =
