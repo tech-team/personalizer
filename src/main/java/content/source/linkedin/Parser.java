@@ -1,71 +1,75 @@
 package content.source.linkedin;
 
 
-import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import util.net.HttpDownloader;
+import util.net.UrlParams;
 
 import java.io.IOException;
 
+import static util.net.HttpDownloader.httpGet;
+import static util.net.HttpDownloader.httpPost;
+
 public class Parser {
 
-    public static final String FIELD_FIRST_NAME = "firstName";
-    public static final String FIELD_LAST_NAME = "lastName";
-    public static final String FIELD_HEADLINE = "headline";
-    public static final String FIELD_URL = "url";
-    public static final String FIELD_URL_WRAPPER = "siteStandardProfileRequest";
-    public static final String FIELD_LOCATION = "location";
-    public static final String FIELD_COUNTRY = "country";
-    public static final String FIELD_CODE = "code";
-    public static final String FIELD_ID = "id";
-
-
-    public static LinkedInPerson parsePerson(String person) {
-        LinkedInPerson linkedInPerson = new LinkedInPerson();
-        if(person != null) {
-            JSONObject json = new JSONObject(person);
-            linkedInPerson.setFirstName(getProfileField(FIELD_FIRST_NAME, json));
-            linkedInPerson.setLastName(getProfileField(FIELD_LAST_NAME, json));
-            linkedInPerson.setHeadline(getProfileField(FIELD_HEADLINE, json));
-            linkedInPerson.setUrl(getProfileField(FIELD_URL_WRAPPER, json));
-            linkedInPerson.setCountry(getProfileField(FIELD_LOCATION, json));
-            linkedInPerson.setId(getProfileField(FIELD_ID, json));
+    public static UrlParams getInputParams() {
+        UrlParams params = new UrlParams();
+        try {
+            Document doc = Jsoup.connect("https://www.linkedin.com/").get();
+            params.add("session_key", "prsnlzr@gmail.com")
+                    .add("session_password", "tech-team")
+                    .add("loginCsrfParam", doc.select("#loginCsrfParam-login").attr("value"))
+                    .add("csrfToken", doc.select("#csrfToken-login").attr("value"))
+                    .add("sourceAlias", doc.select("#sourceAlias-login").attr("value"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return linkedInPerson;
+        return params;
     }
 
-    public static void main(String[] args) {
-        HttpDownloader.Request request = Request.makeRequest(Request.URL_PROFILE + "/~:(first-name,headline,last-name,location,id,industry,educations,site-standard-profile-request)", null);
+    public static void getPersons(String name, String last_name) {
+        String url = "http://www.linkedin.com/pub/dir/" + name + "/" + last_name;
+        HttpDownloader.Request request = new HttpDownloader.Request(url, null, null);
         try {
-            String response = HttpDownloader.httpGet(request);
-            LinkedInPerson person = parsePerson(response);
-            System.out.println();
+            String page = httpGet(request).getBody();
+            Document doc = Jsoup.parse(page);
+            for(Element element :doc.select(".vcard")) {
+                String link = element.select("h2 a").attr("href");
+                getPersonByLink(link);
+                System.out.println(link);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static String getProfileField(String name, JSONObject profile) {
-        if(!profile.isNull(name)) {
-            switch (name) {
-                case FIELD_URL_WRAPPER:
-                    JSONObject wrapper = profile.getJSONObject(FIELD_URL_WRAPPER);
-                    return getProfileField(FIELD_URL, wrapper);
-                case FIELD_LOCATION:
-                    JSONObject location = profile.getJSONObject(FIELD_LOCATION);
-                    JSONObject country = getProfileObject(FIELD_COUNTRY, location);
-                    return getProfileField(FIELD_CODE, country);
-                default:
-                    return profile.getString(name);
-            }
+    public static void getPersonByLink(String link) {
+        HttpDownloader.Request request = new HttpDownloader.Request(link, null, null);
+        try {
+            String page = httpGet(request).getBody();
+            Document doc = Jsoup.parse(page);
+            Element el = doc.select(".full-name").get(0);
+            System.out.println(el.text());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
     }
 
-    public static JSONObject getProfileObject(String name, JSONObject profile) {
-        if(!profile.isNull(name)) {
-            return profile.getJSONObject(name);
+    public static void main(String[] args) {
+        HttpDownloader.Request request = new HttpDownloader.Request("https://www.linkedin.com/uas/login-submit",
+                getInputParams(),
+                null);
+        try {
+            HttpDownloader.Response response = httpPost(request);
+
+            Document doc = Jsoup.parse(response.getBody());
+            System.out.println();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
+        getPersons("Sam", "Kil");
     }
 
 }

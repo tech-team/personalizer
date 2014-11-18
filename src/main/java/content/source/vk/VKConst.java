@@ -1,15 +1,17 @@
 package content.source.vk;
 
 
+import util.net.UrlParams;
+
 import java.util.Map;
 
 public class VKConst {
     public static final String token =
-            "f42b8812d15eeeaa84740414e0831d17bc65fcb502d077dd4e6c48465c975d3c9cb50d63b16cd9d14fcaa";
+            "d02b8ce87345045229994512ae4bee189755b688b8df8138f15e1ddd8b6a5cc820271998a2db271fcc244";
     private static final String usersSearchUrl =
-            "https://api.vk.com/method/users.search?&v=5.26&count=5";
+            "https://api.vk.com/method/users.search";//?v=5.26&count=5";
     private static final String usersGetUrl =
-            "https://api.vk.com/method/users.get?&v=5.26";
+            "https://api.vk.com/method/users.get";//?v=5.26";
     private static final String getCountriesUrl =
             "https://api.vk.com/method/database.getCountries?&v=5.26";
     private static final String getCityUrl =
@@ -32,12 +34,23 @@ public class VKConst {
     }
 
     public static String getUsersSearchUrl(String token){
-        return usersSearchUrl + "&access_token=" + token;
+        return usersSearchUrl;// + "&access_token=" + token;
     }
 
     public static String getUsersGetUrl(String token){
-        return usersGetUrl + "&access_token=" + token;
+        return usersGetUrl;
+    }// + "&access_token=" + token;
+
+    public static void addAccessTokenParam(UrlParams urlParams){
+        urlParams.add("access_token", token);
     }
+
+    public static void addVersionParam(UrlParams urlParams){
+        urlParams.add("v", "5.26");
+    }
+
+
+
 
 
 }

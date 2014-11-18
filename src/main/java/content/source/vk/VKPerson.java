@@ -2,6 +2,8 @@ package content.source.vk;
 
 
 import content.SocialLink;
+import content.source.University;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.Map;
 
 public class VKPerson {
     public static final String fields =
-            "sex,bdate,city,country,photo_100,education,contacts";
+            "sex,bdate,city,country,photo_100,universities,contacts";
 
     private String firstName;
     private String lastName;
@@ -19,11 +21,57 @@ public class VKPerson {
     private String city;
     private String country;
     private String photo;
-    private String university;
-    private Integer graduation;
+    private ArrayList<University> universities;
     private Integer id;
     private String mobilePhone;
     private Map<SocialLink.LinkType, String> socialLinks = new HashMap<>();
+
+
+    public Integer getBDay(){
+        if (bdate != null){
+
+            String[] bdates = bdate.split("\\.");
+            if (bdates.length >= 1){
+                return Integer.parseInt(bdates[0]);
+            }
+        }
+        return null;
+    }
+    public Integer getBMonth(){
+        if (bdate != null){
+            String[] bdates = bdate.split("\\.");
+            if (bdates.length >= 2){
+                return Integer.parseInt(bdates[1]);
+            }
+        }
+        return null;
+    }
+    public Integer getBYear(){
+        if (bdate != null){
+            String[] bdates = bdate.split("\\.");
+            if (bdates.length >= 3){
+                return Integer.parseInt(bdates[2]);
+            }
+        }
+        return null;
+    }
+
+    public ArrayList<University> getUniversities() {
+        return universities;
+    }
+
+    public void setUniversities(ArrayList<University> universities) {
+        this.universities = universities;
+    }
+
+    public Map<SocialLink.LinkType, String> getSocialLinks() {
+        return socialLinks;
+    }
+
+    public void setSocialLinks(Map<SocialLink.LinkType, String> socialLinks) {
+        this.socialLinks = socialLinks;
+    }
+
 
 
     public String getLastName() {
@@ -58,9 +106,6 @@ public class VKPerson {
         this.mobilePhone = mobilePhone;
     }
 
-    public void setGraduation(Integer graduation) {
-        this.graduation = graduation;
-    }
 
     public String getSex() {
         return sex;
@@ -102,22 +147,6 @@ public class VKPerson {
         this.photo = photo;
     }
 
-    public String getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(String university) {
-        this.university = university;
-    }
-
-    public int getGraduation() {
-        return graduation;
-    }
-
-    public void setGraduation(int graduation) {
-        this.graduation = graduation;
-    }
-
     public VKPerson(JSONObject person){
         setId(person.getInt("id"));
         if (person.optJSONObject("country") != null){
@@ -132,12 +161,20 @@ public class VKPerson {
         if (!person.optString("photo_100").equals("")){
             setPhoto(person.optString("photo_100"));
         }
-        if (!person.optString("university_name").equals("")){
-            setUniversity(person.optString("university_name"));
+
+        JSONArray univers;
+        universities = new ArrayList<>();
+        if ((univers = person.optJSONArray("universities")) != null){
+
+            for (int i = 0; i < univers.length(); i++){
+                JSONObject item = univers.getJSONObject(i);
+                universities.add(new University
+                                (item.getString("name"),
+                                (item.optInt("graduation")==0?null:item.getInt("graduation")))
+                );
+            }
         }
-        if (person.optInt("graduation") != 0){
-            setGraduation(person.optInt("graduation"));
-        }
+
         if (!person.optString("bdate").equals("")){
             setBdate(person.optString("bdate"));
         }
@@ -152,7 +189,7 @@ public class VKPerson {
         }
         if (!person.optString("skype").equals("")){
             String skype = person.optString("skype");
-            socialLinks.put(SocialLink.LinkType.Skype, skype);
+            socialLinks.put(SocialLink.LinkType.SKYPE, skype);
         }
         if (!person.optString("facebook").equals("")){
             String facebook = person.optString("facebook");
@@ -160,7 +197,7 @@ public class VKPerson {
 
         }
         if (!person.optString("twitter").equals("")){
-            socialLinks.put(SocialLink.LinkType.Twitter, person.optString("twitter"));
+            socialLinks.put(SocialLink.LinkType.TWITTER, person.optString("twitter"));
         }
 
     }

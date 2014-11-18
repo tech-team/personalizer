@@ -16,20 +16,18 @@ public class VKDataHelper {
 
 
     public static void initCountries(){
-        try {
-            if (VKConst.countries == null){
-                VKConst.countries = VKDataHelper.getCountries();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (VKConst.countries == null){
+            VKConst.countries = new HashMap<>();
+            //VKDataHelper.getCountries();
+            VKConst.countries.put("Россия", 1);
         }
     }
 
     public static Map<String, Integer> getCountries() throws IOException {
-        String parameters = String.format("&need_all=%s",
+        String parameters = String.format("need_all=%s",
                 URLEncoder.encode("1", "UTF-8"));
         String request = VKConst.getGetCountriesUrl() + "&" + parameters;
-        String response = HttpDownloader.httpGet(request);
+        String response = HttpDownloader.httpGet(request).getBody();
         JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
         Map <String, Integer> countries = new HashMap<>();
         for (int i = 0; i < responseArray.length(); i++){
@@ -58,7 +56,7 @@ public class VKDataHelper {
     public static int getId(String request){
         String response = null;
         try {
-            response = HttpDownloader.httpGet(request);
+            response = HttpDownloader.httpGet(request).getBody();
             JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
             JSONObject entityObj = responseArray.optJSONObject(0);
             if (entityObj != null)

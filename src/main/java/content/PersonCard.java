@@ -1,7 +1,7 @@
 package content;
 
 import content.source.ContentSource;
-import org.json.JSONObject;
+import content.source.University;
 
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -9,31 +9,50 @@ import java.util.List;
 import java.util.Map;
 
 public class PersonCard {
-    public static class Date {
-        private int day;
-        private int month;
-        private int year;
 
-        public Date(int day, int month, int year) {
+
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public void setMobilePhone(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public static class Date {
+        private Integer day;
+        private Integer month;
+        private Integer year;
+
+        public Date(Integer day, Integer month, Integer year) {
             this.day = day;
             this.month = month;
             this.year = year;
         }
 
-        public int getDay() {
+        public Integer getDay() {
             return day;
         }
 
-        public int getMonth() {
+        public Integer getMonth() {
             return month;
         }
 
-        public int getYear() {
+        public Integer getYear() {
             return year;
         }
     }
 
     private PersonId id = null;
+    private SocialLink personLink;
     private String name;
     private String surname;
     private Integer ageFrom;
@@ -43,8 +62,11 @@ public class PersonCard {
     private Boolean famous;
     private String country;
     private String city;
-    private List<String> universities = new LinkedList<>();
+    private String mobilePhone;
+    private String sex;
+    private List<University> universities = new LinkedList<>();
     private List<String> jobs = new LinkedList<>();
+    private List<String> avatars = new LinkedList<>();
 
     private Map<SocialLink.LinkType, SocialLink> socialLinks = new EnumMap<>(SocialLink.LinkType.class);
 
@@ -56,10 +78,8 @@ public class PersonCard {
     public PersonCard() {
     }
 
-    public String toJsonString() {
-        JSONObject json = new JSONObject();
-
-        json.put()
+    public SocialLink getPersonLink() {
+        return personLink;
     }
 
     public String getName() {
@@ -98,7 +118,7 @@ public class PersonCard {
         return city;
     }
 
-    public List<String> getUniversities() {
+    public List<University> getUniversities() {
         return universities;
     }
 
@@ -108,6 +128,15 @@ public class PersonCard {
 
     public Map<SocialLink.LinkType, SocialLink> getSocialLinks() {
         return socialLinks;
+    }
+
+    public List<String> getAvatars() {
+        return avatars;
+    }
+
+    public PersonCard setPersonLink(SocialLink personLink) {
+        this.personLink = personLink;
+        return this;
     }
 
     public PersonCard setName(String name) {
@@ -155,7 +184,7 @@ public class PersonCard {
         return this;
     }
 
-    public PersonCard setUniversities(List<String> universities) {
+    public PersonCard setUniversities(List<University> universities) {
         this.universities = universities;
         return this;
     }
@@ -170,7 +199,7 @@ public class PersonCard {
         return this;
     }
 
-    public PersonCard addUniversity(String university) {
+    public PersonCard addUniversity(University university) {
         this.universities.add(university);
         return this;
     }
@@ -182,6 +211,11 @@ public class PersonCard {
 
     public PersonCard addSocialLink(SocialLink.LinkType type, SocialLink link) {
         this.socialLinks.put(type, link);
+        return this;
+    }
+
+    public PersonCard addAvatar(String link) {
+        avatars.add(link);
         return this;
     }
 

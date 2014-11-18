@@ -13,7 +13,11 @@ public class PersonList {
         private Map<ContentSource.Type, Integer> currentIds = new EnumMap<>(ContentSource.Type.class);
         public int generate(ContentSource.Type type) {
             Integer id = currentIds.get(type);
-            ++id;
+            if (id != null) {
+                ++id;
+            } else {
+                id = 1;
+            }
             currentIds.put(type, id);
             return id;
         }
