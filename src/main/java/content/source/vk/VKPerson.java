@@ -116,8 +116,9 @@ public class VKPerson {
         }
 
         JSONArray univers;
+        universities = new ArrayList<>();
         if ((univers = person.optJSONArray("universities")) != null){
-            universities = new ArrayList<>();
+
             for (int i = 0; i < univers.length(); i++){
                 JSONObject item = univers.getJSONObject(i);
                 universities.add(new University
