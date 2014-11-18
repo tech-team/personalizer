@@ -7,16 +7,27 @@ body {
     padding-bottom: 100px;
 }
 
-.column {
+.sources .column {
     padding-bottom: 100px;
 
     height: 350px;
     overflow-y: scroll;
 }
 
+.destinations .column {
+    padding-right: 100px;
+
+    height: 200px;
+    overflow-x: scroll;
+}
+
 .card {
     margin: 0 1em 1em 0;
     padding: 0.3em;
+}
+
+.destinations .card, .destinations .card-placeholder {
+    display: inline-block;
 }
 
 .card-header {
