@@ -1,7 +1,5 @@
 package server;
 
-import content.source.linkedin.Request;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,9 +21,6 @@ public class FrontendServlet extends HttpServlet {
 
         //AJAX
         public static final String STATUS = "/status";
-
-        //not needed
-        public static final String LINKED_IN = "/linkedin";
     }
 
     public abstract class Templates {
@@ -66,12 +61,6 @@ public class FrontendServlet extends HttpServlet {
                 statusView(request, response);
                 return;
 
-
-            case Locations.LINKED_IN: {
-                //пока так
-                String code = request.getParameter("code");
-                Request.token = Request.requestAccessToken(code);
-            }
 
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
