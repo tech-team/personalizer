@@ -1,15 +1,15 @@
 package util.net;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import org.eclipse.jetty.http.HttpHeader;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 
 public class HttpDownloader {
     // TODO: add proxy
@@ -25,6 +25,10 @@ public class HttpDownloader {
 
         public Request(String url, String encoding) {
             this(url, null, null, encoding);
+        }
+
+        public Request(String url, UrlParams params) {
+            this(url, params, null, DEFAULT_ENCODING);
         }
 
         public Request(String url, UrlParams params, Headers headers) {
@@ -55,18 +59,71 @@ public class HttpDownloader {
         }
     }
 
-    public static String httpGet(String url) throws IOException {
+    public static class Response {
+        private int responseCode;
+        private String protocol;
+        private Headers headers;
+        private String body;
+
+        public Response(int responseCode, String protocol, Headers headers, String body) {
+            this.responseCode = responseCode;
+            this.protocol = protocol;
+            this.headers = headers;
+            this.body = body;
+        }
+
+        public Response() {
+        }
+
+        public int getResponseCode() {
+            return responseCode;
+        }
+
+        public void setResponseCode(int responseCode) {
+            this.responseCode = responseCode;
+        }
+
+        public String getProtocol() {
+            return protocol;
+        }
+
+        public void setProtocol(String protocol) {
+            this.protocol = protocol;
+        }
+
+        public Headers getHeaders() {
+            return headers;
+        }
+
+        public void setHeaders(Headers headers) {
+            this.headers = headers;
+        }
+
+        public String getBody() {
+            return body;
+        }
+
+        public void setBody(String body) {
+            this.body = body;
+        }
+    }
+
+
+    public static Response httpGet(String url) throws IOException {
         return httpGet(url, null, null, DEFAULT_ENCODING);
     }
 
-    public static String httpGet(Request request) throws IOException {
+    public static Response httpGet(String url, UrlParams params) throws IOException {
+        return httpGet(url, params, null, DEFAULT_ENCODING);
+    }
+
+    public static Response httpGet(Request request) throws IOException {
         return httpGet(request.getUrl(), request.getParams(), request.getHeaders(), request.getEncoding());
     }
 
-    public static String httpGet(String url, UrlParams params, Headers headers, String encoding) throws IOException {
-        URL urlObj = constructUrl(url, params);
+    public static Response httpGet(String url, UrlParams params, Headers headers, String encoding) throws IOException {
+        URL urlObj = constructUrl(url, params, encoding);
         HttpURLConnection connection = null;
-        InputStream in = null;
 
         try {
             connection = (HttpURLConnection) urlObj.openConnection();
@@ -75,35 +132,58 @@ public class HttpDownloader {
             fillHeaders(headers, connection);
             connection.connect();
 
-            String res = null;
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                in = connection.getInputStream();
-                res = handleInputStream(in, encoding);
-            }
-            return res;
+            return parseConnection(connection, encoding);
         } finally {
-            if (in != null) {
-                in.close();
-            }
-
             if (connection != null) {
                 connection.disconnect();
             }
         }
     }
 
-    public static String httpPost(String url) throws IOException {
+    private static Response parseConnection(HttpURLConnection connection, String encoding) throws IOException {
+        InputStream in = null;
+        try {
+            String protocol = null;
+            String body = null;
+            int status = connection.getResponseCode();
+            Headers headers = new Headers();
+
+            for (Map.Entry<String, List<String>> e : connection.getHeaderFields().entrySet()) {
+                String key = e.getKey();
+                if (key == null) {
+                    protocol = connection.getHeaderField(null).split("\\s")[0];
+                } else {
+                    headers.add(key, connection.getHeaderField(key));
+                }
+            }
+
+            if (status == HttpURLConnection.HTTP_OK) {
+                in = connection.getInputStream();
+            } else {
+                in = connection.getErrorStream();
+            }
+            body = handleInputStream(in, encoding);
+
+            return new Response(status, protocol, headers, body);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+
+    }
+
+    public static Response httpPost(String url) throws IOException {
         return httpPost(url, null, null, DEFAULT_ENCODING);
     }
 
-    public static String httpPost(Request request) throws IOException {
+    public static Response httpPost(Request request) throws IOException {
         return httpPost(request.getUrl(), request.getParams(), request.getHeaders(), request.getEncoding());
     }
 
-    public static String httpPost(String url, UrlParams data, Headers headers, String encoding) throws IOException {
-        URL urlObj = constructUrl(url, null);
+    public static Response httpPost(String url, UrlParams data, Headers headers, String encoding) throws IOException {
+        URL urlObj = constructUrl(url, null, encoding);
         HttpURLConnection connection = null;
-        InputStream in = null;
         OutputStream out = null;
 
         try {
@@ -116,23 +196,14 @@ public class HttpDownloader {
 
             connection.connect();
 
-            String dataString = constructParams(data);
+            String dataString = constructParams(data, encoding);
             out = new BufferedOutputStream(connection.getOutputStream());
             out.write(dataString.getBytes());
             //clean up
             out.flush();
 
-            String res = null;
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                in = connection.getInputStream();
-                res = handleInputStream(in, encoding);
-            }
-            return res;
+            return parseConnection(connection, encoding);
         } finally {
-            if (in != null) {
-                in.close();
-            }
-
             if (out != null) {
                 out.close();
             }
@@ -143,21 +214,21 @@ public class HttpDownloader {
         }
     }
 
-    private static URL constructUrl(String url, UrlParams params) throws MalformedURLException {
+    private static URL constructUrl(String url, UrlParams params, String encoding) throws MalformedURLException, UnsupportedEncodingException {
         if (params == null || params.isEmpty()) {
             return new URL(url);
         }
-        return new URL(url + "?" + constructParams(params));
+        return new URL(url + "?" + constructParams(params, encoding));
     }
 
-    private static String constructParams(UrlParams params) {
+    private static String constructParams(UrlParams params, String encoding) throws UnsupportedEncodingException {
         if (params == null) {
             return "";
         }
 
         String newUrl = "";
         for (UrlParams.UrlParam p : params) {
-            newUrl += p.getKey() + "=" + p.getValue() + "&";
+            newUrl += URLEncoder.encode(p.getKey(), encoding) + "=" + URLEncoder.encode(p.getValue(), encoding) + "&";
         }
         return newUrl.substring(0, newUrl.length() - 1);
     }

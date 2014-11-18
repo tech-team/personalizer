@@ -1,3 +1,7 @@
 .breadcrumb>li+li:before {
     content: ">"; /* divider */
 }
+
+.breadcrumb>.active {
+    font-weight: bold;
+}

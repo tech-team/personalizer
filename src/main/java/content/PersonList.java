@@ -4,17 +4,20 @@ import content.source.ContentSource;
 
 import java.util.*;
 
-public class PersonList implements Iterable<PersonCard> {
+public class PersonList {
     private ContentSource.Type type;
-//    private PersonCard initialCard = null;
-    private List<PersonCard> persons = new LinkedList<>();
+    private Map<PersonId, PersonCard> persons = new HashMap<>();
 
 
     private static class IdGenerator {
         private Map<ContentSource.Type, Integer> currentIds = new EnumMap<>(ContentSource.Type.class);
         public int generate(ContentSource.Type type) {
             Integer id = currentIds.get(type);
-            ++id;
+            if (id != null) {
+                ++id;
+            } else {
+                id = 1;
+            }
             currentIds.put(type, id);
             return id;
         }
@@ -38,34 +41,20 @@ public class PersonList implements Iterable<PersonCard> {
     }
 
     public PersonCard newPerson() {
-//        if (initialCard == null) {
-//            throw new RuntimeException("Initial card is not set");
-//        }
-        PersonCard p = new PersonCard(generateNewId());
-        persons.add(p);
+        PersonId id = generateNewId();
+        PersonCard p = new PersonCard(id);
+        persons.put(id, p);
         return p;
     }
 
     public PersonCard addPerson(PersonCard p) {
-//        if (initialCard == null) {
-//            throw new RuntimeException("Initial card is not set");
-//        }
-        p.setId(generateNewId());
-        persons.add(p);
+        PersonId id = generateNewId();
+        p.setId(id);
+        persons.put(id, p);
         return p;
     }
 
-//    public void setInitial(PersonCard p) {
-//        initialCard = p;
-//    }
-//
-//    public PersonCard getInitial() {
-//        return initialCard;
-//    }
-
-
-    @Override
-    public Iterator<PersonCard> iterator() {
-        return persons.iterator();
+    public Map<PersonId, PersonCard> getPersons() {
+        return persons;
     }
 }

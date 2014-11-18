@@ -33,34 +33,38 @@ public class Parser {
         String url = "http://www.linkedin.com/pub/dir/" + name + "/" + last_name;
         HttpDownloader.Request request = new HttpDownloader.Request(url, null, null);
         try {
-            String page = httpGet(request);
+            String page = httpGet(request).getBody();
             Document doc = Jsoup.parse(page);
             for(Element element :doc.select(".vcard")) {
                 String link = element.select("h2 a").attr("href");
+                getPersonByLink(link);
                 System.out.println(link);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-//
-//    public static void getPersonByLink(String link) {
-//        HttpDownloader.Request request = new HttpDownloader.Request(link, null, null);
-//        try {
-//            String page = httpGet(request);
-//            Document doc = Jsoup.parse(page);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+
+    public static void getPersonByLink(String link) {
+        HttpDownloader.Request request = new HttpDownloader.Request(link, null, null);
+        try {
+            String page = httpGet(request).getBody();
+            Document doc = Jsoup.parse(page);
+            Element el = doc.select(".full-name").get(0);
+            System.out.println(el.text());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
         HttpDownloader.Request request = new HttpDownloader.Request("https://www.linkedin.com/uas/login-submit",
                 getInputParams(),
                 null);
         try {
-            String page = httpPost(request);
-            Document doc = Jsoup.parse(page);
+            HttpDownloader.Response response = httpPost(request);
+
+            Document doc = Jsoup.parse(response.getBody());
             System.out.println();
         } catch (IOException e) {
             e.printStackTrace();

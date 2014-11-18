@@ -118,7 +118,7 @@ public class VKPerson {
     }
 
     public VKPerson(JSONObject person){
-        setId(person.getInt("id"));
+        setId(person.getInt("uid"));
         if (person.optJSONObject("country") != null){
             setCountry(person.optJSONObject("country").getString("title"));
         }
@@ -151,7 +151,7 @@ public class VKPerson {
         }
         if (!person.optString("skype").equals("")){
             String skype = person.optString("skype");
-            socialLinks.put(SocialLink.LinkType.Skype, skype);
+            socialLinks.put(SocialLink.LinkType.SKYPE, skype);
         }
         if (!person.optString("facebook").equals("")){
             String facebook = person.optString("facebook");
@@ -159,7 +159,7 @@ public class VKPerson {
 
         }
         if (!person.optString("twitter").equals("")){
-            socialLinks.put(SocialLink.LinkType.Twitter, person.optString("twitter"));
+            socialLinks.put(SocialLink.LinkType.TWITTER, person.optString("twitter"));
         }
 
     }
