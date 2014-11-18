@@ -1,0 +1,43 @@
+body {
+    min-width: 520px;
+}
+
+.destinations, .sources {
+    height: 350px;
+    padding-bottom: 100px;
+}
+
+.column {
+    padding-bottom: 100px;
+
+    height: 350px;
+    overflow-y: scroll;
+}
+
+.card {
+    margin: 0 1em 1em 0;
+    padding: 0.3em;
+}
+
+.card-header {
+    padding: 0.2em 0.3em;
+    margin-bottom: 0.5em;
+    position: relative;
+}
+
+.card-remove {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    margin-top: -8px;
+}
+
+.card-content {
+    padding: 0.4em;
+}
+
+.card-placeholder {
+    border: 1px dotted black;
+    margin: 0 1em 1em 0;
+    height: 50px;
+}
