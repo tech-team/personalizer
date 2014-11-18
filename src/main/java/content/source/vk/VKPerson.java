@@ -4,7 +4,6 @@ package content.source.vk;
 import content.SocialLink;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -152,7 +151,7 @@ public class VKPerson {
         }
         if (!person.optString("skype").equals("")){
             String skype = person.optString("skype");
-            socialLinks.put(SocialLink.LinkType.Skype, skype);
+            socialLinks.put(SocialLink.LinkType.SKYPE, skype);
         }
         if (!person.optString("facebook").equals("")){
             String facebook = person.optString("facebook");
@@ -160,7 +159,7 @@ public class VKPerson {
 
         }
         if (!person.optString("twitter").equals("")){
-            socialLinks.put(SocialLink.LinkType.Twitter, person.optString("twitter"));
+            socialLinks.put(SocialLink.LinkType.TWITTER, person.optString("twitter"));
         }
 
     }

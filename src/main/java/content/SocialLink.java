@@ -6,9 +6,9 @@ public class SocialLink {
         NONE,
         VK,
         FB,
-        LINKED_ID,
-        Skype,
-        Twitter
+        LINKED_IN,
+        SKYPE,
+        TWITTER
     }
 
     private String id;

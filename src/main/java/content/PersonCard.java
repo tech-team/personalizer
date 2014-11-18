@@ -44,6 +44,7 @@ public class PersonCard {
     private String city;
     private List<String> universities = new LinkedList<>();
     private List<String> jobs = new LinkedList<>();
+    private List<String> avatars = new LinkedList<>();
 
     private Map<SocialLink.LinkType, SocialLink> socialLinks = new EnumMap<>(SocialLink.LinkType.class);
 
@@ -101,6 +102,10 @@ public class PersonCard {
 
     public Map<SocialLink.LinkType, SocialLink> getSocialLinks() {
         return socialLinks;
+    }
+
+    public List<String> getAvatars() {
+        return avatars;
     }
 
     public PersonCard setName(String name) {
@@ -175,6 +180,11 @@ public class PersonCard {
 
     public PersonCard addSocialLink(SocialLink.LinkType type, SocialLink link) {
         this.socialLinks.put(type, link);
+        return this;
+    }
+
+    public PersonCard addAvatar(String link) {
+        avatars.add(link);
         return this;
     }
 
