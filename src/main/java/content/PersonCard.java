@@ -1,6 +1,7 @@
 package content;
 
 import content.source.ContentSource;
+import content.source.University;
 
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ public class PersonCard {
     private Boolean famous;
     private String country;
     private String city;
-    private List<String> universities = new LinkedList<>();
+    private List<University> universities = new LinkedList<>();
     private List<String> jobs = new LinkedList<>();
     private List<String> avatars = new LinkedList<>();
 
@@ -99,7 +100,7 @@ public class PersonCard {
         return city;
     }
 
-    public List<String> getUniversities() {
+    public List<University> getUniversities() {
         return universities;
     }
 
@@ -165,7 +166,7 @@ public class PersonCard {
         return this;
     }
 
-    public PersonCard setUniversities(List<String> universities) {
+    public PersonCard setUniversities(List<University> universities) {
         this.universities = universities;
         return this;
     }
@@ -180,7 +181,7 @@ public class PersonCard {
         return this;
     }
 
-    public PersonCard addUniversity(String university) {
+    public PersonCard addUniversity(University university) {
         this.universities.add(university);
         return this;
     }

@@ -2,14 +2,17 @@ package content.source.vk;
 
 
 import content.SocialLink;
+import content.source.University;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class VKPerson {
     public static final String fields =
-            "sex,bdate,city,country,photo_100,education,contacts";
+            "sex,bdate,city,country,photo_100,universities,contacts";
 
     private String firstName;
     private String lastName;
@@ -18,8 +21,7 @@ public class VKPerson {
     private String city;
     private String country;
     private String photo;
-    private String university;
-    private Integer graduation;
+    private ArrayList<University> universities;
     private Integer id;
     private String mobilePhone;
     private Map<SocialLink.LinkType, String> socialLinks = new HashMap<>();
@@ -57,9 +59,6 @@ public class VKPerson {
         this.mobilePhone = mobilePhone;
     }
 
-    public void setGraduation(Integer graduation) {
-        this.graduation = graduation;
-    }
 
     public String getSex() {
         return sex;
@@ -101,24 +100,8 @@ public class VKPerson {
         this.photo = photo;
     }
 
-    public String getUniversity() {
-        return university;
-    }
-
-    public void setUniversity(String university) {
-        this.university = university;
-    }
-
-    public int getGraduation() {
-        return graduation;
-    }
-
-    public void setGraduation(int graduation) {
-        this.graduation = graduation;
-    }
-
     public VKPerson(JSONObject person){
-        setId(person.getInt("uid"));
+        setId(person.getInt("id"));
         if (person.optJSONObject("country") != null){
             setCountry(person.optJSONObject("country").getString("title"));
         }
@@ -131,12 +114,20 @@ public class VKPerson {
         if (!person.optString("photo_100").equals("")){
             setPhoto(person.optString("photo_100"));
         }
-        if (!person.optString("university_name").equals("")){
-            setUniversity(person.optString("university_name"));
+
+        JSONArray univers;
+        universities = new ArrayList<>();
+        if ((univers = person.optJSONArray("universities")) != null){
+
+            for (int i = 0; i < univers.length(); i++){
+                JSONObject item = univers.getJSONObject(i);
+                universities.add(new University
+                                (item.getString("name"),
+                                (item.optInt("graduation")==0?null:item.getInt("graduation")))
+                );
+            }
         }
-        if (person.optInt("graduation") != 0){
-            setGraduation(person.optInt("graduation"));
-        }
+
         if (!person.optString("bdate").equals("")){
             setBdate(person.optString("bdate"));
         }
