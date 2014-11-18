@@ -2,7 +2,6 @@ package content.source.vk;
 
 
 import content.PersonCard;
-import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.net.HttpDownloader;
@@ -105,11 +104,11 @@ public class VKUserSearcher {
 
     public ArrayList<VKPerson> getPersonsByIds(String ids){
         try {
-            String parameters = "";
-            parameters = RequestHelper.addParam(parameters, new Pair<>("user_ids", ids));
-            parameters = RequestHelper.addParam(parameters, new Pair<>("fields", VKPerson.fields + ",connections"));
-            String request = VKConst.getUsersGetUrl(VKConst.token) + "&" + parameters;
-            String response = HttpDownloader.httpGet(request);
+            UrlParams urlParams = new UrlParams();
+            urlParams.add("user_ids", ids);
+            urlParams.add("fields", VKPerson.fields + ",connections");
+            String request = VKConst.getUsersGetUrl(VKConst.token);
+            String response = HttpDownloader.httpGet(request, urlParams);
             JSONArray responseArray = new JSONObject(response).getJSONArray("response");
 
             ArrayList<VKPerson> persons = new ArrayList<>();
