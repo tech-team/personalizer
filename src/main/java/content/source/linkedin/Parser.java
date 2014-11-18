@@ -47,14 +47,14 @@ public class Parser {
 
     public static void getPersonByLink(String link) {
         HttpDownloader.Request request = new HttpDownloader.Request(link, null, null);
-        try {
-            String page = httpGet(request).getBody();
-            Document doc = Jsoup.parse(page);
-            Element el = doc.select(".full-name").get(0);
-            System.out.println(el.text());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        UserPageObject user = new UserPageObject(request);
+        System.out.println(user.getFirstName());
+        System.out.println(user.getLastName());
+        System.out.println(user.getCountry());
+        System.out.println(user.getHeadline());
+        System.out.println(user.getCurrentWork());
+        System.out.println(user.getCurrentEducation());
+
     }
 
     public static void main(String[] args) {

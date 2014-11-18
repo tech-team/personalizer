@@ -11,26 +11,42 @@ import java.util.Map;
 public class PersonCard {
 
 
-    public static class Date {
-        private int day;
-        private int month;
-        private int year;
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
 
-        public Date(int day, int month, int year) {
+    public void setMobilePhone(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public static class Date {
+        private Integer day;
+        private Integer month;
+        private Integer year;
+
+        public Date(Integer day, Integer month, Integer year) {
             this.day = day;
             this.month = month;
             this.year = year;
         }
 
-        public int getDay() {
+        public Integer getDay() {
             return day;
         }
 
-        public int getMonth() {
+        public Integer getMonth() {
             return month;
         }
 
-        public int getYear() {
+        public Integer getYear() {
             return year;
         }
     }
@@ -46,6 +62,8 @@ public class PersonCard {
     private Boolean famous;
     private String country;
     private String city;
+    private String mobilePhone;
+    private String sex;
     private List<University> universities = new LinkedList<>();
     private List<String> jobs = new LinkedList<>();
     private List<String> avatars = new LinkedList<>();
