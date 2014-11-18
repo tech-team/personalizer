@@ -2,21 +2,24 @@ package content;
 
 import content.source.ContentSource;
 
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 public class PersonIdsTuple {
-    private Map<ContentSource.Type, PersonId> ids = new EnumMap<>(ContentSource.Type.class);
+    private List<PersonId> ids = new LinkedList<>();
 
-    public PersonIdsTuple(Map<ContentSource.Type, PersonId> ids) {
+    public PersonIdsTuple(List<PersonId> ids) {
         this.ids = ids;
     }
+    public PersonIdsTuple(PersonId[] ids) {
+        this.ids = Arrays.asList(ids);
+    }
+
 
     public PersonIdsTuple() {
     }
 
-    public PersonIdsTuple addId(ContentSource.Type type, PersonId id) {
-        ids.put(type, id);
+    public PersonIdsTuple addId(PersonId id) {
+        ids.add(id);
         return this;
     }
 }

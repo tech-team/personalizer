@@ -164,7 +164,6 @@ public class HttpDownloader {
             String dataString = constructParams(data, encoding);
             out = new BufferedOutputStream(connection.getOutputStream());
             out.write(dataString.getBytes());
-            //clean up
             out.flush();
 
             return parseConnection(connection, encoding);

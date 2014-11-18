@@ -71,7 +71,7 @@ public class PersonCard {
     private Map<SocialLink.LinkType, SocialLink> socialLinks = new EnumMap<>(SocialLink.LinkType.class);
 
 
-    public PersonCard(PersonId id) {
+    PersonCard(PersonId id) {
         this.id = id;
     }
 
