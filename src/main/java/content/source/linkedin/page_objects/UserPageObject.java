@@ -4,11 +4,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import util.net.HttpDownloader;
-
-import java.io.IOException;
-
-import static util.net.HttpDownloader.httpGet;
 
 public class UserPageObject {
     public static final String NAME_SELECTOR = ".full-name";
@@ -26,21 +21,15 @@ public class UserPageObject {
     private JobPageObject jobs;
     private EducationPageObject educations;
 
-    public UserPageObject(HttpDownloader.Request request) {
-        try {
-            String page = httpGet(request).getBody();
-            document = Jsoup.parse(page);
-            Element jobs = getElementBySelector(JOB_SELECTOR);
-            Element educations = getElementBySelector(EDUCATION_SELECTOR);
-            Element personals = getElementBySelector(PERSONAL_INFO_SELECTOR);
+    public UserPageObject(String body) {
+        document = Jsoup.parse(body);
+        Element jobs = getElementBySelector(JOB_SELECTOR);
+        Element educations = getElementBySelector(EDUCATION_SELECTOR);
+        Element personals = getElementBySelector(PERSONAL_INFO_SELECTOR);
 
-            this.personals = new PersonalPageObject(personals);
-            this.educations = new EducationPageObject(educations);
-            this.jobs = new JobPageObject(jobs);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.personals = new PersonalPageObject(personals);
+        this.educations = new EducationPageObject(educations);
+        this.jobs = new JobPageObject(jobs);
     }
 
     public String getHeadline() {
