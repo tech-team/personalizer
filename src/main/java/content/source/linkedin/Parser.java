@@ -1,9 +1,11 @@
 package content.source.linkedin;
 
 
+import content.source.linkedin.page_objects.UserPageObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import util.net.HttpDownloader;
 import util.net.UrlParams;
 
@@ -35,10 +37,16 @@ public class Parser {
         try {
             String page = httpGet(request).getBody();
             Document doc = Jsoup.parse(page);
-            for(Element element :doc.select(".vcard")) {
-                String link = element.select("h2 a").attr("href");
-                getPersonByLink(link);
-                System.out.println(link);
+            Elements elements = doc.select(".vcard");
+            if(elements.size() > 1) {
+                for (Element element : elements) {
+                    String link = element.select("h2 a").attr("href");
+                    getPersonByLink(link);
+                    System.out.println(link);
+                }
+            }
+            if(elements.size() == 1) {
+                getPersonByLink(url);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,6 +62,7 @@ public class Parser {
         System.out.println(user.getHeadline());
         System.out.println(user.getCurrentWork());
         System.out.println(user.getCurrentEducation());
+        System.out.println(user.getEducations().getList());
 
     }
 
@@ -69,7 +78,7 @@ public class Parser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        getPersons("Sam", "Kil");
+        getPersons("person", "personalizer");
     }
 
 }

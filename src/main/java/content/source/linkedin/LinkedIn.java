@@ -9,6 +9,8 @@ public class LinkedIn implements ContentSource {
 
     @Override
     public void retrieve(PersonCard card, PersonList dest) {
+        String name = card.getName();
+        String lastName = card.getSurname();
 
     }
 
