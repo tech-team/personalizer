@@ -1,18 +1,11 @@
 package content.source.vk;
 
 import content.PersonCard;
-import content.PersonId;
 import content.PersonList;
 import content.SocialLink;
 import content.source.ContentSource;
 import content.source.University;
-import javafx.util.Pair;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import util.net.HttpDownloader;
 
-import java.io.*;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,8 +60,9 @@ public class VK implements ContentSource {
         if (surname != null && !surname.equals(""))
             personCard.setSurname(surname);
 
-        if (id != null && id != -1)
-            personCard.setId(new PersonId(Type.VK, id));
+        //TODO: this thing does not compile and should be removed
+        //if (id != null && id != -1)
+        //   personCard.setId(new PersonId(Type.VK, id));
 
         if (country != null && !country.equals(""))
             personCard.setCountry(country);
