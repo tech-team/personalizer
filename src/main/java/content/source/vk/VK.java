@@ -60,8 +60,9 @@ public class VK implements ContentSource {
         if (surname != null && !surname.equals(""))
             personCard.setSurname(surname);
 
-        if (id != null && id != -1)
-          //  personCard.setId(new PersonId(Type.VK, id));
+        //TODO: this thing does not compile and should be removed
+        //if (id != null && id != -1)
+        //   personCard.setId(new PersonId(Type.VK, id));
 
         if (country != null && !country.equals(""))
             personCard.setCountry(country);

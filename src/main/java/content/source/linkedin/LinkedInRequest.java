@@ -61,6 +61,7 @@ public class LinkedInRequest {
 
     private HttpDownloader.Response makeGetRequest(String url, Headers headers) {
         HttpDownloader.Request request = new HttpDownloader.Request(url, null, headers);
+        request.setFollowRedirects(false);
         HttpDownloader.Response response = null;
         try {
             response = httpGet(request);

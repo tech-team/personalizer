@@ -20,6 +20,11 @@ public class HttpDownloader {
         private UrlParams params;
         private Headers headers;
         private String encoding;
+        private boolean followRedirects = true;
+
+        public Request(String url) {
+            this(url, null, null);
+        }
 
         public Request(String url, String encoding) {
             this(url, null, null, encoding);
@@ -54,6 +59,30 @@ public class HttpDownloader {
 
         public String getEncoding() {
             return encoding;
+        }
+
+        public boolean isFollowRedirects() {
+            return followRedirects;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public void setParams(UrlParams params) {
+            this.params = params;
+        }
+
+        public void setHeaders(Headers headers) {
+            this.headers = headers;
+        }
+
+        public void setEncoding(String encoding) {
+            this.encoding = encoding;
+        }
+
+        public void setFollowRedirects(boolean followRedirects) {
+            this.followRedirects = followRedirects;
         }
     }
 
@@ -108,29 +137,28 @@ public class HttpDownloader {
 
 
     public static Response httpGet(String url) throws IOException {
-        return httpGet(url, null, null, DEFAULT_ENCODING);
+        Request req = new Request(url);
+        return httpGet(req);
     }
 
     public static Response httpGet(String url, UrlParams params) throws IOException {
-        return httpGet(url, params, null, DEFAULT_ENCODING);
+        Request req = new Request(url, params);
+        return httpGet(req);
     }
 
     public static Response httpGet(Request request) throws IOException {
-        return httpGet(request.getUrl(), request.getParams(), request.getHeaders(), request.getEncoding());
-    }
-
-    public static Response httpGet(String url, UrlParams params, Headers headers, String encoding) throws IOException {
-        URL urlObj = constructUrl(url, params, encoding);
+        URL urlObj = constructUrl(request.getUrl(), request.getParams(), request.getEncoding());
         HttpURLConnection connection = null;
 
         try {
             connection = (HttpURLConnection) urlObj.openConnection();
 
             connection.setRequestMethod("GET");
-            fillHeaders(headers, connection);
+            fillHeaders(request.getHeaders(), connection);
+            connection.setInstanceFollowRedirects(request.isFollowRedirects());
             connection.connect();
 
-            return parseConnection(connection, encoding);
+            return parseConnection(connection, request.getEncoding());
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -139,15 +167,12 @@ public class HttpDownloader {
     }
 
     public static Response httpPost(String url) throws IOException {
-        return httpPost(url, null, null, DEFAULT_ENCODING);
+        Request req = new Request(url);
+        return httpPost(req);
     }
 
     public static Response httpPost(Request request) throws IOException {
-        return httpPost(request.getUrl(), request.getParams(), request.getHeaders(), request.getEncoding());
-    }
-
-    public static Response httpPost(String url, UrlParams data, Headers headers, String encoding) throws IOException {
-        URL urlObj = constructUrl(url, null, encoding);
+        URL urlObj = constructUrl(request.getUrl(), null, request.getEncoding());
         HttpURLConnection connection = null;
         OutputStream out = null;
 
@@ -157,16 +182,17 @@ public class HttpDownloader {
             connection.setRequestMethod("POST");
             connection.setDoInput(true);
             connection.setDoOutput(true);
-            fillHeaders(headers, connection);
+            connection.setInstanceFollowRedirects(request.isFollowRedirects());
+            fillHeaders(request.getHeaders(), connection);
 
             connection.connect();
 
-            String dataString = constructParams(data, encoding);
+            String dataString = constructParams(request.getParams(), request.getEncoding());
             out = new BufferedOutputStream(connection.getOutputStream());
             out.write(dataString.getBytes());
             out.flush();
 
-            return parseConnection(connection, encoding);
+            return parseConnection(connection, request.getEncoding());
         } finally {
             if (out != null) {
                 out.close();
@@ -236,7 +262,7 @@ public class HttpDownloader {
                 }
             }
 
-            if (status == HttpURLConnection.HTTP_OK) {
+            if (status < 400) {
                 in = connection.getInputStream();
             } else {
                 in = connection.getErrorStream();

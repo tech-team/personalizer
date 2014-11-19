@@ -1,6 +1,7 @@
 package content.source.linkedin;
 
 
+import content.source.linkedin.page_objects.UserPageObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,7 +9,6 @@ import org.jsoup.select.Elements;
 import util.net.Headers;
 import util.net.HttpDownloader;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -28,7 +28,12 @@ public class Parser {
 
             case 302:
                 Headers headers = response.getHeaders();
-                urls.add(headers.getHeader("Location").getValue());
+                String location = headers.getHeader("Location").getValue();
+                int parametersIndex = location.indexOf('?');
+                if(parametersIndex > 0) {
+                    location = location.substring(0, parametersIndex);
+                }
+                urls.add(location);
                 break;
         }
 
@@ -37,17 +42,14 @@ public class Parser {
     }
 
     public static void getPersonByLink(HttpDownloader.Response response) {
-        /*UserPageObject user = new UserPageObject(response.getBody());
+        UserPageObject user = new UserPageObject(response.getBody());
         System.out.println(user.getFirstName());
         System.out.println(user.getLastName());
         System.out.println(user.getCountry());
         System.out.println(user.getHeadline());
         System.out.println(user.getCurrentWork());
         System.out.println(user.getCurrentEducation());
-        System.out.println(user.getEducations().getList());*/
-        Document document = Jsoup.parse(response.getBody());
-        Elements elements = document.select(".account-settings-tab");
-        System.out.println(elements.size());
+        System.out.println(user.getEducations().getList());
     }
 
     public static void main(String[] args) {
@@ -55,11 +57,6 @@ public class Parser {
         HttpDownloader.Response response = request.makeLoginRequest();
         Cookie cookie = new Cookie(response.getHeaders().getHeader("Set-Cookie"));
         request.makeHeaders(cookie.getCookie());
-        try {
-            System.out.println(HttpDownloader.httpGet(new HttpDownloader.Request("http://ru.linkedin.com/pub/%D0%B8%D0%B2%D0%B0%D0%BD-%D1%81%D0%BF%D0%B8%D1%80%D0%B8%D0%B4%D0%BE%D0%BD%D0%BE%D0%B2/80/847/b12", null, request.headers)).getBody());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         List<String> urls = getPersonUrls(request.makeFindRequest("Иван", "Спиридонов"));
         for(String url: urls) {
             System.out.println(url);

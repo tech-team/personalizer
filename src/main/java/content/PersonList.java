@@ -57,4 +57,8 @@ public class PersonList {
     public Map<PersonId, PersonCard> getPersons() {
         return persons;
     }
+
+    public void remove(PersonId id) {
+        persons.remove(id);
+    }
 }

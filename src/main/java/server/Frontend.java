@@ -7,4 +7,9 @@ public interface Frontend {
     void postPersonCard(PersonCard card);
     void postPersonList(PersonList list);
     void postResults(PersonList list);
+
+    void finishedListsRetrieval();
+    void finishedAutomaticMerge();
+    void finishedRemoval();
+    void finishedMerge();
 }

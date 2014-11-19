@@ -1,7 +1,7 @@
 
 $(document).ready(function() {
     $(".sources .column").sortable({
-        connectWith: ".destinations .column",
+        connectWith: ".destinations .person",
         handle: ".card-header",
         cancel: ".card-remove",
         placeholder: "card-placeholder ui-corner-all",
@@ -17,11 +17,12 @@ $(document).ready(function() {
 //                }
     });
 
-    $(".destinations .column").sortable({
-        connectWith: ".sources .column",
+    $(".destinations .person").sortable({
+        connectWith: ".sources .column, .destinations .person",
         handle: ".card-header",
         cancel: ".card-remove",
         placeholder: "card-placeholder ui-corner-all",
+        floating: true
     });
 
     $(".card")
