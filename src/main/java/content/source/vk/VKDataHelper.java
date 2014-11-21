@@ -14,7 +14,6 @@ import java.util.Map;
 public class VKDataHelper {
 
 
-
     public static void initCountries(){
         if (VKConst.countries == null){
             VKConst.countries = new HashMap<>();
@@ -28,7 +27,7 @@ public class VKDataHelper {
                 URLEncoder.encode("1", "UTF-8"));
         String request = VKConst.getGetCountriesUrl() + "&" + parameters;
         String response = HttpDownloader.httpGet(request).getBody();
-        JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
+        JSONArray responseArray = VKResponseParser.getResponseJSONitems(response);
         Map <String, Integer> countries = new HashMap<>();
         for (int i = 0; i < responseArray.length(); i++){
             String title = responseArray.getJSONObject(i).getString("title");
@@ -57,7 +56,7 @@ public class VKDataHelper {
         String response = null;
         try {
             response = HttpDownloader.httpGet(request).getBody();
-            JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
+            JSONArray responseArray = VKResponseParser.getResponseJSONitems(response);
             JSONObject entityObj = responseArray.optJSONObject(0);
             if (entityObj != null)
                 return entityObj.getInt("id");

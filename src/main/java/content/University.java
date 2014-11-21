@@ -1,4 +1,4 @@
-package content.source;
+package content;
 
 
 public class University {
