@@ -6,7 +6,7 @@ import java.util.*;
 
 public class PersonList {
     private ContentSource.Type type;
-    private Map<PersonId, PersonCard> persons = new HashMap<>();
+    private Map<PersonId, PersonCard> persons = new TreeMap<>(PersonId.COMPARATOR);
 
 
     private static class IdGenerator {
@@ -56,5 +56,9 @@ public class PersonList {
 
     public Map<PersonId, PersonCard> getPersons() {
         return persons;
+    }
+
+    public void remove(PersonId id) {
+        persons.remove(id);
     }
 }

@@ -1,7 +1,6 @@
 package content.source.vk;
 
 import content.PersonCard;
-import content.PersonId;
 import content.PersonList;
 import content.SocialLink;
 import content.source.ContentSource;
@@ -38,5 +37,4 @@ public class VK implements ContentSource {
     public Type getType() {
         return Type.VK;
     }
-
 }

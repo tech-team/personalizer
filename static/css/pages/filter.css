@@ -2,21 +2,38 @@ body {
     min-width: 520px;
 }
 
-.destinations, .sources {
+.sources {
     height: 350px;
     padding-bottom: 100px;
 }
 
-.column {
+.sources .column {
     padding-bottom: 100px;
 
     height: 350px;
     overflow-y: scroll;
 }
 
+.destinations {
+
+}
+
+.destinations .person {
+    height: 10em;
+    overflow-y: auto;
+}
+
 .card {
     margin: 0 1em 1em 0;
     padding: 0.3em;
+
+    width: 21em;
+    height: 7em;
+}
+
+.destinations .card, .destinations .card-placeholder {
+    display: inline-block;
+    float: left;
 }
 
 .card-header {
@@ -39,5 +56,18 @@ body {
 .card-placeholder {
     border: 1px dotted black;
     margin: 0 1em 1em 0;
-    height: 50px;
+    width: 23em;
+    height: 8em;
+}
+
+.merge-table {
+    width: 100%;
+}
+
+.merge-id {
+
+}
+
+.merge-content {
+    width: 100%;
 }

@@ -70,7 +70,7 @@ public class PersonCard {
     private Map<SocialLink.LinkType, SocialLink> socialLinks = new EnumMap<>(SocialLink.LinkType.class);
 
 
-    public PersonCard(PersonId id) {
+    PersonCard(PersonId id) {
         this.id = id;
     }
 
@@ -222,7 +222,7 @@ public class PersonCard {
         return id;
     }
 
-    public void setId(PersonId id) {
+    void setId(PersonId id) {
         this.id = id;
     }
 

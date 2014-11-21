@@ -3,7 +3,8 @@ package util;
 import java.util.concurrent.*;
 
 public class ThreadPool {
-    private int threadsCount = 2;
+    public static final int PROCESSORS_COUNT = Runtime.getRuntime().availableProcessors();
+    private int threadsCount = PROCESSORS_COUNT;
 
     private ExecutorService executor = null;
 

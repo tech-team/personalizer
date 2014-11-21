@@ -12,38 +12,27 @@ public class AsyncContentProvider implements IContentProvider {
     }
 
     @Override
-    public void request(Request request) {
-        try {
-            threadPool.execute(() -> {
+    public void request(PersonCard request) throws InterruptedException {
+        threadPool.execute(() -> {
+            try {
                 contentProvider.request(request);
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            threadPool.stopExecution();
-        }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     @Override
-    public void remove(PersonId[] ids) {
-        try {
-            threadPool.execute(() -> {
-                contentProvider.remove(ids);
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            threadPool.stopExecution();
-        }
+    public void remove(PersonId[] ids) throws InterruptedException {
+        threadPool.execute(() -> {
+            contentProvider.remove(ids);
+        });
     }
 
     @Override
-    public void merge(PersonIdsTuple tuple) {
-        try {
-            threadPool.execute(() -> {
-                contentProvider.merge(tuple);
-            });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            threadPool.stopExecution();
-        }
+    public void merge(PersonIdsTuple tuple) throws InterruptedException {
+        threadPool.execute(() -> {
+            contentProvider.merge(tuple);
+        });
     }
 }
