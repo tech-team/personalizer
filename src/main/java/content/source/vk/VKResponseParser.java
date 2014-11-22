@@ -43,6 +43,7 @@ public class VKResponseParser {
         person.setPersonLink(new SocialLink(SocialLink.LinkType.VK,
                 String.valueOf(item.getInt("id")),
                 String.valueOf(item.getInt("id"))));
+
         if (!item.optString("first_name").equals("")){
             person.setName(item.getString("first_name"));
         }

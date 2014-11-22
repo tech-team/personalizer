@@ -65,24 +65,29 @@ public class HttpDownloader {
             return followRedirects;
         }
 
-        public void setUrl(String url) {
+        public Request setUrl(String url) {
             this.url = url;
+            return this;
         }
 
-        public void setParams(UrlParams params) {
+        public Request setParams(UrlParams params) {
             this.params = params;
+            return this;
         }
 
-        public void setHeaders(Headers headers) {
+        public Request setHeaders(Headers headers) {
             this.headers = headers;
+            return this;
         }
 
-        public void setEncoding(String encoding) {
+        public Request setEncoding(String encoding) {
             this.encoding = encoding;
+            return this;
         }
 
-        public void setFollowRedirects(boolean followRedirects) {
+        public Request setFollowRedirects(boolean followRedirects) {
             this.followRedirects = followRedirects;
+            return this;
         }
     }
 
@@ -91,12 +96,14 @@ public class HttpDownloader {
         private String protocol;
         private Headers headers;
         private String body;
+        private String url;
 
-        public Response(int responseCode, String protocol, Headers headers, String body) {
+        public Response(int responseCode, String protocol, Headers headers, String body, String url) {
             this.responseCode = responseCode;
             this.protocol = protocol;
             this.headers = headers;
             this.body = body;
+            this.url = url;
         }
 
         public Response() {
@@ -132,6 +139,14 @@ public class HttpDownloader {
 
         public void setBody(String body) {
             this.body = body;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 
@@ -226,7 +241,7 @@ public class HttpDownloader {
     private static void fillHeaders(Headers headers, HttpURLConnection connection) {
         if (headers != null) {
             for (Headers.Header h : headers) {
-                connection.setRequestProperty(h.getName(), h.getValue());
+                connection.setRequestProperty(h.getName(), h.getValuesSeparated());
             }
         }
         connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -268,13 +283,20 @@ public class HttpDownloader {
                 in = connection.getErrorStream();
             }
             body = handleInputStream(in, encoding);
-
-            return new Response(status, protocol, headers, body);
+            String url = connection.getURL().toString();
+            return new Response(status, protocol, headers, body, url);
         } finally {
             if (in != null) {
                 in.close();
             }
         }
 
+    }
+
+    public static void main(String[] args) throws IOException {
+        Headers hh = new Headers();
+        hh.add("Cookie", "hello=1");
+        hh.add("Cookie", "pip=2");
+        Response r = HttpDownloader.httpGet(new Request("http://vk.com").setHeaders(hh));
     }
 }

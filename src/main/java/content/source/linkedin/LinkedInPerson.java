@@ -1,7 +1,5 @@
 package content.source.linkedin;
 
-import content.PersonCard;
-
 import java.util.List;
 
 public class LinkedInPerson {
@@ -13,7 +11,8 @@ public class LinkedInPerson {
     private String avatar;
     private List<Job> jobs;
     private List<Education> educations;
-    private PersonCard.Date birthdate;
+    private String birthdate;
+    private String relation;
 
     public String getLastName() {
         return lastName;
@@ -79,12 +78,20 @@ public class LinkedInPerson {
         this.educations = educations;
     }
 
-    public PersonCard.Date getBirthdate() {
+    public String getBirthdate() {
         return birthdate;
     }
 
-    public void setBirthdate(PersonCard.Date birthdate) {
+    public void setBirthdate(String birthdate) {
         this.birthdate = birthdate;
+    }
+
+    public String getRelation() {
+        return relation;
+    }
+
+    public void setRelation(String relation) {
+        this.relation = relation;
     }
 
     public static class Job {

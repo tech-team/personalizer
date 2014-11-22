@@ -41,15 +41,20 @@ public class Parser {
         return urls;
     }
 
-    public static void getPersonByLink(HttpDownloader.Response response) {
+    public static LinkedInPerson getPersonByLink(HttpDownloader.Response response) {
         UserPageObject user = new UserPageObject(response.getBody());
-        System.out.println(user.getFirstName());
-        System.out.println(user.getLastName());
-        System.out.println(user.getCountry());
-        System.out.println(user.getHeadline());
-        System.out.println(user.getCurrentWork());
-        System.out.println(user.getCurrentEducation());
-        System.out.println(user.getEducations().getList());
+        LinkedInPerson person = new LinkedInPerson();
+        person.setUrl(response.getUrl());
+        person.setCountry(user.getCountry());
+        person.setFirstName(user.getFirstName());
+        person.setHeadline(user.getHeadline());
+        person.setAvatar(user.getAvatar());
+        person.setLastName(user.getLastName());
+        person.setEducations(user.getEducations().getList());
+        person.setJobs(user.getJobs().getList());
+        person.setBirthdate(user.getDOB());
+        person.setRelation(user.getRelStatus());
+        return person;
     }
 
     public static void main(String[] args) {
@@ -57,10 +62,11 @@ public class Parser {
         HttpDownloader.Response response = request.makeLoginRequest();
         Cookie cookie = new Cookie(response.getHeaders().getHeader("Set-Cookie"));
         request.makeHeaders(cookie.getCookie());
-        List<String> urls = getPersonUrls(request.makeFindRequest("Иван", "Спиридонов"));
+        List<String> urls = getPersonUrls(request.makeFindRequest("person", "personalizer"));
         for(String url: urls) {
             System.out.println(url);
-            getPersonByLink(request.makePersonRequest(url));
+            LinkedInPerson person = getPersonByLink(request.makePersonRequest(url));
+            System.out.println();
         }
     }
 }
