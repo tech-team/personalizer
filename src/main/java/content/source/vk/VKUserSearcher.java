@@ -13,23 +13,17 @@ import java.util.ArrayList;
 
 public class VKUserSearcher {
 
+    private String token;
+
+    public VKUserSearcher(String _token){
+        this.token = _token;
+    }
+
     public ArrayList<PersonCard> getPersons(PersonCard data){
         return getPersonsByIds((usersSearch(getQueryParams(data))));
     }
 
     public UrlParams getQueryParams(PersonCard data){
-//        String name = "Игорь";
-//        String second_name = "Латкин";
-//        String country = "Россия";
-//        String city = "Москва";
-//        String university = "МГТУ им. Баумана";
-//        Integer ageFrom = 5;
-//        Integer ageTo = 25;
-//        Integer birthDay = null;
-//        Integer birthMonth = null;
-//        Integer birthYear = null;
-//        Integer universityYear = null;
-//        String company = null;
         String name = data.getName();
         String second_name = data.getSurname();
         String country = data.getCountry();
@@ -106,8 +100,8 @@ public class VKUserSearcher {
 
     public String usersSearch(UrlParams params){
         try {
-            String request = VKConst.getUsersSearchUrl(VKConst.token);
-            VKConst.addAccessTokenParam(params);
+            String request = VKConst.getUsersSearchUrl(token);
+            VKConst.addAccessTokenParam(params, token);
             VKConst.addVersionParam(params);
             String response = HttpDownloader.httpGet(request, params).getBody();
             JSONArray responseArray = VKResponseParser.getResponseJSONitems(response);
@@ -135,8 +129,8 @@ public class VKUserSearcher {
             urlParams.add("user_ids", ids);
             urlParams.add("fields", VKConst.fields);
             VKConst.addVersionParam(urlParams);
-            VKConst.addAccessTokenParam(urlParams);
-            String request = VKConst.getUsersGetUrl(VKConst.token);
+            VKConst.addAccessTokenParam(urlParams, token);
+            String request = VKConst.getUsersGetUrl(token);
             String response = HttpDownloader.httpGet(request, urlParams).getBody();
             JSONArray responseArray = new JSONObject(response).getJSONArray("response");
             return VKResponseParser.getPersons(responseArray);
