@@ -40,7 +40,9 @@ public class VKResponseParser {
     public static PersonCard getPerson(JSONObject item){
         PersonCard person = new PersonCard();
 
-        person.setId(new PersonId(ContentSource.Type.VK, item.getInt("id")));
+        person.setPersonLink(new SocialLink(SocialLink.LinkType.VK,
+                String.valueOf(item.getInt("id")),
+                String.valueOf(item.getInt("id"))));
         if (!item.optString("first_name").equals("")){
             person.setName(item.getString("first_name"));
         }
