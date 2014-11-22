@@ -4,7 +4,7 @@ import content.PersonCard;
 import content.PersonList;
 import content.SocialLink;
 import content.source.ContentSource;
-import content.source.University;
+import content.University;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,10 +27,9 @@ public class VK implements ContentSource {
 
     @Override
     public void retrieve(PersonCard data, PersonList dest) {
-        ArrayList<VKPerson> persons = searcher.getPersons(data);
-
-        for (VKPerson person: persons){
-            dest.addPerson(transformVKPersonToPersonCard(person, data));
+        ArrayList<PersonCard> personCards = searcher.getPersons(data);
+        for (PersonCard personCard: personCards){
+            dest.addPerson(personCard);
         }
     }
 
@@ -38,69 +37,4 @@ public class VK implements ContentSource {
     public Type getType() {
         return Type.VK;
     }
-
-    public PersonCard transformVKPersonToPersonCard(VKPerson person, PersonCard init){
-        PersonCard personCard = new PersonCard();
-        String name = person.getFirstName();
-        String surname = person.getLastName();
-        Integer id = person.getId();
-        Integer bday = person.getBDay();
-        Integer bmonth = person.getBMonth();
-        Integer byear = person.getBYear();
-        String country = person.getCountry();
-        String city = person.getCity();
-        String mobile = person.getMobilePhone();
-        String photo = person.getPhoto();
-        String sex = person.getSex();
-        ArrayList<University> universities = person.getUniversities();
-        Map<SocialLink.LinkType, String>socialLinks = person.getSocialLinks();
-
-        if (name != null && !name.equals(""))
-            personCard.setName(name);
-        if (surname != null && !surname.equals(""))
-            personCard.setSurname(surname);
-
-        //TODO: this thing does not compile and should be removed
-        //if (id != null && id != -1)
-        //   personCard.setId(new PersonId(Type.VK, id));
-
-        if (country != null && !country.equals(""))
-            personCard.setCountry(country);
-        if (city != null && !city.equals(""))
-            personCard.setCity(city);
-
-        if (mobile != null && !mobile.equals(""))
-            personCard.setMobilePhone(mobile);
-
-        if (photo != null && !photo.equals(""))
-            personCard.addAvatar(photo);
-
-        if (sex != null && !sex.equals(""))
-            personCard.setSex(sex);
-
-        if (universities != null && universities.size() != 0)
-            personCard.setUniversities(universities);
-
-        if (socialLinks != null && socialLinks.size() != 0){
-            Map<SocialLink.LinkType, SocialLink> links = new HashMap<>();
-            Set<SocialLink.LinkType> social = socialLinks.keySet();
-            for (SocialLink.LinkType s: social){
-                String identity = socialLinks.get(s);
-                SocialLink link = new SocialLink(s, identity, identity);
-                links.put(s, link);
-            }
-            personCard.setSocialLinks(links);
-        }
-
-        if (bday != null){
-            personCard.setBirthDate(new PersonCard.Date(bday, bmonth, byear));
-        }
-
-        personCard.setType(Type.VK);
-        personCard.setPersonLink(new SocialLink(SocialLink.LinkType.VK, id.toString(), id.toString()));
-
-        return personCard;
-    }
-
-
 }

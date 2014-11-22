@@ -1,7 +1,6 @@
 package content;
 
 import content.source.ContentSource;
-import content.source.University;
 
 import java.util.EnumMap;
 import java.util.LinkedList;
