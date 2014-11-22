@@ -9,7 +9,7 @@ import java.util.List;
 import static content.source.linkedin.LinkedInPerson.Education;
 
 public class EducationPageObject {
-    public static final String EDUCATION_ELEMENT_SELECTOR = ".editable-item";
+    public static final String EDUCATION_ELEMENT_SELECTOR = ".section-item";
     public static final String EDUCATION_LOCALE_SELECTOR = "header .summary";
     public static final String EDUCATION_DEGREE_SELECTOR = "header h5 .degree";
     public static final String EDUCATION_MAJOR_SELECTOR = "header h5 .major";
@@ -45,8 +45,8 @@ public class EducationPageObject {
         return list;
     }
 
-    private String getString(Element education, String selector) {
-        Element element = education.select(selector).first();
+    public static String getString(Element parent, String selector) {
+        Element element = parent.select(selector).first();
         if(element != null && element.children().size() == 0) {
             return element.text();
         }
@@ -74,4 +74,5 @@ public class EducationPageObject {
         }
         return null;
     }
+
 }

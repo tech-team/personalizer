@@ -91,12 +91,14 @@ public class HttpDownloader {
         private String protocol;
         private Headers headers;
         private String body;
+        private String url;
 
-        public Response(int responseCode, String protocol, Headers headers, String body) {
+        public Response(int responseCode, String protocol, Headers headers, String body, String url) {
             this.responseCode = responseCode;
             this.protocol = protocol;
             this.headers = headers;
             this.body = body;
+            this.url = url;
         }
 
         public Response() {
@@ -132,6 +134,14 @@ public class HttpDownloader {
 
         public void setBody(String body) {
             this.body = body;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
         }
     }
 
@@ -268,8 +278,8 @@ public class HttpDownloader {
                 in = connection.getErrorStream();
             }
             body = handleInputStream(in, encoding);
-
-            return new Response(status, protocol, headers, body);
+            String url = connection.getURL().toString();
+            return new Response(status, protocol, headers, body, url);
         } finally {
             if (in != null) {
                 in.close();

@@ -17,7 +17,6 @@ public class UserPageObject {
     public static final String PERSONAL_INFO_SELECTOR = "#personal-info";
 
     private Document document;
-    private PersonalPageObject personals;
     private JobPageObject jobs;
     private EducationPageObject educations;
 
@@ -25,9 +24,7 @@ public class UserPageObject {
         document = Jsoup.parse(body);
         Element jobs = getElementBySelector(JOB_SELECTOR);
         Element educations = getElementBySelector(EDUCATION_SELECTOR);
-        Element personals = getElementBySelector(PERSONAL_INFO_SELECTOR);
 
-        this.personals = new PersonalPageObject(personals);
         this.educations = new EducationPageObject(educations);
         this.jobs = new JobPageObject(jobs);
     }
@@ -67,11 +64,37 @@ public class UserPageObject {
     }
 
     public String getAvatar() {
-        return getStringBySelector(AVATAR_SELECTOR);
+        Element avatar = getElementBySelector(AVATAR_SELECTOR);
+        if(avatar != null) {
+            return avatar.attr("src");
+        }
+        return null;
     }
 
-    public PersonalPageObject getPersonals() {
-        return personals;
+    public String getDOB() {                                //личные данные недоступны неавторизованному пользователю
+        if(document != null) {
+            Elements elements = document.getElementsContainingOwnText("Дата рождения");
+            if(elements != null && elements.first() != null) {
+                Elements dob = elements.first().siblingElements();
+                if(dob != null) {
+                    return dob.text();
+                }
+            }
+        }
+        return null;
+    }
+
+    public String getRelStatus() {
+        if(document != null) {
+            Elements elements = document.getElementsContainingOwnText("Семейное положение");
+            if(elements != null && elements.first() != null) {
+                Elements relation = elements.first().siblingElements();
+                if(relation != null) {
+                    return relation.text();
+                }
+            }
+        }
+        return null;
     }
 
     public JobPageObject getJobs() {
