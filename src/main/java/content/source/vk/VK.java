@@ -14,7 +14,7 @@ public class VK implements ContentSource {
     public static final String AUTHORIZE_URL =
             "https://oauth.vk.com/authorize?client_id=4628886&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token";
     public static final String LOGIN_URL = "https://login.vk.com?act=login";
-    public static final String LOGIN = ERROR"СПРОСИ У СИРОГИ ЛОГИН";
+    public static final String LOGIN = "prsnlzr@gmail.com";
     public static final String PASS = "prsnlzr123";
 
     private VKUserSearcher searcher;
