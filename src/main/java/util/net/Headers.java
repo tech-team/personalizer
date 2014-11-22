@@ -36,7 +36,7 @@ public class Headers implements Iterable<Headers.Header> {
 
     public class Header {
         private String name;
-        private List<String> value = new LinkedList<>();
+        private List<String> value = new ArrayList<>();
 
         public Header(String name, String value) {
             this.name = name;
@@ -61,6 +61,18 @@ public class Headers implements Iterable<Headers.Header> {
         public List<String> getValues() {
             return value;
         }
+
+        public String getValuesSeparated() {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < value.size() - 1; ++i) {
+                sb.append(value.get(i));
+                sb.append(";");
+            }
+            sb.append(value.get(value.size() - 1));
+            return sb.toString();
+        }
+
+
 
         @Override
         public String toString() {

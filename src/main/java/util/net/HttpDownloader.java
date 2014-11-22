@@ -65,24 +65,29 @@ public class HttpDownloader {
             return followRedirects;
         }
 
-        public void setUrl(String url) {
+        public Request setUrl(String url) {
             this.url = url;
+            return this;
         }
 
-        public void setParams(UrlParams params) {
+        public Request setParams(UrlParams params) {
             this.params = params;
+            return this;
         }
 
-        public void setHeaders(Headers headers) {
+        public Request setHeaders(Headers headers) {
             this.headers = headers;
+            return this;
         }
 
-        public void setEncoding(String encoding) {
+        public Request setEncoding(String encoding) {
             this.encoding = encoding;
+            return this;
         }
 
-        public void setFollowRedirects(boolean followRedirects) {
+        public Request setFollowRedirects(boolean followRedirects) {
             this.followRedirects = followRedirects;
+            return this;
         }
     }
 
@@ -236,7 +241,7 @@ public class HttpDownloader {
     private static void fillHeaders(Headers headers, HttpURLConnection connection) {
         if (headers != null) {
             for (Headers.Header h : headers) {
-                connection.setRequestProperty(h.getName(), h.getValue());
+                connection.setRequestProperty(h.getName(), h.getValuesSeparated());
             }
         }
         connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -286,5 +291,12 @@ public class HttpDownloader {
             }
         }
 
+    }
+
+    public static void main(String[] args) throws IOException {
+        Headers hh = new Headers();
+        hh.add("Cookie", "hello=1");
+        hh.add("Cookie", "pip=2");
+        Response r = HttpDownloader.httpGet(new Request("http://vk.com").setHeaders(hh));
     }
 }
