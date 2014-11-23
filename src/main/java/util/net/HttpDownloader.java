@@ -107,7 +107,7 @@ public class HttpDownloader {
             CookieManager cm = request.getCookieManager();
 
             if (cm != null) {
-                cm.setCookies(connection);
+                cm.applyCookies(connection);
             }
 
             Headers headers = request.getHeaders();
@@ -176,6 +176,6 @@ public class HttpDownloader {
 
         HttpResponse r = HttpDownloader.httpGet(req);
         System.out.println("hi");
-        r.getCookieManager().setCookies(new URL("https://www.linkedin.com").openConnection());
+        r.getCookieManager().applyCookies(new URL("https://www.linkedin.com").openConnection());
     }
 }

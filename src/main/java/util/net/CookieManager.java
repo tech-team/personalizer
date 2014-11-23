@@ -28,7 +28,7 @@ public class CookieManager {
     public CookieManager() {
     }
 
-    public void storeCookies(Headers headers) {
+    void storeCookies(Headers headers) {
         Headers.Header setCookieHeader = headers.getHeader(SET_COOKIE);
         if (setCookieHeader == null)
             return;
@@ -82,11 +82,11 @@ public class CookieManager {
      * @throws java.io.IOException Thrown if conn has already been opened.
      */
 
-    public void setCookies(URLConnection conn) throws IOException {
-        setCookies(conn, true);
+    void applyCookies(URLConnection conn) throws IOException {
+        applyCookies(conn, true);
     }
 
-    public void setCookies(URLConnection conn, boolean checkCookieData) throws IOException {
+    void applyCookies(URLConnection conn, boolean checkCookieData) throws IOException {
 
         // let's determine the domain and path to retrieve the appropriate cookies
         URL url = conn.getURL();
@@ -112,7 +112,7 @@ public class CookieManager {
             conn.setRequestProperty(COOKIE, cookieSB.toString());
         } catch (java.lang.IllegalStateException ise) {
             IOException ioe = new IOException("Illegal State! Cookies cannot be set on a URLConnection that is already connected. "
-                    + "Only call setCookies(java.net.URLConnection) BEFORE calling java.net.URLConnection.connect().");
+                    + "Only call applyCookies(java.net.URLConnection) BEFORE calling java.net.URLConnection.connect().");
             throw ioe;
         }
     }
@@ -180,7 +180,7 @@ public class CookieManager {
             conn.connect();
 //            cm.storeCookies(conn);
             System.out.println(cm);
-            cm.setCookies(url.openConnection());
+            cm.applyCookies(url.openConnection());
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
