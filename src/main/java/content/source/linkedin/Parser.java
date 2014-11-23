@@ -7,14 +7,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import util.net.Headers;
-import util.net.HttpDownloader;
+import util.net.HttpResponse;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public class Parser {
 
-    public static List<String> getPersonUrls(HttpDownloader.Response response) {
+    public static List<String> getPersonUrls(HttpResponse response) {
         List<String> urls = new LinkedList<>();
         switch (response.getResponseCode()) {
             case 200:
@@ -41,7 +41,7 @@ public class Parser {
         return urls;
     }
 
-    public static LinkedInPerson getPersonByLink(HttpDownloader.Response response) {
+    public static LinkedInPerson getPersonByLink(HttpResponse response) {
         UserPageObject user = new UserPageObject(response.getBody());
         LinkedInPerson person = new LinkedInPerson();
         person.setUrl(response.getUrl());
@@ -59,7 +59,7 @@ public class Parser {
 
     public static void main(String[] args) {
         LinkedInRequest request = new LinkedInRequest();
-        HttpDownloader.Response response = request.makeLoginRequest();
+        HttpResponse response = request.makeLoginRequest();
         Cookie cookie = new Cookie(response.getHeaders().getHeader("Set-Cookie"));
         request.makeHeaders(cookie.getCookie());
         List<String> urls = getPersonUrls(request.makeFindRequest("person", "personalizer"));

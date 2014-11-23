@@ -6,6 +6,7 @@ import content.SocialLink;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import util.net.HttpDownloader;
+import util.net.HttpRequest;
 import util.net.UrlParams;
 
 import java.io.IOException;
@@ -35,13 +36,13 @@ public class FBRequest {
                 .add("redirect_uri", appUrl)
                 .add("response_type", loginResponseType);
 
-        HttpDownloader.Request request = new HttpDownloader.Request(loginUrl, loginParams);
+        HttpRequest request = new HttpRequest(loginUrl, loginParams);
         request.setFollowRedirects(false);
 
         try {
             String location = HttpDownloader.httpGet(request).getHeaders().getHeader("Location").getValue();
 
-            request = new HttpDownloader.Request(location);
+            request = new HttpRequest(location);
             request.setFollowRedirects(false);
             String response = HttpDownloader.httpGet(location).getUrl();
 
@@ -60,7 +61,7 @@ public class FBRequest {
     void search(String name, PersonList dest) throws IOException {
         searchParams.add("q", name);
 
-        HttpDownloader.Request request = new HttpDownloader.Request( baseUrl + "search", searchParams);
+        HttpRequest request = new HttpRequest( baseUrl + "search", searchParams);
         JSONArray people = new JSONObject(HttpDownloader.httpGet(request).getBody()).getJSONArray("data");
 
         PersonList personList = new PersonList();

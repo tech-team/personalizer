@@ -2,9 +2,7 @@ package content.source.linkedin;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import util.net.Headers;
-import util.net.HttpDownloader;
-import util.net.UrlParams;
+import util.net.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -40,11 +38,11 @@ public class LinkedInRequest {
         return params;
     }
 
-    public HttpDownloader.Response makeLoginRequest() {
+    public HttpResponse makeLoginRequest() {
         return makePostRequest("https://www.linkedin.com/uas/login-submit", getInputParams(), null);
     }
 
-    public HttpDownloader.Response makeFindRequest(String name, String lastName) {
+    public HttpResponse makeFindRequest(String name, String lastName) {
         try {
             name = URLEncoder.encode(name, "UTF-8");
             lastName = URLEncoder.encode(lastName, "UTF-8");
@@ -55,14 +53,14 @@ public class LinkedInRequest {
         return makeGetRequest(url, null);
     }
 
-    public HttpDownloader.Response makePersonRequest(String url) {
+    public HttpResponse makePersonRequest(String url) {
         return makeGetRequest(url, headers);
     }
 
-    private HttpDownloader.Response makeGetRequest(String url, Headers headers) {
-        HttpDownloader.Request request = new HttpDownloader.Request(url, null, headers);
+    private HttpResponse makeGetRequest(String url, Headers headers) {
+        HttpRequest request = new HttpRequest(url, null, headers);
         request.setFollowRedirects(false);
-        HttpDownloader.Response response = null;
+        HttpResponse response = null;
         try {
             response = httpGet(request);
         } catch (IOException e) {
@@ -71,11 +69,11 @@ public class LinkedInRequest {
         return  response;
     }
 
-    private HttpDownloader.Response makePostRequest(String url, UrlParams params, Headers headers) {
-        HttpDownloader.Request request = new HttpDownloader.Request(url,
+    private HttpResponse makePostRequest(String url, UrlParams params, Headers headers) {
+        HttpRequest request = new HttpRequest(url,
                 params,
                 headers);
-        HttpDownloader.Response response = null;
+        HttpResponse response = null;
         try {
             response = httpPost(request);
         } catch (IOException e) {
