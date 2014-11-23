@@ -10,6 +10,8 @@ public class Headers implements Iterable<Headers.Header> {
     }
 
     public Headers add(String name, String value) {
+        name = name.toLowerCase();
+
         Header header = headers.get(name);
         if (header == null) {
             header = new Header(name, value);
@@ -25,7 +27,7 @@ public class Headers implements Iterable<Headers.Header> {
     }
 
     public Header getHeader(String name) {
-        return headers.get(name);
+        return headers.get(name.toLowerCase());
     }
 
     @Override
@@ -39,7 +41,7 @@ public class Headers implements Iterable<Headers.Header> {
         private List<String> value = new ArrayList<>();
 
         public Header(String name, String value) {
-            this.name = name;
+            this.name = name.toLowerCase();
             this.value.add(value);
         }
 
@@ -52,7 +54,7 @@ public class Headers implements Iterable<Headers.Header> {
         }
 
         public void set(String name, String value) {
-            if (!name.equals(this.name)) {
+            if (!name.equalsIgnoreCase(this.name)) {
                 throw new RuntimeException("Name is not valid");
             }
             this.value.add(value);

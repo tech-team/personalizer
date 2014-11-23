@@ -87,7 +87,7 @@ public class VK implements ContentSource {
         headers.add("Cookie", cook);
         request.setHeaders(headers);
         HttpResponse response = HttpDownloader.httpGet(request);
-        String url = response.getUrl();
+        String url = response.getUrl().toString();
         int tokenIndex = url.indexOf("access_token=") + 13;
         int expiresIndex = url.indexOf("&expires");
         String token = url.substring(tokenIndex, expiresIndex);

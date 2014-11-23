@@ -2,16 +2,17 @@ package util.net;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class HttpResponse {
     private int responseCode;
     private String protocol;
     private Headers headers;
     private String body;
-    private String url;
+    private URL url;
     private CookieManager cookieManager = new CookieManager();
 
-    public HttpResponse(int responseCode, String protocol, Headers headers, String body, String url) {
+    public HttpResponse(int responseCode, String protocol, Headers headers, String body, URL url) {
         this.responseCode = responseCode;
         this.protocol = protocol;
         this.headers = headers;
@@ -58,15 +59,15 @@ public class HttpResponse {
         this.body = body;
     }
 
-    public String getUrl() {
+    public URL getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public void setUrl(URL url) {
         this.url = url;
     }
 
-    void setCookies(HttpURLConnection connection) throws IOException {
-        cookieManager.storeCookies(connection);
+    void setCookies(Headers headers) throws IOException {
+        cookieManager.storeCookies(headers);
     }
 }

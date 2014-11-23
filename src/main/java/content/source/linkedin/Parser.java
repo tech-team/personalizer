@@ -44,7 +44,7 @@ public class Parser {
     public static LinkedInPerson getPersonByLink(HttpResponse response) {
         UserPageObject user = new UserPageObject(response.getBody());
         LinkedInPerson person = new LinkedInPerson();
-        person.setUrl(response.getUrl());
+        person.setUrl(response.getUrl().toString());
         person.setCountry(user.getCountry());
         person.setFirstName(user.getFirstName());
         person.setHeadline(user.getHeadline());

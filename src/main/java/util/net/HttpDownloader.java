@@ -107,11 +107,14 @@ public class HttpDownloader {
             CookieManager cm = request.getCookieManager();
 
             if (cm != null) {
-//                cm.setCookies(connection); // TODO
+                cm.setCookies(connection);
             }
 
-            for (Headers.Header h : request.getHeaders()) {
-                connection.setRequestProperty(h.getName(), h.getValuesSeparated());
+            Headers headers = request.getHeaders();
+            if (headers != null) {
+                for (Headers.Header h : headers) {
+                    connection.setRequestProperty(h.getName(), h.getValuesSeparated());
+                }
             }
         }
         connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -153,9 +156,9 @@ public class HttpDownloader {
                 in = connection.getErrorStream();
             }
             body = handleInputStream(in, encoding);
-            String url = connection.getURL().toString();
+            URL url = connection.getURL();
             HttpResponse r = new HttpResponse(status, protocol, headers, body, url);
-            r.setCookies(connection);
+            r.setCookies(headers);
             return r;
         } finally {
             if (in != null) {
@@ -166,9 +169,13 @@ public class HttpDownloader {
     }
 
     public static void main(String[] args) throws IOException {
-        Headers hh = new Headers();
-        HttpRequest req = new HttpRequest("https://linkedin.com").setHeaders(hh);
+        CookieManager cm = new CookieManager();
+        cm.addCookie(new Cookie("test1", "val1"));
+        cm.addCookie(new Cookie("test2", "val2"));
+        HttpRequest req = new HttpRequest("https://www.linkedin.com").setCookies(cm);
+
         HttpResponse r = HttpDownloader.httpGet(req);
         System.out.println("hi");
+        r.getCookieManager().setCookies(new URL("https://www.linkedin.com").openConnection());
     }
 }

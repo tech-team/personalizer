@@ -44,7 +44,7 @@ public class FBRequest {
 
             request = new HttpRequest(location);
             request.setFollowRedirects(false);
-            String response = HttpDownloader.httpGet(location).getUrl();
+            String response = HttpDownloader.httpGet(location).getUrl().toString();
 
             //TODO: Добиться редиректа
             String accessToken = new URL(response).getQuery().split("=")[1];
