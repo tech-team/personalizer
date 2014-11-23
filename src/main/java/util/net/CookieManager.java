@@ -71,25 +71,13 @@ public class CookieManager {
     }
 
 
-    /**
-     * Prior to opening a URLConnection, calling this method will set all
-     * unexpired cookies that match the path or subpaths for thi underlying URL
-     * <p>
-     * The connection MUST NOT have been opened
-     * method or an IOException will be thrown.
-     *
-     * @param conn a java.net.URLConnection - must NOT be open, or IOException will be thrown
-     * @throws java.io.IOException Thrown if conn has already been opened.
-     */
-
-    void applyCookies(URLConnection conn) throws IOException {
-        applyCookies(conn, true);
+    Headers.Header constructHeader(URL url) {
+        return constructHeader(url, true);
     }
 
-    void applyCookies(URLConnection conn, boolean checkCookieData) throws IOException {
+    Headers.Header constructHeader(URL url, boolean checkCookieData) {
 
         // let's determine the domain and path to retrieve the appropriate cookies
-        URL url = conn.getURL();
         String path = url.getPath();
 
         StringBuilder cookieSB = new StringBuilder();
@@ -105,16 +93,17 @@ public class CookieManager {
                 cookieSB.append(cookieName);
                 cookieSB.append("=");
                 cookieSB.append(cookie.getValue());
-                if (cookieNames.hasNext()) cookieSB.append(SET_COOKIE_SEPARATOR);
+                if (cookieNames.hasNext())
+                    cookieSB.append(SET_COOKIE_SEPARATOR);
             }
         }
-        try {
-            conn.setRequestProperty(COOKIE, cookieSB.toString());
-        } catch (java.lang.IllegalStateException ise) {
-            IOException ioe = new IOException("Illegal State! Cookies cannot be set on a URLConnection that is already connected. "
-                    + "Only call applyCookies(java.net.URLConnection) BEFORE calling java.net.URLConnection.connect().");
-            throw ioe;
+        String cookieStr;
+        if (cookieSB.lastIndexOf(SET_COOKIE_SEPARATOR) == cookieSB.length() - 2) {
+            cookieStr = cookieSB.substring(0, cookieSB.length() - 2);
+        } else {
+            cookieStr = cookieSB.toString();
         }
+        return new Headers.Header(COOKIE, cookieStr);
     }
 
 
@@ -180,7 +169,7 @@ public class CookieManager {
             conn.connect();
 //            cm.storeCookies(conn);
             System.out.println(cm);
-            cm.applyCookies(url.openConnection());
+//            cm.applyCookies(url.openConnection());
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
