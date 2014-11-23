@@ -13,8 +13,8 @@ public class CookieManager {
     private static final String COOKIE_VALUE_DELIMITER = ";";
     private static final String PATH = "path";
     private static final String EXPIRES = "expires";
-    private static final String DATE_FORMAT = "EEE, dd-MMM-yyyy hh:mm:ss z";
-    private static final String DATE_FORMAT2 = "EEE, dd MMM yyyy hh:mm:ss z";
+    private static final String DATE_FORMAT = "EEE, dd-MMM-yyyy HH:mm:ss z";
+    private static final String DATE_FORMAT2 = "EEE, dd MMM yyyy HH:mm:ss z";
     private static final String SET_COOKIE_SEPARATOR = "; ";
     private static final String COOKIE = "Cookie";
     private static final String DELETE_ME = "delete me";
@@ -28,12 +28,12 @@ public class CookieManager {
     public CookieManager() {
     }
 
-    static {
-        TimeZone.setDefault(TimeZone.getTimeZone("Europe/Moscow"));
-    }
-
     public void storeCookies(Headers headers) {
-        List<String> cookies = headers.getHeader(SET_COOKIE).getValues();
+        Headers.Header setCookieHeader = headers.getHeader(SET_COOKIE);
+        if (setCookieHeader == null)
+            return;
+
+        List<String> cookies = setCookieHeader.getValues();
 
         for (String cookieField : cookies) {
             Cookie cookie = new Cookie();
@@ -119,7 +119,7 @@ public class CookieManager {
 
 
     public void addExtra(CookieManager anotherCM) {
-
+        store.putAll(anotherCM.store);
     }
 
     public CookieManager addCookie(Cookie cookie) {
