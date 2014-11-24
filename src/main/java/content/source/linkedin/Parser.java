@@ -59,9 +59,13 @@ public class Parser {
 
     public static void main(String[] args) {
         LinkedInRequest request = new LinkedInRequest();
-        HttpDownloader.Response response = request.makeLoginRequest();
-        Cookie cookie = new Cookie(response.getHeaders().getHeader("Set-Cookie"));
-        request.makeHeaders(cookie.getCookie());
+        HttpDownloader.Response response = request.getMainPage();
+        Cookie cookie = new Cookie();
+        cookie.add(response.getHeaders().getHeader("Set-Cookie"));
+        request.makeHeaders(cookie.toString());
+        response = request.makeLoginRequest();
+        cookie.add(response.getHeaders().getHeader("Set-Cookie"));
+        request.makeHeaders(cookie.toString());
         List<String> urls = getPersonUrls(request.makeFindRequest("person", "personalizer"));
         for(String url: urls) {
             System.out.println(url);

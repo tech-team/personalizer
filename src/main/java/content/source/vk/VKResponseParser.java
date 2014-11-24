@@ -2,18 +2,11 @@ package content.source.vk;
 
 
 import content.PersonCard;
-import content.PersonId;
 import content.SocialLink;
 import content.University;
-import content.source.ContentSource;
-import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 
 public class VKResponseParser {
@@ -40,7 +33,7 @@ public class VKResponseParser {
     public static PersonCard getPerson(JSONObject item){
         PersonCard person = new PersonCard();
 
-        person.setId(new PersonId(ContentSource.Type.VK, item.getInt("id")));
+        //person.setId(new PersonId(ContentSource.Type.VK, item.getInt("id")));
         if (!item.optString("first_name").equals("")){
             person.setName(item.getString("first_name"));
         }

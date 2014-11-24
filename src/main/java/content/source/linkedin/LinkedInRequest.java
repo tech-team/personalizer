@@ -25,6 +25,10 @@ public class LinkedInRequest {
                .add("Connection", "keep-alive");
     }
 
+    public HttpDownloader.Response getMainPage() {
+        return makeGetRequest("https://www.linkedin.com/", null);
+    }
+
     public static UrlParams getInputParams() {
         UrlParams params = new UrlParams();
         try {
@@ -41,7 +45,7 @@ public class LinkedInRequest {
     }
 
     public HttpDownloader.Response makeLoginRequest() {
-        return makePostRequest("https://www.linkedin.com/uas/login-submit", getInputParams(), null);
+        return makePostRequest("https://www.linkedin.com/uas/login-submit", getInputParams(), headers);
     }
 
     public HttpDownloader.Response makeFindRequest(String name, String lastName) {
