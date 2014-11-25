@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class PageGenerator {
     private static final String HTML_DIR = "static/html";
-    private static final Configuration CFG = new Configuration(Configuration.VERSION_2_3_21);
+    private static final Configuration CFG = new Configuration();
     static {
         CFG.setDefaultEncoding("UTF-8");
         CFG.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
