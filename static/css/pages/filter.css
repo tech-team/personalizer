@@ -19,7 +19,7 @@ body {
 }
 
 .destinations .person {
-    height: 10em;
+    height: 20em;
     overflow-y: auto;
 }
 
@@ -27,8 +27,12 @@ body {
     margin: 0 1em 1em 0;
     padding: 0.3em;
 
-    width: 21em;
-    height: 7em;
+    width: 25em;
+    /*height: 7em;*/
+}
+
+.card table tr td {
+    padding-left: 1em;
 }
 
 .destinations .card, .destinations .card-placeholder {
@@ -40,6 +44,14 @@ body {
     padding: 0.2em 0.3em;
     margin-bottom: 0.5em;
     position: relative;
+}
+
+.card-content-section {
+    font-weight: bold;
+}
+
+.card-content-value {
+    margin-left: 1em;
 }
 
 .card-remove {
@@ -56,8 +68,8 @@ body {
 .card-placeholder {
     border: 1px dotted black;
     margin: 0 1em 1em 0;
-    width: 23em;
-    height: 8em;
+    width: 27em;
+    height: 18em;
 }
 
 .merge-table {
