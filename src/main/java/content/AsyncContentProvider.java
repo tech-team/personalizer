@@ -1,13 +1,13 @@
 package content;
 
-import server.Frontend;
+import server.ContentReceiver;
 import util.ThreadPool;
 
 public class AsyncContentProvider implements IContentProvider {
     private ContentProvider contentProvider;
     private ThreadPool threadPool = new ThreadPool();
 
-    public AsyncContentProvider(Frontend frontend) {
+    public AsyncContentProvider(ContentReceiver frontend) {
         contentProvider = new ContentProvider(frontend);
     }
 

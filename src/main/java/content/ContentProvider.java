@@ -4,7 +4,7 @@ import content.source.ContentSource;
 import content.source.fb.Facebook;
 import content.source.linkedin.LinkedIn;
 import content.source.vk.VK;
-import server.Frontend;
+import server.ContentReceiver;
 import util.ThreadPool;
 
 import java.util.HashMap;
@@ -12,14 +12,14 @@ import java.util.Map;
 
 public class ContentProvider implements IContentProvider {
 
-    private Frontend frontend;
+    private ContentReceiver frontend;
     private ThreadPool threadPool = new ThreadPool();
 
     private Map<ContentSource, PersonList> sources = new HashMap<>();
     private PersonList mergedList = new PersonList(ContentSource.Type.NONE);
 
 
-    public ContentProvider(Frontend frontend) {
+    public ContentProvider(ContentReceiver frontend) {
         this.frontend = frontend;
 
         ContentSource[] sources = {
@@ -44,7 +44,7 @@ public class ContentProvider implements IContentProvider {
         }
         threadPool.waitForFinish();
 
-        frontend.finishedListsRetrieval();
+        frontend.onFinishedListsRetrieval();
     }
 
     @Override
@@ -58,14 +58,14 @@ public class ContentProvider implements IContentProvider {
             }
         }
 
-        frontend.finishedRemoval();
+        frontend.onFinishedRemoval();
     }
 
     @Override
     public void merge(PersonIdsTuple tuple) {
 
         frontend.postResults(mergedList);
-        frontend.finishedMerge();
+        frontend.onFinishedMerge();
     }
 
     public static void main(String[] args) throws InterruptedException {

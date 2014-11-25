@@ -43,7 +43,10 @@ public class FrontendServlet extends HttpServlet {
         public static final String FINISHED = "FINISHED";
     }
 
+    Map<String, BufferedAsyncContentProvider> queries = new HashMap<>();
+
     public FrontendServlet() {
+
     }
 
     public void doGet(HttpServletRequest request,
@@ -95,12 +98,17 @@ public class FrontendServlet extends HttpServlet {
             throws ServletException, IOException  {
         response.addHeader("Cache-Control", "no-cache");
 
-        //start async CP here and put it to the map
+        //start new query asynchronously
+        String qid = "";
+        do {
+            qid = UUID.randomUUID().toString();
+        }
+        while (queries.containsKey(qid));
+        queries.put(qid, new BufferedAsyncContentProvider(new BufferedContentReceiver()));
 
+        //send query id
         JSONObject json = new JSONObject();
         json.put("status", ApiRequestStatus.OK);
-
-        String qid = UUID.randomUUID().toString();
         json.put("qid", qid);
 
         response.getWriter().println(json.toString());
