@@ -13,24 +13,17 @@ import java.util.ArrayList;
 
 public class VKUserSearcher {
 
-    public ArrayList<VKPerson> getPersons(PersonCard data){
+    private String token;
+
+    public VKUserSearcher(String _token){
+        this.token = _token;
+    }
+
+    public ArrayList<PersonCard> getPersons(PersonCard data){
         return getPersonsByIds((usersSearch(getQueryParams(data))));
     }
 
     public UrlParams getQueryParams(PersonCard data){
-        //TODO получить все параметры из карты
-//        String name = "Игорь";
-//        String second_name = "Латкин";
-//        String country = "Россия";
-//        String city = "Москва";
-//        String university = "МГТУ им. Баумана";
-//        Integer ageFrom = 5;
-//        Integer ageTo = 25;
-//        Integer birthDay = null;
-//        Integer birthMonth = null;
-//        Integer birthYear = null;
-//        Integer universityYear = null;
-//        String company = null;
         String name = data.getName();
         String second_name = data.getSurname();
         String country = data.getCountry();
@@ -107,11 +100,11 @@ public class VKUserSearcher {
 
     public String usersSearch(UrlParams params){
         try {
-            String request = VKConst.getUsersSearchUrl(VKConst.token);
-            VKConst.addAccessTokenParam(params);
+            String request = VKConst.getUsersSearchUrl(token);
+            VKConst.addAccessTokenParam(params, token);
             VKConst.addVersionParam(params);
             String response = HttpDownloader.httpGet(request, params).getBody();
-            JSONArray responseArray = RequestHelper.getResponseJSONitems(response);
+            JSONArray responseArray = VKResponseParser.getResponseJSONitems(response);
 
             return getPersonsIdsByArray(responseArray);
 
@@ -130,24 +123,17 @@ public class VKUserSearcher {
         return ids.toString();
     }
 
-    public ArrayList<VKPerson> getPersonsByIds(String ids){
+    public ArrayList<PersonCard> getPersonsByIds(String ids){
         try {
             UrlParams urlParams = new UrlParams();
             urlParams.add("user_ids", ids);
-            urlParams.add("fields", VKPerson.fields + ",connections");
+            urlParams.add("fields", VKConst.fields);
             VKConst.addVersionParam(urlParams);
-            VKConst.addAccessTokenParam(urlParams);
-            String request = VKConst.getUsersGetUrl(VKConst.token);
+            VKConst.addAccessTokenParam(urlParams, token);
+            String request = VKConst.getUsersGetUrl(token);
             String response = HttpDownloader.httpGet(request, urlParams).getBody();
             JSONArray responseArray = new JSONObject(response).getJSONArray("response");
-
-            ArrayList<VKPerson> persons = new ArrayList<>();
-            for (int i = 0; i < responseArray.length(); i++){
-                JSONObject item = responseArray.getJSONObject(i);
-                VKPerson person = new VKPerson(item);
-                persons.add(person);
-            }
-            return persons;
+            return VKResponseParser.getPersons(responseArray);
 
         } catch (IOException e) {
             e.printStackTrace();

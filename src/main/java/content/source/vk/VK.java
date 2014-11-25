@@ -1,36 +1,39 @@
 package content.source.vk;
 
-import content.PersonCard;
-import content.PersonList;
-import content.SocialLink;
+import content.*;
 import content.source.ContentSource;
-import content.source.University;
+import util.net.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 public class VK implements ContentSource {
 
-//    public static final String AuthorizeURL =
-//            "https://oauth.vk.com/authorize?client_id=4628886&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token";
-//    private static Boolean isAuthorized = false;
+    public static final String AUTHORIZE_URL =
+            "https://oauth.vk.com/authorize?client_id=4628886&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token";
+    public static final String LOGIN_URL = "https://login.vk.com?act=login";
+    public static final String LOGIN = "prsnlzr@gmail.com";
+    public static final String PASS = "prsnlzr123";
 
     private VKUserSearcher searcher;
 
     public VK(){
-        VKDataHelper.initCountries();
-        VKConst.countries.put("Россия", 1);
-        searcher = new VKUserSearcher();
+        try {
+            VKDataHelper.initCountries();
+            VKConst.countries.put("Россия", 1);
+            Headers.Header cookie = login();
+            String token = getToken(cookie);
+            searcher = new VKUserSearcher(token);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void retrieve(PersonCard data, PersonList dest) {
-        ArrayList<VKPerson> persons = searcher.getPersons(data);
-
-        for (VKPerson person: persons){
-            dest.addPerson(transformVKPersonToPersonCard(person, data));
+        ArrayList<PersonCard> personCards = searcher.getPersons(data);
+        for (PersonCard personCard: personCards){
+            dest.addPerson(personCard);
         }
     }
 
@@ -39,68 +42,56 @@ public class VK implements ContentSource {
         return Type.VK;
     }
 
-    public PersonCard transformVKPersonToPersonCard(VKPerson person, PersonCard init){
-        PersonCard personCard = new PersonCard();
-        String name = person.getFirstName();
-        String surname = person.getLastName();
-        Integer id = person.getId();
-        Integer bday = person.getBDay();
-        Integer bmonth = person.getBMonth();
-        Integer byear = person.getBYear();
-        String country = person.getCountry();
-        String city = person.getCity();
-        String mobile = person.getMobilePhone();
-        String photo = person.getPhoto();
-        String sex = person.getSex();
-        ArrayList<University> universities = person.getUniversities();
-        Map<SocialLink.LinkType, String>socialLinks = person.getSocialLinks();
+    public Headers.Header login() throws IOException {
+        HttpRequest request = new HttpRequest(LOGIN_URL);
+        UrlParams urlParams = new UrlParams();
+        urlParams.add("email", LOGIN);
+        urlParams.add("pass", PASS);
+        request.setParams(urlParams);
+        request.setFollowRedirects(false);
+        HttpResponse response = HttpDownloader.httpPost(request);
 
-        if (name != null && !name.equals(""))
-            personCard.setName(name);
-        if (surname != null && !surname.equals(""))
-            personCard.setSurname(surname);
-
-        //TODO: this thing does not compile and should be removed
-        //if (id != null && id != -1)
-        //   personCard.setId(new PersonId(Type.VK, id));
-
-        if (country != null && !country.equals(""))
-            personCard.setCountry(country);
-        if (city != null && !city.equals(""))
-            personCard.setCity(city);
-
-        if (mobile != null && !mobile.equals(""))
-            personCard.setMobilePhone(mobile);
-
-        if (photo != null && !photo.equals(""))
-            personCard.addAvatar(photo);
-
-        if (sex != null && !sex.equals(""))
-            personCard.setSex(sex);
-
-        if (universities != null && universities.size() != 0)
-            personCard.setUniversities(universities);
-
-        if (socialLinks != null && socialLinks.size() != 0){
-            Map<SocialLink.LinkType, SocialLink> links = new HashMap<>();
-            Set<SocialLink.LinkType> social = socialLinks.keySet();
-            for (SocialLink.LinkType s: social){
-                String identity = socialLinks.get(s);
-                SocialLink link = new SocialLink(s, identity, identity);
-                links.put(s, link);
-            }
-            personCard.setSocialLinks(links);
+        Headers.Header redirectHeader = response.getHeaders().getHeader("Location");
+        String redirect = redirectHeader.getValue();
+        Headers.Header cookie = response.getHeaders().getHeader("Set-Cookie");
+        List<String> cookies = cookie.getValues();
+        String cook = "";
+        for (String coco: cookies){
+            cook += coco + ";";
         }
+        Headers headers = new Headers();
+        headers.add("Cookie", cook);
+        request = new HttpRequest(redirect);
+        request.setHeaders(headers);
+        request.setFollowRedirects(false);
+        response = HttpDownloader.httpGet(request);
 
-        if (bday != null){
-            personCard.setBirthDate(new PersonCard.Date(bday, bmonth, byear));
+        cookie = response.getHeaders().getHeader("Set-Cookie");
+        cookies = cookie.getValues();
+        for (String coco: cookies){
+            cook += coco + ";";
         }
+        headers.add("Cookie", cook);
 
-        personCard.setType(Type.VK);
-        personCard.setPersonLink(new SocialLink(SocialLink.LinkType.VK, id.toString(), id.toString()));
-
-        return personCard;
+        return headers.getHeader("Cookie");
     }
 
+    public String getToken(Headers.Header cookie) throws IOException {
+        HttpRequest request = new HttpRequest(AUTHORIZE_URL);
+        List<String> cookies = cookie.getValues();
+        String cook = "";
+        for (String coco: cookies){
+            cook += coco + ";";
+        }
+        Headers headers = new Headers();
+        headers.add("Cookie", cook);
+        request.setHeaders(headers);
+        HttpResponse response = HttpDownloader.httpGet(request);
+        String url = response.getUrl().toString();
+        int tokenIndex = url.indexOf("access_token=") + 13;
+        int expiresIndex = url.indexOf("&expires");
+        String token = url.substring(tokenIndex, expiresIndex);
+        return token;
+    }
 
 }

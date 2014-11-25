@@ -1,7 +1,6 @@
 package content;
 
 import content.source.ContentSource;
-import content.source.University;
 
 import java.util.EnumMap;
 import java.util.LinkedList;
@@ -227,7 +226,7 @@ public class PersonCard {
         this.id = id;
     }
 
-    public void setType(ContentSource.Type type) {
+    void setType(ContentSource.Type type) {
         this.id.setType(type);
     }
 }
