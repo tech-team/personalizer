@@ -12,7 +12,7 @@
         <table>
             <tr>
                 <td>
-                    <img class="card-content-avatar" src="${avatars?first!http://floraldreams.ru/images/misc/unknown.gif}" />
+                    <img class="card-content-avatar" src="${avatars?first!"http://floraldreams.ru/images/misc/unknown.gif"}" />
                     <div class="card-content-section">Контакты</div>
                     <#list socialLinks as link>
                         <div class="card-content-value"><a href="${link}">${link}</a></div>

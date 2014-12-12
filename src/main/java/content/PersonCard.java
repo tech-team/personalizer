@@ -92,7 +92,7 @@ public class PersonCard {
      * or null if some fields is missing in birthday object
      */
     public Integer getAge() {
-        if (birthDate.getYear() == null)
+        if (birthDate == null || birthDate.getYear() == null)
             return null;
 
         Calendar calendar = Calendar.getInstance();

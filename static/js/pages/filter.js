@@ -1,5 +1,10 @@
 
 $(document).ready(function() {
+    $('#continue_button').click(function() {
+        //TODO: send AJAX request to Locations.POST_FILTER_CARDS
+        window.location.href = Locations.RESULTS;
+    });
+
     sendCardRequest();
 
     //TODO: think to remember:
@@ -44,12 +49,7 @@ $(document).ready(function() {
 function sendCardRequest() {
     $.ajax({
         type: "GET",
-        url: Locations.GET_CARDS,
-        dataType: "json",
-        //data: {
-        //    name: "John",
-        //    location: "Boston"
-        //}
+        url: Locations.GET_FILTER_CARDS
     })
     .done(function(msg) {
             console.log("msg received, status: " + msg.status);

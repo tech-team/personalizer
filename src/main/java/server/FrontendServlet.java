@@ -10,9 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,8 +26,9 @@ public class FrontendServlet extends HttpServlet {
         public static final String FILTER = "/filter";
         public static final String RESULTS = "/results";
 
-        public static final String GET_CARDS = "/api/get_cards";
-        public static final String FILTER_CARDS = "/api/filter_cards";
+        public static final String GET_FILTER_CARDS = "/api/get_filter_cards";
+        public static final String GET_RESULT_CARDS = "/api/get_result_cards";
+        public static final String POST_FILTER_CARDS = "/api/post_filter_cards";
     }
 
     public abstract class Templates {
@@ -74,23 +73,37 @@ public class FrontendServlet extends HttpServlet {
                 staticHandler(request, response, Templates.RESULTS);
                 return;
 
-            case Locations.GET_CARDS:
+            case Locations.GET_FILTER_CARDS:
                 getCardsHandler(request, response);
                 return;
 
-            case Locations.FILTER_CARDS:
-                filterCardsHandler(request, response);
+            case Locations.GET_RESULT_CARDS:
+                getCardsHandler(request, response);
                 return;
+
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
-    private void staticHandler(HttpServletRequest request, HttpServletResponse response, String templateName)
-            throws ServletException, IOException  {
-        Map<String, Object> pageVariables = new HashMap<>();
+    public void doPost(HttpServletRequest request,
+                      HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
 
-        response.getWriter().println(PageGenerator.getPage(templateName, pageVariables));
+        switch (request.getPathInfo()) {
+            case Locations.POST_FILTER_CARDS:
+                filterCardsHandler(request, response);
+                return;
+
+            default:
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void staticHandler(HttpServletRequest request, HttpServletResponse response, String fileName)
+            throws ServletException, IOException  {
+        response.getWriter().println(PageGenerator.getStaticPage(fileName));
     }
 
     private void filterHandler(HttpServletRequest request, HttpServletResponse response)
@@ -117,8 +130,10 @@ public class FrontendServlet extends HttpServlet {
             throws ServletException, IOException  {
         response.addHeader("Cache-Control", "no-cache");
 
+        System.out.println(Arrays.toString(request.getCookies()));
+
         //obtain new cards from CP
-        boolean newCardsReady = false;
+        boolean newCardsReady = true;
 
         if (newCardsReady) {
             JSONObject json = new JSONObject();
@@ -128,7 +143,7 @@ public class FrontendServlet extends HttpServlet {
             PersonCard personCard = new PersonCard();
             card.put("name", NC.toString(personCard.getName()));
             card.put("surname", NC.toString(personCard.getSurname()));
-            card.put("birthdate", NC.toString(personCard.getBirthDate().toString()));
+            card.put("birthdate", NC.toString(personCard.getBirthDate()));
             card.put("age", NC.toString(personCard.getAge()));
 
             card.put("avatars", personCard.getAvatars());
@@ -137,11 +152,11 @@ public class FrontendServlet extends HttpServlet {
             card.put("city", NC.toString(personCard.getCity()));
             card.put("phone", NC.toString(personCard.getMobilePhone()));
 
-            card.put("socialLinks", personCard.getSocialLinks());
+            card.put("socialLinks", personCard.getSocialLinks().values());
             card.put("universities", personCard.getUniversities());
             card.put("jobs", personCard.getJobs());
 
-            json.put("data", PageGenerator.getPage(Templates.CARD, card));
+            json.put("data", PageGenerator.getTemplatePage(Templates.CARD, card));
 
             response.getWriter().println(json.toString());
         } else {
@@ -158,11 +173,5 @@ public class FrontendServlet extends HttpServlet {
         json.put("status", ApiRequestStatus.OK);
 
         response.getWriter().println(json.toString());
-    }
-
-    private static String getTime() {
-        Date date = new Date();
-        DateFormat formatter = new SimpleDateFormat("HH.mm.ss");
-        return formatter.format(date);
     }
 }

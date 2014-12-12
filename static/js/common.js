@@ -9,8 +9,9 @@ var Locations = {
     RESULTS: "/results",
 
     //AJAX
-    GET_CARDS: "/api/get_cards",
-    FILTER_CARDS: "/api/filter_cards"
+    GET_FILTER_CARDS: "/api/get_filter_cards",
+    GET_RESULT_CARDS: "/api/get_result_cards",
+    POST_FILTER_CARDS: "/api/filter_cards"
 };
 
 var ApiRequestStatus = {
