@@ -2,10 +2,7 @@ package content;
 
 import content.source.ContentSource;
 
-import java.util.EnumMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PersonCard {
 
@@ -87,6 +84,31 @@ public class PersonCard {
 
     public String getSurname() {
         return surname;
+    }
+
+    /**
+     *
+     * @return Difference between current date and person's birthday in years
+     * or null if some fields is missing in birthday object
+     */
+    public Integer getAge() {
+        if (birthDate.getYear() == null)
+            return null;
+
+        Calendar calendar = Calendar.getInstance();
+
+        Integer age = calendar.get(Calendar.YEAR) - birthDate.getYear();
+
+        if (birthDate.getMonth() == null || birthDate.getDay() == null)
+            return age;
+
+        if (calendar.get(Calendar.MONTH) < birthDate.month
+                || (calendar.get(Calendar.MONTH) == birthDate.month
+                    && calendar.get(Calendar.DAY_OF_MONTH) == birthDate.day)) {
+            return age - 1;
+        }
+
+        return age;
     }
 
     public Integer getAgeFrom() {

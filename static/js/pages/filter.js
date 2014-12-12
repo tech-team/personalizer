@@ -1,5 +1,10 @@
 
 $(document).ready(function() {
+    sendCardRequest();
+
+    //TODO: think to remember:
+    //all the addClass things should be carried out on new cards as well
+
     $(".sources .column").sortable({
         connectWith: ".destinations .person",
         handle: ".card-header",
@@ -35,3 +40,41 @@ $(document).ready(function() {
         $(this).closest(".card").remove();
     });
 });
+
+function sendCardRequest() {
+    $.ajax({
+        type: "GET",
+        url: Locations.GET_CARDS,
+        dataType: "json",
+        //data: {
+        //    name: "John",
+        //    location: "Boston"
+        //}
+    })
+    .done(function(msg) {
+            console.log("msg received, status: " + msg.status);
+
+            switch (msg.status) {
+                case ApiRequestStatus.OK:
+                    console.log("card received: " + msg.data);
+                    sendCardRequestDelayed();
+                    break;
+                case ApiRequestStatus.FINISHED:
+                    if (msg.data)
+                        console.log("card received: " + msg.data);
+                    break;
+                case ApiRequestStatus.WAIT:
+                    sendCardRequestDelayed();
+                    break;
+                case ApiRequestStatus.ERROR:
+                    break;
+            }
+    })
+    .fail(function(error) {
+            alert("Error while trying to receive card: " + error);
+    });
+}
+
+function sendCardRequestDelayed() {
+    setTimeout(sendCardRequest, 500);
+}

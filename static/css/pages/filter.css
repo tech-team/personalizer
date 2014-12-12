@@ -33,6 +33,7 @@ body {
 
 .card table tr td {
     padding-left: 1em;
+    vertical-align: top;
 }
 
 .destinations .card, .destinations .card-placeholder {
@@ -72,6 +73,10 @@ body {
     height: 18em;
 }
 
+.card-content-birthday {
+    margin-right: 2em;
+}
+
 .merge-table {
     width: 100%;
 }
@@ -82,4 +87,8 @@ body {
 
 .merge-content {
     width: 100%;
+}
+
+.card-content-avatar {
+    margin: 1em;
 }

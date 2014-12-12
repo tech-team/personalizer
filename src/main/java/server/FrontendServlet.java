@@ -1,8 +1,11 @@
 package server;
 
+import content.PersonCard;
 import org.json.JSONObject;
+import util.NC;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +28,6 @@ public class FrontendServlet extends HttpServlet {
         public static final String FILTER = "/filter";
         public static final String RESULTS = "/results";
 
-        public static final String START_SEARCH = "/api/start_search";
         public static final String GET_CARDS = "/api/get_cards";
         public static final String FILTER_CARDS = "/api/filter_cards";
     }
@@ -34,6 +36,7 @@ public class FrontendServlet extends HttpServlet {
         public static final String REQUEST = "request.html";
         public static final String FILTER = "filter.html";
         public static final String RESULTS = "results.html";
+        public static final String CARD = "card.tml";
     }
 
     public abstract class ApiRequestStatus {
@@ -64,15 +67,11 @@ public class FrontendServlet extends HttpServlet {
                 return;
 
             case Locations.FILTER:
-                staticHandler(request, response, Templates.FILTER);
+                filterHandler(request, response);
                 return;
 
             case Locations.RESULTS:
                 staticHandler(request, response, Templates.RESULTS);
-                return;
-
-            case Locations.START_SEARCH:
-                startSearchHandler(request, response);
                 return;
 
             case Locations.GET_CARDS:
@@ -94,9 +93,10 @@ public class FrontendServlet extends HttpServlet {
         response.getWriter().println(PageGenerator.getPage(templateName, pageVariables));
     }
 
-    private void startSearchHandler(HttpServletRequest request, HttpServletResponse response)
+    private void filterHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
-        response.addHeader("Cache-Control", "no-cache");
+
+        //TODO: GET params
 
         //start new query asynchronously
         String qid = "";
@@ -106,12 +106,10 @@ public class FrontendServlet extends HttpServlet {
         while (queries.containsKey(qid));
         queries.put(qid, new BufferedAsyncContentProvider(new BufferedContentReceiver()));
 
-        //send query id
-        JSONObject json = new JSONObject();
-        json.put("status", ApiRequestStatus.OK);
-        json.put("qid", qid);
+        //set query id as cookie
+        response.addCookie(new Cookie("qid", qid));
 
-        response.getWriter().println(json.toString());
+        staticHandler(request, response, Templates.FILTER);
     }
 
 
@@ -126,7 +124,24 @@ public class FrontendServlet extends HttpServlet {
             JSONObject json = new JSONObject();
             json.put("status", ApiRequestStatus.OK);
 
-            //TODO: form JSON from cards
+            HashMap<String, Object> card = new HashMap<>();
+            PersonCard personCard = new PersonCard();
+            card.put("name", NC.toString(personCard.getName()));
+            card.put("surname", NC.toString(personCard.getSurname()));
+            card.put("birthdate", NC.toString(personCard.getBirthDate().toString()));
+            card.put("age", NC.toString(personCard.getAge()));
+
+            card.put("avatars", personCard.getAvatars());
+
+            card.put("country", NC.toString(personCard.getCountry()));
+            card.put("city", NC.toString(personCard.getCity()));
+            card.put("phone", NC.toString(personCard.getMobilePhone()));
+
+            card.put("socialLinks", personCard.getSocialLinks());
+            card.put("universities", personCard.getUniversities());
+            card.put("jobs", personCard.getJobs());
+
+            json.put("data", PageGenerator.getPage(Templates.CARD, card));
 
             response.getWriter().println(json.toString());
         } else {
@@ -135,11 +150,7 @@ public class FrontendServlet extends HttpServlet {
 
             response.getWriter().println(json.toString());
         }
-
-
-        response.getWriter().println(getTime());
     }
-
 
     private void filterCardsHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {

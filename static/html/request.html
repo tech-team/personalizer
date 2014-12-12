@@ -21,7 +21,7 @@
                 <li>Результаты</li>
             </ol>
             <h4>Заполните известную информацию</h4>
-            <form class="form-horizontal" role="form">
+            <form class="form-horizontal" role="form" action="/filter">
                 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -36,7 +36,7 @@
                                 <div class="form-group">
                                     <label for="input_name" class="col-sm-2 control-label">ФИО</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="input_name" placeholder="Иванов Иван Иванович">
+                                        <input type="text" class="form-control" id="input_name" name="name" placeholder="Иванов Иван Иванович">
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -44,11 +44,11 @@
                                     <div class="col-sm-10 form-group" id="input_age">
                                         <div class="row form-inline">
                                             <label for="input_age_from" class="col-sm-1 control-label">от:</label>
-                                            <input type="text" class="col-sm-2 form-control" id="input_age_from" placeholder="18">
+                                            <input type="text" class="col-sm-2 form-control" id="input_age_from" name="age_from" placeholder="18">
                                         </div>
                                         <div class="row form-inline">
                                             <label for="input_age_to" class="col-sm-1 control-label">до:</label>
-                                            <input type="text" class="col-sm-2 form-control" id="input_age_to" placeholder="150">
+                                            <input type="text" class="col-sm-2 form-control" id="input_age_to" name="age_to" placeholder="150">
                                         </div>
 
                                         <!--0-->
@@ -59,14 +59,14 @@
                                 <div class="form-group">
                                     <label for="input_email" class="col-sm-2 control-label">Email</label>
                                     <div class="col-sm-10">
-                                        <input type="email" class="form-control" id="input_email" placeholder="ivanov.ivan@gmail.com">
+                                        <input type="email" class="form-control" id="input_email" name="email" placeholder="ivanov.ivan@gmail.com">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
                                         <div class="checkbox">
                                             <label>
-                                                <input type="checkbox" id="input_famous"> Известная личность
+                                                <input type="checkbox" id="input_famous" name="is_famous"> Известная личность
                                             </label>
                                         </div>
                                     </div>
@@ -87,19 +87,19 @@
                                 <div class="form-group">
                                     <label for="input_vk" class="col-sm-2 control-label">VK</label>
                                     <div class="col-sm-10">
-                                        <input type=text class="form-control" id="input_vk" placeholder="id1010001 или ivanov.ivan">
+                                        <input type=text class="form-control" id="input_vk" name="vk" placeholder="id1010001 или ivanov.ivan">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="input_fb" class="col-sm-2 control-label">Facebook</label>
                                     <div class="col-sm-10">
-                                        <input type=text class="form-control" id="input_fb" placeholder="id1010001 или ivanov.ivan">
+                                        <input type=text class="form-control" id="input_fb" name="fb" placeholder="id1010001 или ivanov.ivan">
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="input_li" class="col-sm-2 control-label">LinkedIn</label>
                                     <div class="col-sm-10">
-                                        <input type=text class="form-control" id="input_li" placeholder="id1010001 или ivanov.ivan">
+                                        <input type=text class="form-control" id="input_li" name="li" placeholder="id1010001 или ivanov.ivan">
                                     </div>
                                 </div>
                             </div>
