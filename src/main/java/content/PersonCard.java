@@ -66,6 +66,8 @@ public class PersonCard {
 
     private Map<SocialLink.LinkType, SocialLink> socialLinks = new EnumMap<>(SocialLink.LinkType.class);
 
+    private List<PersonCard> linkedCards = new LinkedList<>();
+
 
     PersonCard(PersonId id) {
         this.id = id;
@@ -244,6 +246,10 @@ public class PersonCard {
         return id;
     }
 
+    public ContentSource.Type getType() {
+        return id.getType();
+    }
+
     void setId(PersonId id) {
         this.id = id;
     }
@@ -251,4 +257,17 @@ public class PersonCard {
     void setType(ContentSource.Type type) {
         this.id.setType(type);
     }
+
+    public void linkWith(PersonCard card) {
+        linkedCards.add(card);
+    }
+
+    public void linkWith(Collection<PersonCard> cards) {
+        linkedCards.addAll(cards);
+    }
+
+    public boolean isLinkedWith(PersonCard card) {
+        return linkedCards.contains(card);
+    }
+
 }

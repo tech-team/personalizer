@@ -12,10 +12,10 @@ public class AsyncContentProvider implements IContentProvider {
     }
 
     @Override
-    public void request(PersonCard request) throws InterruptedException {
+    public void request(PersonCard request, boolean autoMerge) throws InterruptedException {
         threadPool.execute(() -> {
             try {
-                contentProvider.request(request);
+                contentProvider.request(request, autoMerge);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
