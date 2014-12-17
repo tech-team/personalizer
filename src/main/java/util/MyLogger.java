@@ -19,36 +19,36 @@ public abstract class MyLogger {
 
     static {
         Handler ch = new ConsoleHandler();
-        Handler fh = null;
+//        Handler fh = null;
 
-        File dir = new File(LOG_PATH);
-
-        // if the directory does not exist, create it
-        if (!dir.exists()) {
-            boolean result = false;
-
-            try {
-                result = dir.mkdir();
-            } catch(SecurityException se){
-                //handle it
-            }
-            if(!result) {
-                throw new RuntimeException("Couldn't create directory for logs");
-            }
-        }
-        try {
-            fh = new FileHandler(FILENAME, APPEND_BY_DEFAULT);
-        } catch (SecurityException | IOException e) {
-            e.printStackTrace();
-        }
-        assert fh != null;
+//        File dir = new File(LOG_PATH);
+//
+//        // if the directory does not exist, create it
+//        if (!dir.exists()) {
+//            boolean result = false;
+//
+//            try {
+//                result = dir.mkdir();
+//            } catch(SecurityException se){
+//                //handle it
+//            }
+//            if(!result) {
+//                throw new RuntimeException("Couldn't create directory for logs");
+//            }
+//        }
+//        try {
+//            fh = new FileHandler(FILENAME, APPEND_BY_DEFAULT);
+//        } catch (SecurityException | IOException e) {
+//            e.printStackTrace();
+//        }
+//        assert fh != null;
 
         MyFormatter formatter = new MyFormatter();
         ch.setFormatter(formatter);
-        fh.setFormatter(formatter);
+//        fh.setFormatter(formatter);
 
         ch.setLevel(DEFAULT_LEVEL);
-        fh.setLevel(DEFAULT_LEVEL);
+//        fh.setLevel(DEFAULT_LEVEL);
 
         LOGGER.setUseParentHandlers(false);
 
