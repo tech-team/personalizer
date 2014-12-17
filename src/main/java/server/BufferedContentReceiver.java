@@ -22,17 +22,17 @@ public class BufferedContentReceiver implements ContentReceiver {
 
     @Override
     public void postPersonCard(PersonCard card) {
-
+        postedPersonCards.add(card);
     }
 
     @Override
     public void postPersonList(PersonList list) {
-
+        postedPersonLists.add(list);
     }
 
     @Override
     public void postResults(PersonList list) {
-
+        postedResults = list;
     }
 
     @Override

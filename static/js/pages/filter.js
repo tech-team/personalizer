@@ -49,6 +49,7 @@ $(document).ready(function() {
 function sendCardRequest() {
     $.ajax({
         type: "GET",
+        contentType: "application/json",
         url: Locations.GET_FILTER_CARDS
     })
     .done(function(msg) {

@@ -11,10 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 //NB: Locations and ApiRequestStatus classes
 // should be same as in static/js/common.js
@@ -46,7 +43,11 @@ public class FrontendServlet extends HttpServlet {
         public static final String FINISHED = "FINISHED";
     }
 
-    Map<String, Session> queries = new HashMap<>();
+    public abstract class Cookies {
+        public static final String QID = "qid";
+    }
+
+    Map<String, Session> sessions = new HashMap<>();
 
     public FrontendServlet() {
 
@@ -132,7 +133,7 @@ public class FrontendServlet extends HttpServlet {
         do {
             qid = UUID.randomUUID().toString();
         }
-        while (queries.containsKey(qid));
+        while (sessions.containsKey(qid));
 
         //create session
         Session session = new Session();
@@ -148,10 +149,10 @@ public class FrontendServlet extends HttpServlet {
         System.out.println("Search started for qid = " + qid);
 
         //save session
-        queries.put(qid, session);
+        sessions.put(qid, session);
 
         //set query id as cookie
-        response.addCookie(new Cookie("qid", qid));
+        response.addCookie(new Cookie(Cookies.QID, qid));
 
         staticHandler(request, response, Templates.FILTER);
     }
@@ -160,39 +161,65 @@ public class FrontendServlet extends HttpServlet {
     private void getCardsHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
         response.addHeader("Cache-Control", "no-cache");
+        response.setContentType("application/json");
 
-        System.out.println(Arrays.toString(request.getCookies()));
+        Cookie[] cookies = request.getCookies();
+        String qid = null;
+        for (Cookie cookie: cookies) {
+            if (cookie.getName().equals(Cookies.QID)) {
+                qid = cookie.getValue();
+                break;
+            }
+        }
+
+        if (qid == null) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.ERROR);
+            json.put("data", "No QID cookie provided");
+            response.getWriter().println(json.toString());
+
+            return;
+        }
 
         //obtain new cards from CP
-        boolean newCardsReady = true;
+        Session session = sessions.get(qid);
+        BufferedContentReceiver receiver = session.getCP().getContentReceiver();
 
-        if (newCardsReady) {
+        List<PersonCard> cards =  receiver.getPostedPersonCards();
+
+        if (!cards.isEmpty()) {
             JSONObject json = new JSONObject();
             json.put("status", ApiRequestStatus.OK);
 
-            HashMap<String, Object> card = new HashMap<>();
-            PersonCard personCard = new PersonCard();
-            card.put("name", NC.toString(personCard.getName()));
-            card.put("surname", NC.toString(personCard.getSurname()));
-            card.put("birthdate", NC.toString(personCard.getBirthDate()));
-            card.put("age", NC.toString(personCard.getAge()));
+            for (PersonCard personCard: cards) {
+                HashMap<String, Object> card = new HashMap<>();
 
-            card.put("avatars", personCard.getAvatars());
+                card.put("name", NC.toString(personCard.getName()));
+                card.put("surname", NC.toString(personCard.getSurname()));
+                card.put("birthdate", NC.toString(personCard.getBirthDate()));
+                card.put("age", NC.toString(personCard.getAge()));
 
-            card.put("country", NC.toString(personCard.getCountry()));
-            card.put("city", NC.toString(personCard.getCity()));
-            card.put("phone", NC.toString(personCard.getMobilePhone()));
+                card.put("avatars", personCard.getAvatars());
 
-            card.put("socialLinks", personCard.getSocialLinks().values());
-            card.put("universities", personCard.getUniversities());
-            card.put("jobs", personCard.getJobs());
+                card.put("country", NC.toString(personCard.getCountry()));
+                card.put("city", NC.toString(personCard.getCity()));
+                card.put("phone", NC.toString(personCard.getMobilePhone()));
 
-            json.put("data", PageGenerator.getTemplatePage(Templates.CARD, card));
+                card.put("socialLinks", personCard.getSocialLinks().values());
+                card.put("universities", personCard.getUniversities());
+                card.put("jobs", personCard.getJobs());
+
+                json.append("data", PageGenerator.getTemplatePage(Templates.CARD, card));
+            }
 
             response.getWriter().println(json.toString());
         } else {
             JSONObject json = new JSONObject();
-            json.put("status", ApiRequestStatus.WAIT);
+
+            if (receiver.isFinishedListsRetrieval())
+                json.put("status", ApiRequestStatus.FINISHED);
+            else
+                json.put("status", ApiRequestStatus.WAIT);
 
             response.getWriter().println(json.toString());
         }
