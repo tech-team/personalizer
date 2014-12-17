@@ -3,6 +3,8 @@ package content;
 import server.ContentReceiver;
 import util.ThreadPool;
 
+import java.util.List;
+
 public class AsyncContentProvider implements IContentProvider {
     private ContentProvider contentProvider;
     private ThreadPool threadPool = new ThreadPool();
@@ -23,7 +25,7 @@ public class AsyncContentProvider implements IContentProvider {
     }
 
     @Override
-    public void remove(PersonId[] ids) throws InterruptedException {
+    public void remove(List<PersonId> ids) throws InterruptedException {
         threadPool.execute(() -> {
             contentProvider.remove(ids);
         });

@@ -1,15 +1,12 @@
 package content;
 
 import content.source.ContentSource;
-import content.source.fb.Facebook;
-import content.source.linkedin.LinkedIn;
 import content.source.vk.VK;
 import server.ContentReceiver;
 import util.MyLogger;
 import util.ThreadPool;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -70,7 +67,7 @@ public class ContentProvider implements IContentProvider {
     }
 
     @Override
-    public void remove(PersonId[] ids) {
+    public void remove(List<PersonId> ids) {
         for (PersonId id : ids) {
             for (ContentSource source : sources.keySet()) {
                 if (source.getType() == id.getType()) {

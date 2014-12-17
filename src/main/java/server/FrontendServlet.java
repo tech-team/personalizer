@@ -1,8 +1,8 @@
 package server;
 
-import content.PersonCard;
-import content.PersonList;
-import content.SocialLink;
+import content.*;
+import content.source.ContentSource;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import util.NC;
 
@@ -11,6 +11,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
 
@@ -164,14 +165,7 @@ public class FrontendServlet extends HttpServlet {
         response.addHeader("Cache-Control", "no-cache");
         response.setContentType("application/json");
 
-        Cookie[] cookies = request.getCookies();
-        String qid = null;
-        for (Cookie cookie: cookies) {
-            if (cookie.getName().equals(Cookies.QID)) {
-                qid = cookie.getValue();
-                break;
-            }
-        }
+        String qid = getQueryId(request);
 
         if (qid == null) {
             JSONObject json = new JSONObject();
@@ -195,6 +189,9 @@ public class FrontendServlet extends HttpServlet {
 
             for (PersonCard personCard: personList.getPersons().values()) {
                 HashMap<String, Object> card = new HashMap<>();
+
+                card.put("source-id", personCard.getType().toString().toLowerCase());
+                card.put("id", personCard.getId());
 
                 card.put("name", NC.toString(personCard.getName()));
                 card.put("surname", NC.toString(personCard.getSurname()));
@@ -229,9 +226,98 @@ public class FrontendServlet extends HttpServlet {
 
     private void filterCardsHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
-        JSONObject json = new JSONObject();
-        json.put("status", ApiRequestStatus.OK);
+        response.addHeader("Cache-Control", "no-cache");
+        response.setContentType("application/json");
 
-        response.getWriter().println(json.toString());
+        String qid = getQueryId(request);
+        if (qid == null) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.ERROR);
+            json.put("data", "No QID cookie provided");
+            response.getWriter().println(json.toString());
+
+            return;
+        }
+        Session session = sessions.get(qid);
+        BufferedAsyncContentProvider cp = session.getCP();
+
+        JSONObject jsonRequest = getJsonData(request);
+
+        try {
+            //handle deleted cards
+            JSONArray deletedCards = jsonRequest.getJSONArray("deletedCards");
+            List<PersonId> deletedCardsList = new ArrayList<>();
+
+            for (int i = 0; i < deletedCards.length(); i++) {
+                JSONObject cardObject = deletedCards.getJSONObject(i);
+
+                int id = cardObject.getInt("id");
+                int source_id = cardObject.getInt("source-id");
+
+                ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(id).toUpperCase());
+                deletedCardsList.add(new PersonId(type, id));
+            }
+
+            cp.remove(deletedCardsList);
+
+            //handle merged cards
+            JSONArray mergedCards = jsonRequest.getJSONArray("mergedCards");
+
+            for (int i = 0; i < mergedCards.length(); i++) {
+                JSONArray mergeObject = mergedCards.getJSONArray(i);
+                List<PersonId> mergeList = new ArrayList<>();
+
+                for (int j = 0; j < mergeObject.length(); j++) {
+                    JSONObject cardObject = mergeObject.getJSONObject(i);
+
+                    int id = cardObject.getInt("id");
+                    int source_id = cardObject.getInt("source-id");
+
+                    ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(id).toUpperCase());
+                    mergeList.add(new PersonId(type, id));
+                }
+
+                cp.merge(new PersonIdsTuple(mergeList));
+            }
+        }
+        catch (InterruptedException e) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.ERROR);
+            json.put("data", "Something was interrupted");
+            response.getWriter().println(json.toString());
+
+            return;
+        }
+
+
+        //send response
+
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("status", ApiRequestStatus.OK);
+
+        response.getWriter().println(jsonResponse.toString());
+    }
+
+    private JSONObject getJsonData(HttpServletRequest request) {
+        StringBuilder jb = new StringBuilder();
+        String line = null;
+        try {
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null)
+                jb.append(line);
+        } catch (Exception e) { /*report an error*/ }
+
+        return new JSONObject(jb.toString());
+    }
+
+    private String getQueryId(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        for (Cookie cookie: cookies) {
+            if (cookie.getName().equals(Cookies.QID))
+                return cookie.getValue();
+        }
+
+        return null;
     }
 }

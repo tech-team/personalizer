@@ -1,14 +1,46 @@
 
+var deletedCards = [];
+
 $(document).ready(function() {
+
     $('#continue_button').click(function() {
-        //TODO: send AJAX request to Locations.POST_FILTER_CARDS
-        window.location.href = Locations.RESULTS;
+        var mergedCards = [];
+
+        var $persons = $(".destinations .person");
+
+        $persons.each(function($person) {
+            var merge = [];
+
+            $person.each(function($card) {
+                merge.append({
+                    "id": $card.data('id'),
+                    "source-id": $card.data('source-id')
+                });
+            });
+
+            mergedCards.append(merge);
+        });
+
+        $.ajax({
+            type: "POST",
+            contentType: "application/json",
+            url: Locations.POST_FILTER_CARDS,
+            dataType: "json",
+            data: {
+                deletedCards: deletedCards,
+                mergedCards: mergedCards
+            }
+        })
+            .done(function(msg) {
+                window.location.href = Locations.RESULTS;
+            })
+            .fail(function(error) {
+                alert("Error while trying to POST_FILTER_CARDS: " + error);
+            })
+;        )
     });
 
     sendPersonListRequest();
-
-    //TODO: think to remember:
-    //all the addClass things should be carried out on new cards as well
 
     $(".sources .column").sortable({
         connectWith: ".destinations .person",
@@ -17,14 +49,12 @@ $(document).ready(function() {
         placeholder: "card-placeholder ui-corner-all",
 
         receive: function(e, ui) {
-            //TODO: test is it possible to place that item that column
-            $(ui.sender).sortable("cancel");
-        },
+            $card = ui.item;
+            $column = $(this);
 
-//                stop: function()
-//                {
-//                    $(this).sortable('cancel');
-//                }
+            if ($card.data('source-id') != $column.data('source-id'))
+                $(ui.sender).sortable("cancel");
+        }
     });
 
     $(".destinations .person").sortable({
@@ -33,16 +63,6 @@ $(document).ready(function() {
         cancel: ".card-remove",
         placeholder: "card-placeholder ui-corner-all",
         floating: true
-    });
-
-    $(".card")
-        .addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
-        .find(".card-header")
-        .addClass("ui-widget-header ui-corner-all")
-        .prepend("<span class='ui-icon ui-icon-closethick card-remove'></span>");
-
-    $(".card-remove").click(function () {
-        $(this).closest(".card").remove();
     });
 });
 
@@ -85,11 +105,22 @@ function handlePersonList(source, cards) {
     $vk_column = $(".column[data-source-id='" + source.toLowerCase() + "']");
 
     _.each(cards, function(card) {
-        $card = $(card);
+        var $card = $(card);
         $card.addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
             .find(".card-header")
             .addClass("ui-widget-header ui-corner-all")
             .prepend("<span class='ui-icon ui-icon-closethick card-remove'></span>");
+
+        $card.find(".card-remove").click(function () {
+            var $card = $(this).closest(".card");
+
+            deletedCards.append({
+                    "id": $card.data('id'),
+                    "source-id": $card.data('source-id')
+                });
+
+            $card.remove();
+        });
 
         $card.appendTo($vk_column);
     });
