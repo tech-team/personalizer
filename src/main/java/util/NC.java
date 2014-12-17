@@ -14,4 +14,14 @@ public class NC {
     public static String toString(Object obj) {
         return toString(obj, "");
     }
+
+    public static Integer parseInt(String str) {
+        Integer result = null;
+
+        try {
+            result = Integer.parseInt(str);
+        } catch (NumberFormatException ignored) {}
+
+        return result;
+    }
 }

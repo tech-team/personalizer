@@ -1,6 +1,7 @@
 package server;
 
 import content.PersonCard;
+import content.SocialLink;
 import org.json.JSONObject;
 import util.NC;
 
@@ -45,7 +46,7 @@ public class FrontendServlet extends HttpServlet {
         public static final String FINISHED = "FINISHED";
     }
 
-    Map<String, BufferedAsyncContentProvider> queries = new HashMap<>();
+    Map<String, Session> queries = new HashMap<>();
 
     public FrontendServlet() {
 
@@ -109,15 +110,45 @@ public class FrontendServlet extends HttpServlet {
     private void filterHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
 
-        //TODO: GET params
+        //create request
+        PersonCard card = new PersonCard();
 
-        //start new query asynchronously
+        card.setName(request.getParameter("name"));
+        card.setAgeFrom(NC.parseInt(request.getParameter("age_from")));
+        card.setAgeFrom(NC.parseInt(request.getParameter("age_to")));
+        card.addEmail(request.getParameter("email"));
+
+        card.addSocialLink(SocialLink.LinkType.VK,
+                new SocialLink(SocialLink.LinkType.VK, request.getParameter("vk")));
+
+        card.addSocialLink(SocialLink.LinkType.FB,
+                new SocialLink(SocialLink.LinkType.FB, request.getParameter("fb")));
+
+        card.addSocialLink(SocialLink.LinkType.LINKED_IN,
+                new SocialLink(SocialLink.LinkType.LINKED_IN, request.getParameter("li")));
+
+        //generate qid
         String qid = "";
         do {
             qid = UUID.randomUUID().toString();
         }
         while (queries.containsKey(qid));
-        queries.put(qid, new BufferedAsyncContentProvider(new BufferedContentReceiver()));
+
+        //create session
+        Session session = new Session();
+        try {
+            //start search request asynchronously
+            session.getCP().request(card);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        System.out.println("Search started for qid = " + qid);
+
+        //save session
+        queries.put(qid, session);
 
         //set query id as cookie
         response.addCookie(new Cookie("qid", qid));

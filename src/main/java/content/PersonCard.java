@@ -23,6 +23,7 @@ public class PersonCard {
         this.sex = sex;
     }
 
+
     public static class Date {
         private Integer day;
         private Integer month;
@@ -54,7 +55,7 @@ public class PersonCard {
     private Integer ageFrom;
     private Integer ageTo;
     private Date birthDate;
-    private List<String> emails;
+    private List<String> emails = new LinkedList<>();
     private Boolean famous;
     private String country;
     private String city;
@@ -187,6 +188,11 @@ public class PersonCard {
 
     public PersonCard setEmails(List<String> emails) {
         this.emails = emails;
+        return this;
+    }
+
+    public PersonCard addEmail(String email) {
+        this.emails.add(email);
         return this;
     }
 
