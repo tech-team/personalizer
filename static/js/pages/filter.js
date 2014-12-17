@@ -81,4 +81,16 @@ function sendPersonListRequestDelayed() {
 
 function handlePersonList(source, cards) {
     alert("Recieved " + cards.length + " cards from " + source);
+
+    $vk_column = $(".column[data-source-id='" + source.toLowerCase() + "']");
+
+    _.each(cards, function(card) {
+        $card = $(card);
+        $card.addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+            .find(".card-header")
+            .addClass("ui-widget-header ui-corner-all")
+            .prepend("<span class='ui-icon ui-icon-closethick card-remove'></span>");
+
+        $card.appendTo($vk_column);
+    });
 }
