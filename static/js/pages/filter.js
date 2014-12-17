@@ -5,7 +5,7 @@ $(document).ready(function() {
         window.location.href = Locations.RESULTS;
     });
 
-    sendCardRequest();
+    sendPersonListRequest();
 
     //TODO: think to remember:
     //all the addClass things should be carried out on new cards as well
@@ -46,25 +46,25 @@ $(document).ready(function() {
     });
 });
 
-function sendCardRequest() {
+function sendPersonListRequest() {
     $.ajax({
         type: "GET",
-        url: Locations.GET_FILTER_CARDS
+        contentType: "application/json",
+        url: Locations.GET_PERSON_LIST
     })
     .done(function(msg) {
             console.log("msg received, status: " + msg.status);
 
             switch (msg.status) {
                 case ApiRequestStatus.OK:
-                    console.log("card received: " + msg.data);
-                    sendCardRequestDelayed();
+                    console.log("person list received: " + msg.data);
+                    handlePersonList(msg.source, msg.data);
+                    sendPersonListRequestDelayed();
                     break;
                 case ApiRequestStatus.FINISHED:
-                    if (msg.data)
-                        console.log("card received: " + msg.data);
                     break;
                 case ApiRequestStatus.WAIT:
-                    sendCardRequestDelayed();
+                    sendPersonListRequestDelayed();
                     break;
                 case ApiRequestStatus.ERROR:
                     break;
@@ -75,6 +75,22 @@ function sendCardRequest() {
     });
 }
 
-function sendCardRequestDelayed() {
-    setTimeout(sendCardRequest, 500);
+function sendPersonListRequestDelayed() {
+    setTimeout(sendPersonListRequest, 500);
+}
+
+function handlePersonList(source, cards) {
+    alert("Recieved " + cards.length + " cards from " + source);
+
+    $vk_column = $(".column[data-source-id='" + source.toLowerCase() + "']");
+
+    _.each(cards, function(card) {
+        $card = $(card);
+        $card.addClass("ui-widget ui-widget-content ui-helper-clearfix ui-corner-all")
+            .find(".card-header")
+            .addClass("ui-widget-header ui-corner-all")
+            .prepend("<span class='ui-icon ui-icon-closethick card-remove'></span>");
+
+        $card.appendTo($vk_column);
+    });
 }

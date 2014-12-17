@@ -1,6 +1,6 @@
 <div class="card" data-source-id="vk" data-id="0">
     <div class="card-header">
-        <span class="card-content-name">${name}&nbsp;{surname}</span>
+        <span class="card-content-name">${name}&nbsp;${surname}</span>
         <span class="pull-right card-content-birthday">
             ${birthdate}
             <#if age?has_content>
