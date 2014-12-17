@@ -39,4 +39,9 @@ public class SocialLink {
     public String getUrl() {
         return url;
     }
+
+    @Override
+    public String toString() {
+        return getUrl();
+    }
 }

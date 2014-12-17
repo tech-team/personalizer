@@ -5,12 +5,14 @@ import content.source.fb.Facebook;
 import content.source.linkedin.LinkedIn;
 import content.source.vk.VK;
 import server.ContentReceiver;
+import util.MyLogger;
 import util.ThreadPool;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class ContentProvider implements IContentProvider {
 
@@ -20,6 +22,8 @@ public class ContentProvider implements IContentProvider {
     private Map<ContentSource, PersonList> sources = new HashMap<>();
     private PersonList mergedList = new PersonList(ContentSource.Type.NONE);
     private Map<PersonId, PersonCard> fullList;
+
+    private Logger logger = MyLogger.getLogger(this.getClass().getName());
 
 
     public ContentProvider(ContentReceiver frontend) {
@@ -39,13 +43,17 @@ public class ContentProvider implements IContentProvider {
     public void request(PersonCard request, boolean autoMerge) throws InterruptedException {
         for (Map.Entry<ContentSource, PersonList> source : sources.entrySet()) {
             threadPool.execute(() -> {
+                String sourceStr = source.getKey().getType().toString();
+                logger.info("Started source: " + sourceStr);
                 PersonList list = source.getValue();
                 source.getKey().retrieve(request, list);
+                logger.info("Finished source: " + sourceStr);
 
                 frontend.postPersonList(list);
             });
         }
         threadPool.waitForFinish();
+        logger.info("Finished all sources");
 
         fullList = new HashMap<>();
         for (ContentSource cs : sources.keySet()) {
@@ -53,7 +61,9 @@ public class ContentProvider implements IContentProvider {
         }
 
         if (autoMerge) {
+            logger.info("Started auto merge");
             automaticMerge();
+            logger.info("Finished auto merge");
         }
 
         frontend.onFinishedListsRetrieval();

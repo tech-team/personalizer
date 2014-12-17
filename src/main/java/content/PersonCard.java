@@ -66,6 +66,11 @@ public class PersonCard {
         public Integer getYear() {
             return year;
         }
+
+        @Override
+        public String toString() {
+            return String.format("%d-%d-%d", getYear(), getMonth(), getDay());
+        }
     }
 
     private PersonId id = null;
