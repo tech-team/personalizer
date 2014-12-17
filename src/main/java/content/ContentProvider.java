@@ -8,6 +8,8 @@ import server.ContentReceiver;
 import util.ThreadPool;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ContentProvider implements IContentProvider {
@@ -17,6 +19,7 @@ public class ContentProvider implements IContentProvider {
 
     private Map<ContentSource, PersonList> sources = new HashMap<>();
     private PersonList mergedList = new PersonList(ContentSource.Type.NONE);
+    private Map<PersonId, PersonCard> fullList;
 
 
     public ContentProvider(ContentReceiver frontend) {
@@ -33,7 +36,7 @@ public class ContentProvider implements IContentProvider {
     }
 
     @Override
-    public void request(PersonCard request) throws InterruptedException {
+    public void request(PersonCard request, boolean autoMerge) throws InterruptedException {
         for (Map.Entry<ContentSource, PersonList> source : sources.entrySet()) {
             threadPool.execute(() -> {
                 PersonList list = source.getValue();
@@ -43,6 +46,15 @@ public class ContentProvider implements IContentProvider {
             });
         }
         threadPool.waitForFinish();
+
+        fullList = new HashMap<>();
+        for (ContentSource cs : sources.keySet()) {
+            fullList.putAll(sources.get(cs).getPersons());
+        }
+
+        if (autoMerge) {
+            automaticMerge();
+        }
 
         frontend.onFinishedListsRetrieval();
     }
@@ -64,12 +76,38 @@ public class ContentProvider implements IContentProvider {
     @Override
     public void merge(PersonIdsTuple tuple) {
 
+        for (PersonId id : tuple.getIds()) {
+            for (PersonId id2 : tuple.getIds()) {
+                fullList.get(id).linkWith(fullList.get(id2));
+            }
+        }
+
         frontend.postResults(mergedList);
         frontend.onFinishedMerge();
     }
 
+
+    private void automaticMerge() {
+        for (PersonCard card : fullList.values()) {
+
+            for (PersonCard targetCard : fullList.values()) {
+                if (targetCard != card) {
+                    for (SocialLink link : card.getSocialLinks().values()) {
+                        if (link.getLinkType() == targetCard.getPersonLink().getLinkType()
+                                && link.getId().equalsIgnoreCase(targetCard.getPersonLink().getId())) {
+                            if (!card.isLinkedWith(targetCard)) {
+                                card.linkWith(targetCard);
+                                targetCard.linkWith(card);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) throws InterruptedException {
         ContentProvider cp = new ContentProvider(null);
-        cp.request(new PersonCard());
+        cp.request(new PersonCard(), false);
     }
 }

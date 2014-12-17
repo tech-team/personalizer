@@ -22,4 +22,8 @@ public class PersonIdsTuple {
         ids.add(id);
         return this;
     }
+
+    public List<PersonId> getIds() {
+        return ids;
+    }
 }
