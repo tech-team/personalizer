@@ -138,7 +138,7 @@ public class FrontendServlet extends HttpServlet {
         Session session = new Session();
         try {
             //start search request asynchronously
-            session.getCP().request(card);
+            session.getCP().request(card, true);
         } catch (InterruptedException e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
