@@ -27,8 +27,8 @@ public class ContentProvider implements IContentProvider {
 
         ContentSource[] sources = {
                 new VK(),
-                new Facebook(),
-                new LinkedIn()
+//                new Facebook(),
+//                new LinkedIn()
         };
         for (ContentSource s : sources) {
             this.sources.put(s, new PersonList(s.getType()));
@@ -76,10 +76,13 @@ public class ContentProvider implements IContentProvider {
     @Override
     public void merge(PersonIdsTuple tuple) {
 
-        for (PersonId id : tuple.getIds()) {
-            for (PersonId id2 : tuple.getIds()) {
-                fullList.get(id).linkWith(fullList.get(id2));
-            }
+        List<PersonId> ids = tuple.getIds();
+        PersonCard mergedCard = fullList.get(ids.get(0)).copy();
+        for (int i = 1; i < tuple.getIds().size(); ++i) {
+            PersonId id = ids.get(i);
+            PersonCard p = fullList.get(id);
+            mergedCard.linkWith(p);
+            mergedList.addPerson(mergedCard);
         }
 
         frontend.postResults(mergedList);

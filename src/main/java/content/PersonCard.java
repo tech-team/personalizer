@@ -23,6 +23,26 @@ public class PersonCard {
         this.sex = sex;
     }
 
+    public PersonCard copy() {
+        PersonCard card = new PersonCard(getId());
+        card.setType(getType());
+        card.setAgeFrom(getAgeFrom());
+        card.setAgeTo(getAgeTo());
+        card.setBirthDate(getBirthDate());
+        card.setCity(getCity());
+        card.setCountry(getCountry());
+        card.setEmails(getEmails());
+        card.setFamous(getFamous());
+        card.setJobs(getJobs());
+        card.setMobilePhone(getMobilePhone());
+        card.setName(getName());
+        card.setPersonLink(getPersonLink());
+        card.setSex(getSex());
+        card.setSocialLinks(getSocialLinks());
+        card.setSurname(getSurname());
+        card.setUniversities(getUniversities());
+        return card;
+    }
 
     public static class Date {
         private Integer day;
@@ -273,7 +293,7 @@ public class PersonCard {
     }
 
     public boolean isLinkedWith(PersonCard card) {
-        return linkedCards.contains(card);
+        return this == card || linkedCards.contains(card);
     }
 
 }
