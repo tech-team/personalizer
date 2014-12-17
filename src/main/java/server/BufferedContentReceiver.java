@@ -76,6 +76,13 @@ public class BufferedContentReceiver implements ContentReceiver {
         return getPostedPersonLists();
     }
 
+    public PersonList getNextPersonList() {
+        if (postedPersonListsReadPos < postedPersonLists.size())
+            return postedPersonLists.get(postedPersonListsReadPos++);
+        else
+            return null;
+    }
+
     public List<PersonList> getPostedPersonLists() {
         if (postedPersonListsReadPos == 0 || postedPersonLists.size() == 0)
             return postedPersonLists;

@@ -9,7 +9,7 @@ var Locations = {
     RESULTS: "/results",
 
     //AJAX
-    GET_FILTER_CARDS: "/api/get_filter_cards",
+    GET_PERSON_LIST: "/api/get_person_list",
     GET_RESULT_CARDS: "/api/get_result_cards",
     POST_FILTER_CARDS: "/api/filter_cards"
 };

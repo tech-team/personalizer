@@ -1,6 +1,7 @@
 package server;
 
 import content.PersonCard;
+import content.PersonList;
 import content.SocialLink;
 import org.json.JSONObject;
 import util.NC;
@@ -24,7 +25,7 @@ public class FrontendServlet extends HttpServlet {
         public static final String FILTER = "/filter";
         public static final String RESULTS = "/results";
 
-        public static final String GET_FILTER_CARDS = "/api/get_filter_cards";
+        public static final String GET_PERSON_LIST = "/api/get_person_list";
         public static final String GET_RESULT_CARDS = "/api/get_result_cards";
         public static final String POST_FILTER_CARDS = "/api/post_filter_cards";
     }
@@ -75,12 +76,12 @@ public class FrontendServlet extends HttpServlet {
                 staticHandler(request, response, Templates.RESULTS);
                 return;
 
-            case Locations.GET_FILTER_CARDS:
-                getCardsHandler(request, response);
+            case Locations.GET_PERSON_LIST:
+                getPersonListHandler(request, response);
                 return;
 
             case Locations.GET_RESULT_CARDS:
-                getCardsHandler(request, response);
+                getPersonListHandler(request, response);
                 return;
 
             default:
@@ -158,7 +159,7 @@ public class FrontendServlet extends HttpServlet {
     }
 
 
-    private void getCardsHandler(HttpServletRequest request, HttpServletResponse response)
+    private void getPersonListHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
         response.addHeader("Cache-Control", "no-cache");
         response.setContentType("application/json");
@@ -185,13 +186,14 @@ public class FrontendServlet extends HttpServlet {
         Session session = sessions.get(qid);
         BufferedContentReceiver receiver = session.getCP().getContentReceiver();
 
-        List<PersonCard> cards =  receiver.getPostedPersonCards();
+        PersonList personList =  receiver.getNextPersonList();
 
-        if (!cards.isEmpty()) {
+        if (personList != null) {
             JSONObject json = new JSONObject();
             json.put("status", ApiRequestStatus.OK);
+            json.put("source", personList.getType().toString());
 
-            for (PersonCard personCard: cards) {
+            for (PersonCard personCard: personList.getPersons().values()) {
                 HashMap<String, Object> card = new HashMap<>();
 
                 card.put("name", NC.toString(personCard.getName()));
