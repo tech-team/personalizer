@@ -8,17 +8,17 @@ $(document).ready(function() {
 
         var $persons = $(".destinations .person");
 
-        $persons.each(function($person) {
+        $persons.each(function(i, $person) {
             var merge = [];
 
-            $person.each(function($card) {
-                merge.append({
+            $person.each(function(j, $card) {
+                merge.push({
                     "id": $card.data('id'),
                     "source_id": $card.data('source_id')
                 });
             });
 
-            mergedCards.append(merge);
+            mergedCards.push(merge);
         });
 
         $.ajax({
@@ -113,7 +113,7 @@ function handlePersonList(source, cards) {
         $card.find(".card-remove").click(function () {
             var $card = $(this).closest(".card");
 
-            deletedCards.append({
+            deletedCards.push({
                     "id": $card.data('id'),
                     "source_id": $card.data('source_id')
                 });
