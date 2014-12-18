@@ -7,10 +7,7 @@ import server.ContentReceiver;
 import util.MyLogger;
 import util.ThreadPool;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class ContentProvider implements IContentProvider {
@@ -19,7 +16,8 @@ public class ContentProvider implements IContentProvider {
     private ThreadPool threadPool = new ThreadPool();
 
     private Map<ContentSource, PersonList> sources = new HashMap<>();
-    private PersonList mergedList = new PersonList(ContentSource.Type.MERGED);
+    private List<MergedPersonCard> mergedList = new LinkedList<>();
+    private Map<SocialLink, MergedPersonCard> linkList = new HashMap<>();
     private PersonList fullList;
 
     private Logger logger = MyLogger.getLogger(this.getClass().getName());
@@ -86,39 +84,59 @@ public class ContentProvider implements IContentProvider {
     @Override
     public void merge(Collection<PersonIdsTuple> tuples) {
 
-        for (PersonIdsTuple tuple : tuples) {
-            List<PersonId> ids = tuple.getIds();
-            PersonCard mergedCard = fullList.getPerson(ids.get(0)).copy();
-            for (int i = 1; i < tuple.getIds().size(); ++i) {
-                PersonId id = ids.get(i);
-                PersonCard p = fullList.getPerson(id);
-                mergedCard.linkWith(p);
-                mergedList.addPerson(mergedCard);
-            }
-        }
 
-        frontend.postResults(mergedList);
+//        frontend.postResults(mergedList);
         frontend.onFinishedMerge();
     }
 
 
     private void automaticMerge() {
-        for (PersonCard card : fullList.getPersons().values()) {
 
-            for (PersonCard targetCard : fullList.getPersons().values()) {
-                if (targetCard != card) {
-                    for (SocialLink link : card.getSocialLinks().values()) {
-                        if (link.getLinkType() == targetCard.getPersonLink().getLinkType()
-                                && link.getId().equalsIgnoreCase(targetCard.getPersonLink().getId())) {
-                            if (!card.isLinkedWith(targetCard)) {
-                                card.linkWith(targetCard);
-                                targetCard.linkWith(card);
-                            }
-                        }
-                    }
+        for (Map.Entry<PersonId, PersonCard> entry : fullList.getPersons().entrySet()) {
+            PersonCard card = entry.getValue();
+            linkList.put(card.getPersonLink(), new MergedPersonCard(card));
+        }
+
+        for (Map.Entry<SocialLink, MergedPersonCard> entry : linkList.entrySet()) {
+            SocialLink link = entry.getKey();
+            MergedPersonCard card = entry.getValue();
+
+            Collection<SocialLink> links = card.get(link.getLinkType()).getSocialLinks().values();
+
+            for (SocialLink link1 : links) {
+                MergedPersonCard card1 = linkList.get(link1);
+                if (card1 != null) {
+                    card.add(card1);
+                    linkList.remove(link1);
+                    linkList.put(link1, card);
                 }
             }
         }
+
+        for (Map.Entry<SocialLink, MergedPersonCard> entry : linkList.entrySet()) {
+            MergedPersonCard card = entry.getValue();
+
+//            linkList.put(card.getPersonLink(), new MergedPersonCard(card));
+        }
+
+//        for (PersonCard card : fullList.getPersons().values()) {
+//
+//            PersonCard mergedCard = card.copy();
+//
+//            for (PersonCard targetCard : fullList.getPersons().values()) {
+//                if (targetCard != card) {
+//                    for (SocialLink link : card.getSocialLinks().values()) {
+//                        if (link.getLinkType() == targetCard.getPersonLink().getLinkType()
+//                                && link.getId().equalsIgnoreCase(targetCard.getPersonLink().getId())) {
+//                            if (!card.isLinkedWith(targetCard)) {
+//                                card.linkWith(targetCard);
+//                                targetCard.linkWith(card);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 
     public static void main(String[] args) throws InterruptedException {
