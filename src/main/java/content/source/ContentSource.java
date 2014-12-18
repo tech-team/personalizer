@@ -6,6 +6,7 @@ import content.PersonList;
 public interface ContentSource {
     public static enum Type {
         NONE,
+        MERGED,
         VK,
         FB,
         LINKED_IN

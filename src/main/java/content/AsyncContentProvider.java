@@ -1,21 +1,24 @@
 package content;
 
-import server.Frontend;
+import server.ContentReceiver;
 import util.ThreadPool;
+
+import java.util.Collection;
+import java.util.List;
 
 public class AsyncContentProvider implements IContentProvider {
     private ContentProvider contentProvider;
     private ThreadPool threadPool = new ThreadPool();
 
-    public AsyncContentProvider(Frontend frontend) {
+    public AsyncContentProvider(ContentReceiver frontend) {
         contentProvider = new ContentProvider(frontend);
     }
 
     @Override
-    public void request(PersonCard request) throws InterruptedException {
+    public void request(PersonCard request, boolean autoMerge) throws InterruptedException {
         threadPool.execute(() -> {
             try {
-                contentProvider.request(request);
+                contentProvider.request(request, autoMerge);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -23,16 +26,16 @@ public class AsyncContentProvider implements IContentProvider {
     }
 
     @Override
-    public void remove(PersonId[] ids) throws InterruptedException {
+    public void remove(List<PersonId> ids) throws InterruptedException {
         threadPool.execute(() -> {
             contentProvider.remove(ids);
         });
     }
 
     @Override
-    public void merge(PersonIdsTuple tuple) throws InterruptedException {
+    public void merge(Collection<PersonIdsTuple> tuples) throws InterruptedException {
         threadPool.execute(() -> {
-            contentProvider.merge(tuple);
+            contentProvider.merge(tuples);
         });
     }
 }

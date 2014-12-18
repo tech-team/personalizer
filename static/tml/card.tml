@@ -1,0 +1,38 @@
+<div class="card" data-source_id="${source_id}" data-id="${id}">
+    <div class="card-header">
+        <span class="card-content-name">${name}&nbsp;${surname}</span>
+        <span class="pull-right card-content-birthday">
+            ${birthdate}
+            <#if age?has_content>
+                (${age})
+            </#if>
+        </span>
+    </div>
+    <div class="card-content">
+        <table>
+            <tr>
+                <td>
+                    <img class="card-content-avatar" src="${avatars?first!"http://floraldreams.ru/images/misc/unknown.gif"}" />
+                    <div class="card-content-section">Контакты</div>
+                    <#list socialLinks as link>
+                        <div class="card-content-value"><a href="${link}">${link}</a></div>
+                    </#list>
+                </td>
+                <td>
+                    <div class="card-content-section">Родной город</div>
+                    <div class="card-content-value">${city}</div>
+                    <div class="card-content-section">Учёба</div>
+                    <#list universities as university>
+                        <div class="card-content-value">${university}</div>
+                    </#list>
+                    <div class="card-content-section">Работа</div>
+                    <#list jobs as job>
+                        <div class="card-content-value">${job}</div>
+                    </#list>
+                    <div class="card-content-section">Телефоны</div>
+                    <div class="card-content-value">${phone}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

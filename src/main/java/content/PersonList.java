@@ -10,8 +10,8 @@ public class PersonList {
 
 
     private static class IdGenerator {
-        private Map<ContentSource.Type, Integer> currentIds = new EnumMap<>(ContentSource.Type.class);
-        public int generate(ContentSource.Type type) {
+        private static Map<ContentSource.Type, Integer> currentIds = new EnumMap<>(ContentSource.Type.class);
+        public static int generate(ContentSource.Type type) {
             Integer id = currentIds.get(type);
             if (id != null) {
                 ++id;
@@ -23,9 +23,8 @@ public class PersonList {
         }
     }
 
-    private static IdGenerator generator = new IdGenerator();
     private PersonId generateNewId() {
-        return new PersonId(this.type, generator.generate(this.type));
+        return new PersonId(this.type, IdGenerator.generate(this.type));
     }
 
     public PersonList(ContentSource.Type type) {
@@ -60,5 +59,13 @@ public class PersonList {
 
     public void remove(PersonId id) {
         persons.remove(id);
+    }
+
+    public void addAll(Map<PersonId, PersonCard> persons) {
+        this.persons.putAll(persons);
+    }
+
+    public PersonCard getPerson(PersonId id) {
+        return persons.get(id);
     }
 }

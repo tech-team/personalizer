@@ -12,7 +12,7 @@ import java.util.Map;
 public class HttpDownloader {
     // TODO: add proxy
 
-    private static final String USER_AGENT = "Personalizer v0.1";
+    private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.65 Safari/537.36";
 
 
     public static HttpResponse httpGet(String url) throws IOException {
@@ -170,14 +170,10 @@ public class HttpDownloader {
     }
 
     public static void main(String[] args) throws IOException {
-        CookieManager cm = new CookieManager();
-        cm.addCookie(new Cookie("test1", "val1"));
-        cm.addCookie(new Cookie("test2", "val2"));
-        HttpRequest req = new HttpRequest("https://www.linkedin.com").setCookies(cm);
+        HttpRequest req = new HttpRequest("https://www.linkedin.com");
 
         HttpResponse r = HttpDownloader.httpGet(req);
-        System.out.println("hi");
-        Headers.Header h = r.getCookieManager().constructHeader(new URL("https://www.linkedin.com"));
-        System.out.println("hi");
+        CookieManager cookieManager = r.getCookieManager();
+
     }
 }

@@ -22,6 +22,12 @@ public class SocialLink {
         this.url = url;
     }
 
+    public SocialLink(LinkType linkType, String id) {
+        this.linkType = linkType;
+        this.id = id;
+        this.url = ""; //TODO
+    }
+
     public LinkType getLinkType() {
         return linkType;
     }
@@ -32,5 +38,10 @@ public class SocialLink {
 
     public String getUrl() {
         return url;
+    }
+
+    @Override
+    public String toString() {
+        return getUrl();
     }
 }

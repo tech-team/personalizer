@@ -1,18 +1,19 @@
 package server;
 
+import content.*;
+import content.source.ContentSource;
+import org.json.JSONArray;
 import org.json.JSONObject;
+import util.NC;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 //NB: Locations and ApiRequestStatus classes
 // should be same as in static/js/common.js
@@ -25,15 +26,16 @@ public class FrontendServlet extends HttpServlet {
         public static final String FILTER = "/filter";
         public static final String RESULTS = "/results";
 
-        public static final String START_SEARCH = "/api/start_search";
-        public static final String GET_CARDS = "/api/get_cards";
-        public static final String FILTER_CARDS = "/api/filter_cards";
+        public static final String GET_PERSON_LIST = "/api/get_person_list";
+        public static final String GET_RESULT_CARDS = "/api/get_result_cards";
+        public static final String POST_FILTER_CARDS = "/api/post_filter_cards";
     }
 
     public abstract class Templates {
         public static final String REQUEST = "request.html";
         public static final String FILTER = "filter.html";
         public static final String RESULTS = "results.html";
+        public static final String CARD = "card.tml";
     }
 
     public abstract class ApiRequestStatus {
@@ -43,7 +45,14 @@ public class FrontendServlet extends HttpServlet {
         public static final String FINISHED = "FINISHED";
     }
 
+    public abstract class Cookies {
+        public static final String QID = "qid";
+    }
+
+    Map<String, Session> sessions = new HashMap<>();
+
     public FrontendServlet() {
+
     }
 
     public void doGet(HttpServletRequest request,
@@ -61,89 +70,260 @@ public class FrontendServlet extends HttpServlet {
                 return;
 
             case Locations.FILTER:
-                staticHandler(request, response, Templates.FILTER);
+                filterHandler(request, response);
                 return;
 
             case Locations.RESULTS:
                 staticHandler(request, response, Templates.RESULTS);
                 return;
 
-            case Locations.START_SEARCH:
-                startSearchHandler(request, response);
+            case Locations.GET_PERSON_LIST:
+                getPersonListHandler(request, response);
                 return;
 
-            case Locations.GET_CARDS:
-                getCardsHandler(request, response);
+            case Locations.GET_RESULT_CARDS:
+                getPersonListHandler(request, response);
                 return;
 
-            case Locations.FILTER_CARDS:
-                filterCardsHandler(request, response);
-                return;
             default:
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
-    private void staticHandler(HttpServletRequest request, HttpServletResponse response, String templateName)
-            throws ServletException, IOException  {
-        Map<String, Object> pageVariables = new HashMap<>();
+    public void doPost(HttpServletRequest request,
+                      HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html;charset=utf-8");
+        response.setStatus(HttpServletResponse.SC_OK);
 
-        response.getWriter().println(PageGenerator.getPage(templateName, pageVariables));
+        switch (request.getPathInfo()) {
+            case Locations.POST_FILTER_CARDS:
+                filterCardsHandler(request, response);
+                return;
+
+            default:
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 
-    private void startSearchHandler(HttpServletRequest request, HttpServletResponse response)
+    private void staticHandler(HttpServletRequest request, HttpServletResponse response, String fileName)
             throws ServletException, IOException  {
-        response.addHeader("Cache-Control", "no-cache");
+        response.getWriter().println(PageGenerator.getStaticPage(fileName));
+    }
 
-        //start async CP here and put it to the map
+    private void filterHandler(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException  {
 
-        JSONObject json = new JSONObject();
-        json.put("status", ApiRequestStatus.OK);
+        //create request
+        PersonCard card = new PersonCard();
 
-        String qid = UUID.randomUUID().toString();
-        json.put("qid", qid);
+        card.setName(request.getParameter("name"));
+        card.setAgeFrom(NC.parseInt(request.getParameter("age_from")));
+        card.setAgeFrom(NC.parseInt(request.getParameter("age_to")));
+        card.addEmail(request.getParameter("email"));
 
-        response.getWriter().println(json.toString());
+        card.addSocialLink(SocialLink.LinkType.VK,
+                new SocialLink(SocialLink.LinkType.VK, request.getParameter("vk")));
+
+        card.addSocialLink(SocialLink.LinkType.FB,
+                new SocialLink(SocialLink.LinkType.FB, request.getParameter("fb")));
+
+        card.addSocialLink(SocialLink.LinkType.LINKED_IN,
+                new SocialLink(SocialLink.LinkType.LINKED_IN, request.getParameter("li")));
+
+        //generate qid
+        String qid = "";
+        do {
+            qid = UUID.randomUUID().toString();
+        }
+        while (sessions.containsKey(qid));
+
+        //create session
+        Session session = new Session();
+        try {
+            //start search request asynchronously
+            session.getCP().request(card, true);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        System.out.println("Search started for qid = " + qid);
+
+        //save session
+        sessions.put(qid, session);
+
+        //set query id as cookie
+        response.addCookie(new Cookie(Cookies.QID, qid));
+
+        staticHandler(request, response, Templates.FILTER);
     }
 
 
-    private void getCardsHandler(HttpServletRequest request, HttpServletResponse response)
+    private void getPersonListHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
         response.addHeader("Cache-Control", "no-cache");
+        response.setContentType("application/json");
+
+        String qid = getQueryId(request);
+
+        if (qid == null) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.ERROR);
+            json.put("data", "No QID cookie provided");
+            response.getWriter().println(json.toString());
+
+            return;
+        }
 
         //obtain new cards from CP
-        boolean newCardsReady = false;
+        Session session = sessions.get(qid);
+        BufferedContentReceiver receiver = session.getCP().getContentReceiver();
 
-        if (newCardsReady) {
+        PersonList personList =  receiver.getNextPersonList();
+
+        if (personList != null) {
             JSONObject json = new JSONObject();
             json.put("status", ApiRequestStatus.OK);
+            json.put("source", personList.getType().toString());
 
-            //TODO: form JSON from cards
+            for (PersonCard personCard: personList.getPersons().values()) {
+                HashMap<String, Object> card = new HashMap<>();
+
+                card.put("source_id", personCard.getType().toString().toLowerCase());
+                card.put("id", personCard.getId().getId());
+
+                card.put("name", NC.toString(personCard.getName()));
+                card.put("surname", NC.toString(personCard.getSurname()));
+                card.put("birthdate", NC.toString(personCard.getBirthDate()));
+                card.put("age", NC.toString(personCard.getAge()));
+
+                card.put("avatars", personCard.getAvatars());
+
+                card.put("country", NC.toString(personCard.getCountry()));
+                card.put("city", NC.toString(personCard.getCity()));
+                card.put("phone", NC.toString(personCard.getMobilePhone()));
+
+                card.put("socialLinks", personCard.getSocialLinks().values());
+                card.put("universities", personCard.getUniversities());
+                card.put("jobs", personCard.getJobs());
+
+                json.append("data", PageGenerator.getTemplatePage(Templates.CARD, card));
+            }
 
             response.getWriter().println(json.toString());
         } else {
             JSONObject json = new JSONObject();
-            json.put("status", ApiRequestStatus.WAIT);
+
+            if (receiver.isFinishedListsRetrieval())
+                json.put("status", ApiRequestStatus.FINISHED);
+            else
+                json.put("status", ApiRequestStatus.WAIT);
 
             response.getWriter().println(json.toString());
         }
-
-
-        response.getWriter().println(getTime());
     }
-
 
     private void filterCardsHandler(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException  {
-        JSONObject json = new JSONObject();
-        json.put("status", ApiRequestStatus.OK);
+        response.addHeader("Cache-Control", "no-cache");
+        response.setContentType("application/json");
 
-        response.getWriter().println(json.toString());
+        String qid = getQueryId(request);
+        if (qid == null) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.ERROR);
+            json.put("data", "No QID cookie provided");
+            response.getWriter().println(json.toString());
+
+            return;
+        }
+        Session session = sessions.get(qid);
+        BufferedAsyncContentProvider cp = session.getCP();
+
+        JSONObject jsonRequest = getJsonData(request);
+
+        try {
+            //handle deleted cards
+            JSONArray deletedCards = jsonRequest.getJSONArray("deletedCards");
+            List<PersonId> deletedCardsList = new ArrayList<>();
+
+            for (int i = 0; i < deletedCards.length(); i++) {
+                JSONObject cardObject = deletedCards.getJSONObject(i);
+
+                int id = cardObject.getInt("id");
+                String source_id = cardObject.getString("source_id");
+
+                ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(source_id).toUpperCase());
+                deletedCardsList.add(new PersonId(type, id));
+            }
+
+            cp.remove(deletedCardsList);
+
+            //handle merged cards
+            JSONArray mergedCards = jsonRequest.getJSONArray("mergedCards");
+
+            List<PersonIdsTuple> tuplesToMerge = new LinkedList<>();
+
+            for (int i = 0; i < mergedCards.length(); i++) {
+                JSONArray mergeObject = mergedCards.getJSONArray(i);
+                List<PersonId> mergeList = new ArrayList<>();
+
+                for (int j = 0; j < mergeObject.length(); j++) {
+                    JSONObject cardObject = mergeObject.getJSONObject(i);
+
+                    int id = cardObject.getInt("id");
+                    String source_id = cardObject.getString("source_id");
+
+                    ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(source_id).toUpperCase());
+                    mergeList.add(new PersonId(type, id));
+                }
+
+                if (mergeList.size() > 0) {
+                    tuplesToMerge.add(new PersonIdsTuple(mergeList));
+                }
+            }
+
+            cp.merge(tuplesToMerge);
+        }
+        catch (InterruptedException e) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.ERROR);
+            json.put("data", "Something was interrupted");
+            response.getWriter().println(json.toString());
+
+            return;
+        }
+
+
+        //send response
+
+        JSONObject jsonResponse = new JSONObject();
+        jsonResponse.put("status", ApiRequestStatus.OK);
+
+        response.getWriter().println(jsonResponse.toString());
     }
 
-    private static String getTime() {
-        Date date = new Date();
-        DateFormat formatter = new SimpleDateFormat("HH.mm.ss");
-        return formatter.format(date);
+    private JSONObject getJsonData(HttpServletRequest request) {
+        StringBuilder jb = new StringBuilder();
+        String line = null;
+        try {
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null)
+                jb.append(line);
+        } catch (Exception e) { /*report an error*/ }
+
+        return new JSONObject(jb.toString());
+    }
+
+    private String getQueryId(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+
+        for (Cookie cookie: cookies) {
+            if (cookie.getName().equals(Cookies.QID))
+                return cookie.getValue();
+        }
+
+        return null;
     }
 }

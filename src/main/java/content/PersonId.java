@@ -31,7 +31,7 @@ public class PersonId {
             if (o1 == o2) {
                 return 0;
             }
-            return o1.id - o2.id;
+            return o1.getType().ordinal() * o1.id - o2.getType().ordinal() * o2.id;
         }
     };
 }

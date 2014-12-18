@@ -9,9 +9,9 @@ var Locations = {
     RESULTS: "/results",
 
     //AJAX
-    START_SEARCH: "/api/start_search",
-    GET_CARDS: "/api/get_cards",
-    FILTER_CARDS: "/api/filter_cards"
+    GET_PERSON_LIST: "/api/get_person_list",
+    GET_RESULT_CARDS: "/api/get_result_cards",
+    POST_FILTER_CARDS: "/api/post_filter_cards"
 };
 
 var ApiRequestStatus = {
@@ -20,12 +20,3 @@ var ApiRequestStatus = {
     WAIT: "WAIT",
     FINISHED: "FINISHED"
 };
-
-function navigate(page, params) {
-    var qps = "";
-    _.each(_.pairs(params), function(pair) {
-        qps += pair[0] + "=" + pair[1] + "&";
-    });
-
-    window.location.href = page + "?" + qps;
-}

@@ -3,13 +3,13 @@ package server;
 import content.PersonCard;
 import content.PersonList;
 
-public interface Frontend {
+public interface ContentReceiver {
     void postPersonCard(PersonCard card);
     void postPersonList(PersonList list);
     void postResults(PersonList list);
 
-    void finishedListsRetrieval();
-    void finishedAutomaticMerge();
-    void finishedRemoval();
-    void finishedMerge();
+    void onFinishedListsRetrieval();
+    void onFinishedAutomaticMerge();
+    void onFinishedRemoval();
+    void onFinishedMerge();
 }
