@@ -6,15 +6,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import util.net.CookieManager;
 import util.net.Headers;
-import util.net.HttpDownloader;
+import util.net.HttpResponse;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Parser {
 
-    public static List<String> getPersonUrls(HttpDownloader.Response response) {
+    public static List<String> getPersonUrls(HttpResponse response) {
         List<String> urls = new LinkedList<>();
         switch (response.getResponseCode()) {
             case 200:
@@ -41,10 +43,10 @@ public class Parser {
         return urls;
     }
 
-    public static LinkedInPerson getPersonByLink(HttpDownloader.Response response) {
+    public static LinkedInPerson getPersonByLink(HttpResponse response) {
         UserPageObject user = new UserPageObject(response.getBody());
         LinkedInPerson person = new LinkedInPerson();
-        person.setUrl(response.getUrl());
+        person.setUrl(response.getUrl().toString());
         person.setCountry(user.getCountry());
         person.setFirstName(user.getFirstName());
         person.setHeadline(user.getHeadline());
@@ -58,14 +60,15 @@ public class Parser {
     }
 
     public static void main(String[] args) {
+        Date date = new Date();
         LinkedInRequest request = new LinkedInRequest();
-        HttpDownloader.Response response = request.getMainPage();
-        Cookie cookie = new Cookie();
-        cookie.add(response.getHeaders().getHeader("Set-Cookie"));
-        request.makeHeaders(cookie.toString());
+        HttpResponse response = request.getMainPage();
+        CookieManager manager = response.getCookieManager();
+        request.setCookie(manager);
         response = request.makeLoginRequest();
-        cookie.add(response.getHeaders().getHeader("Set-Cookie"));
-        request.makeHeaders(cookie.toString());
+        response.getCookieManager().addExtra(manager);
+        manager = response.getCookieManager();
+        request.setCookie(manager);
         List<String> urls = getPersonUrls(request.makeFindRequest("person", "personalizer"));
         for(String url: urls) {
             System.out.println(url);

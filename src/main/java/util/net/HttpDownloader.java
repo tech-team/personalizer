@@ -12,151 +12,20 @@ import java.util.Map;
 public class HttpDownloader {
     // TODO: add proxy
 
-    private static final String DEFAULT_ENCODING = "UTF-8";
     private static final String USER_AGENT = "Personalizer v0.1";
 
-    public static class Request {
-        private String url;
-        private UrlParams params;
-        private Headers headers;
-        private String encoding;
-        private boolean followRedirects = true;
 
-        public Request(String url) {
-            this(url, null, null);
-        }
-
-        public Request(String url, String encoding) {
-            this(url, null, null, encoding);
-        }
-
-        public Request(String url, UrlParams params) {
-            this(url, params, null, DEFAULT_ENCODING);
-        }
-
-        public Request(String url, UrlParams params, Headers headers) {
-            this(url, params, headers, DEFAULT_ENCODING);
-        }
-
-        public Request(String url, UrlParams params, Headers headers, String encoding) {
-            this.url = url;
-            this.params = params;
-            this.headers = headers;
-            this.encoding = encoding;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public UrlParams getParams() {
-            return params;
-        }
-
-        public Headers getHeaders() {
-            return headers;
-        }
-
-        public String getEncoding() {
-            return encoding;
-        }
-
-        public boolean isFollowRedirects() {
-            return followRedirects;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public void setParams(UrlParams params) {
-            this.params = params;
-        }
-
-        public void setHeaders(Headers headers) {
-            this.headers = headers;
-        }
-
-        public void setEncoding(String encoding) {
-            this.encoding = encoding;
-        }
-
-        public void setFollowRedirects(boolean followRedirects) {
-            this.followRedirects = followRedirects;
-        }
-    }
-
-    public static class Response {
-        private int responseCode;
-        private String protocol;
-        private Headers headers;
-        private String body;
-        private String url;
-
-        public Response(int responseCode, String protocol, Headers headers, String body, String url) {
-            this.responseCode = responseCode;
-            this.protocol = protocol;
-            this.headers = headers;
-            this.body = body;
-            this.url = url;
-        }
-
-        public Response() {
-        }
-
-        public int getResponseCode() {
-            return responseCode;
-        }
-
-        public void setResponseCode(int responseCode) {
-            this.responseCode = responseCode;
-        }
-
-        public String getProtocol() {
-            return protocol;
-        }
-
-        public void setProtocol(String protocol) {
-            this.protocol = protocol;
-        }
-
-        public Headers getHeaders() {
-            return headers;
-        }
-
-        public void setHeaders(Headers headers) {
-            this.headers = headers;
-        }
-
-        public String getBody() {
-            return body;
-        }
-
-        public void setBody(String body) {
-            this.body = body;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-    }
-
-
-    public static Response httpGet(String url) throws IOException {
-        Request req = new Request(url);
+    public static HttpResponse httpGet(String url) throws IOException {
+        HttpRequest req = new HttpRequest(url);
         return httpGet(req);
     }
 
-    public static Response httpGet(String url, UrlParams params) throws IOException {
-        Request req = new Request(url, params);
+    public static HttpResponse httpGet(String url, UrlParams params) throws IOException {
+        HttpRequest req = new HttpRequest(url, params);
         return httpGet(req);
     }
 
-    public static Response httpGet(Request request) throws IOException {
+    public static HttpResponse httpGet(HttpRequest request) throws IOException {
         URL urlObj = constructUrl(request.getUrl(), request.getParams(), request.getEncoding());
         HttpURLConnection connection = null;
 
@@ -164,7 +33,7 @@ public class HttpDownloader {
             connection = (HttpURLConnection) urlObj.openConnection();
 
             connection.setRequestMethod("GET");
-            fillHeaders(request.getHeaders(), connection);
+            fillHeaders(request, connection);
             connection.setInstanceFollowRedirects(request.isFollowRedirects());
             connection.connect();
 
@@ -176,12 +45,12 @@ public class HttpDownloader {
         }
     }
 
-    public static Response httpPost(String url) throws IOException {
-        Request req = new Request(url);
+    public static HttpResponse httpPost(String url) throws IOException {
+        HttpRequest req = new HttpRequest(url);
         return httpPost(req);
     }
 
-    public static Response httpPost(Request request) throws IOException {
+    public static HttpResponse httpPost(HttpRequest request) throws IOException {
         URL urlObj = constructUrl(request.getUrl(), null, request.getEncoding());
         HttpURLConnection connection = null;
         OutputStream out = null;
@@ -193,7 +62,7 @@ public class HttpDownloader {
             connection.setDoInput(true);
             connection.setDoOutput(true);
             connection.setInstanceFollowRedirects(request.isFollowRedirects());
-            fillHeaders(request.getHeaders(), connection);
+            fillHeaders(request, connection);
 
             connection.connect();
 
@@ -233,10 +102,20 @@ public class HttpDownloader {
         return newUrl.substring(0, newUrl.length() - 1);
     }
 
-    private static void fillHeaders(Headers headers, HttpURLConnection connection) {
-        if (headers != null) {
-            for (Headers.Header h : headers) {
-                connection.setRequestProperty(h.getName(), h.getValue());
+    private static void fillHeaders(HttpRequest request, HttpURLConnection connection) throws IOException {
+        if (request != null) {
+            CookieManager cm = request.getCookieManager();
+
+            if (cm != null) {
+                Headers.Header cookieHeader = cm.constructHeader(connection.getURL());
+                connection.setRequestProperty(cookieHeader.getName(), cookieHeader.getValue());
+            }
+
+            Headers headers = request.getHeaders();
+            if (headers != null) {
+                for (Headers.Header h : headers) {
+                    connection.setRequestProperty(h.getName(), h.getValuesSeparated());
+                }
             }
         }
         connection.setRequestProperty("User-Agent", USER_AGENT);
@@ -253,7 +132,7 @@ public class HttpDownloader {
         return sb.toString();
     }
 
-    private static Response parseConnection(HttpURLConnection connection, String encoding) throws IOException {
+    private static HttpResponse parseConnection(HttpURLConnection connection, String encoding) throws IOException {
         InputStream in = null;
         try {
             String protocol = null;
@@ -278,13 +157,27 @@ public class HttpDownloader {
                 in = connection.getErrorStream();
             }
             body = handleInputStream(in, encoding);
-            String url = connection.getURL().toString();
-            return new Response(status, protocol, headers, body, url);
+            URL url = connection.getURL();
+            HttpResponse r = new HttpResponse(status, protocol, headers, body, url);
+            r.setCookies(headers);
+            return r;
         } finally {
             if (in != null) {
                 in.close();
             }
         }
 
+    }
+
+    public static void main(String[] args) throws IOException {
+        CookieManager cm = new CookieManager();
+        cm.addCookie(new Cookie("test1", "val1"));
+        cm.addCookie(new Cookie("test2", "val2"));
+        HttpRequest req = new HttpRequest("https://www.linkedin.com").setCookies(cm);
+
+        HttpResponse r = HttpDownloader.httpGet(req);
+        System.out.println("hi");
+        Headers.Header h = r.getCookieManager().constructHeader(new URL("https://www.linkedin.com"));
+        System.out.println("hi");
     }
 }

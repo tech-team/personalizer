@@ -226,7 +226,7 @@ public class PersonCard {
         this.id = id;
     }
 
-    public void setType(ContentSource.Type type) {
+    void setType(ContentSource.Type type) {
         this.id.setType(type);
     }
 }

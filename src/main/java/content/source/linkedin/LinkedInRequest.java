@@ -2,9 +2,7 @@ package content.source.linkedin;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import util.net.Headers;
-import util.net.HttpDownloader;
-import util.net.UrlParams;
+import util.net.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,18 +13,21 @@ import static util.net.HttpDownloader.httpPost;
 
 public class LinkedInRequest {
 
-    public Headers headers = new Headers();
+    public CookieManager manager;
 
-    public void makeHeaders(String cookie) {
-        if(cookie != null && !cookie.equals("")) {
-            headers.add("Cookie", cookie);
-        }
+    private Headers makeHeaders() {
+        Headers headers = new Headers();
         headers.add("Host", "ru.linkedin.com")
                .add("Connection", "keep-alive");
+        return headers;
     }
 
-    public HttpDownloader.Response getMainPage() {
-        return makeGetRequest("https://www.linkedin.com/", null);
+    public void setCookie(CookieManager manager) {
+        this.manager = manager;
+    }
+
+    public HttpResponse getMainPage() {
+        return makeGetRequest("https://www.linkedin.com/", false);
     }
 
     public static UrlParams getInputParams() {
@@ -44,11 +45,11 @@ public class LinkedInRequest {
         return params;
     }
 
-    public HttpDownloader.Response makeLoginRequest() {
-        return makePostRequest("https://www.linkedin.com/uas/login-submit", getInputParams(), headers);
+    public HttpResponse makeLoginRequest() {
+        return makePostRequest("https://www.linkedin.com/uas/login-submit", getInputParams(), true);
     }
 
-    public HttpDownloader.Response makeFindRequest(String name, String lastName) {
+    public HttpResponse makeFindRequest(String name, String lastName) {
         try {
             name = URLEncoder.encode(name, "UTF-8");
             lastName = URLEncoder.encode(lastName, "UTF-8");
@@ -56,17 +57,19 @@ public class LinkedInRequest {
             e.printStackTrace();
         }
         String url = "http://www.linkedin.com/pub/dir/" + name + "/" + lastName;
-        return makeGetRequest(url, null);
+        return makeGetRequest(url, false);
     }
 
-    public HttpDownloader.Response makePersonRequest(String url) {
-        return makeGetRequest(url, headers);
+    public HttpResponse makePersonRequest(String url) {
+        return makeGetRequest(url, true);
     }
 
-    private HttpDownloader.Response makeGetRequest(String url, Headers headers) {
-        HttpDownloader.Request request = new HttpDownloader.Request(url, null, headers);
+    private HttpResponse makeGetRequest(String url, boolean withCookie) {
+        HttpRequest request = new HttpRequest(url, null, makeHeaders());
         request.setFollowRedirects(false);
-        HttpDownloader.Response response = null;
+        if(withCookie)
+            request.setCookies(manager);
+        HttpResponse response = null;
         try {
             response = httpGet(request);
         } catch (IOException e) {
@@ -75,11 +78,13 @@ public class LinkedInRequest {
         return  response;
     }
 
-    private HttpDownloader.Response makePostRequest(String url, UrlParams params, Headers headers) {
-        HttpDownloader.Request request = new HttpDownloader.Request(url,
+    private HttpResponse makePostRequest(String url, UrlParams params, boolean withCookie) {
+        HttpRequest request = new HttpRequest(url,
                 params,
-                headers);
-        HttpDownloader.Response response = null;
+                makeHeaders());
+        if(withCookie)
+            request.setCookies(manager);
+        HttpResponse response = null;
         try {
             response = httpPost(request);
         } catch (IOException e) {

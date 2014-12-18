@@ -6,8 +6,6 @@ import util.net.UrlParams;
 import java.util.Map;
 
 public class VKConst {
-    public static final String token =
-            "1095b020d45781b99a9835b6a2b8c12f15b27bb04e55736c2083fbaa874ca61a5fecf13c27901b0a957";
     private static final String usersSearchUrl =
             "https://api.vk.com/method/users.search";//?v=5.26&count=5";
     private static final String usersGetUrl =
@@ -45,7 +43,7 @@ public class VKConst {
         return usersGetUrl;
     }// + "&access_token=" + token;
 
-    public static void addAccessTokenParam(UrlParams urlParams){
+    public static void addAccessTokenParam(UrlParams urlParams, String token){
         urlParams.add("access_token", token);
     }
 
