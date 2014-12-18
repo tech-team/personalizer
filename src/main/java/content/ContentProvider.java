@@ -18,7 +18,7 @@ public class ContentProvider implements IContentProvider {
 
     private Map<ContentSource, PersonList> sources = new HashMap<>();
     private PersonList mergedList = new PersonList(ContentSource.Type.NONE);
-    private Map<PersonId, PersonCard> fullList;
+    private PersonList fullList;
 
     private Logger logger = MyLogger.getLogger(this.getClass().getName());
 
@@ -52,9 +52,9 @@ public class ContentProvider implements IContentProvider {
         threadPool.waitForFinish();
         logger.info("Finished all sources");
 
-        fullList = new HashMap<>();
+        fullList = new PersonList();
         for (ContentSource cs : sources.keySet()) {
-            fullList.putAll(sources.get(cs).getPersons());
+            fullList.addAll(sources.get(cs).getPersons());
         }
 
         if (autoMerge) {
@@ -84,10 +84,10 @@ public class ContentProvider implements IContentProvider {
     public void merge(PersonIdsTuple tuple) {
 
         List<PersonId> ids = tuple.getIds();
-        PersonCard mergedCard = fullList.get(ids.get(0)).copy();
+        PersonCard mergedCard = fullList.getPerson(ids.get(0)).copy();
         for (int i = 1; i < tuple.getIds().size(); ++i) {
             PersonId id = ids.get(i);
-            PersonCard p = fullList.get(id);
+            PersonCard p = fullList.getPerson(id);
             mergedCard.linkWith(p);
             mergedList.addPerson(mergedCard);
         }
@@ -98,9 +98,9 @@ public class ContentProvider implements IContentProvider {
 
 
     private void automaticMerge() {
-        for (PersonCard card : fullList.values()) {
+        for (PersonCard card : fullList.getPersons().values()) {
 
-            for (PersonCard targetCard : fullList.values()) {
+            for (PersonCard targetCard : fullList.getPersons().values()) {
                 if (targetCard != card) {
                     for (SocialLink link : card.getSocialLinks().values()) {
                         if (link.getLinkType() == targetCard.getPersonLink().getLinkType()

@@ -36,8 +36,7 @@ $(document).ready(function() {
             })
             .fail(function(error) {
                 alert("Error while trying to POST_FILTER_CARDS: " + error);
-            })
-;        )
+            });
     });
 
     sendPersonListRequest();

@@ -23,6 +23,11 @@ public class UrlParams implements Iterable<UrlParams.UrlParam> {
         public String getValue() {
             return value;
         }
+
+        @Override
+        public String toString() {
+            return getKey() + ": " + getValue();
+        }
     }
 
     public UrlParams() {
@@ -46,4 +51,5 @@ public class UrlParams implements Iterable<UrlParams.UrlParam> {
     public boolean isEmpty() {
         return params.isEmpty();
     }
+
 }

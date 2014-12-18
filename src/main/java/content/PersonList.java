@@ -61,4 +61,12 @@ public class PersonList {
     public void remove(PersonId id) {
         persons.remove(id);
     }
+
+    public void addAll(Map<PersonId, PersonCard> persons) {
+        this.persons.putAll(persons);
+    }
+
+    public PersonCard getPerson(PersonId id) {
+        return persons.get(id);
+    }
 }
