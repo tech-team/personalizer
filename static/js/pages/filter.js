@@ -14,7 +14,7 @@ $(document).ready(function() {
             $person.each(function($card) {
                 merge.append({
                     "id": $card.data('id'),
-                    "source-id": $card.data('source-id')
+                    "source_id": $card.data('source_id')
                 });
             });
 
@@ -51,7 +51,7 @@ $(document).ready(function() {
             $card = ui.item;
             $column = $(this);
 
-            if ($card.data('source-id') != $column.data('source-id'))
+            if ($card.data('source_id') != $column.data('source_id'))
                 $(ui.sender).sortable("cancel");
         }
     });
@@ -101,7 +101,7 @@ function sendPersonListRequestDelayed() {
 function handlePersonList(source, cards) {
     alert("Recieved " + cards.length + " cards from " + source);
 
-    $vk_column = $(".column[data-source-id='" + source.toLowerCase() + "']");
+    $vk_column = $(".column[data-source_id='" + source.toLowerCase() + "']");
 
     _.each(cards, function(card) {
         var $card = $(card);
@@ -115,7 +115,7 @@ function handlePersonList(source, cards) {
 
             deletedCards.append({
                     "id": $card.data('id'),
-                    "source-id": $card.data('source-id')
+                    "source_id": $card.data('source_id')
                 });
 
             $card.remove();

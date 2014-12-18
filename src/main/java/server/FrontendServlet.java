@@ -190,8 +190,8 @@ public class FrontendServlet extends HttpServlet {
             for (PersonCard personCard: personList.getPersons().values()) {
                 HashMap<String, Object> card = new HashMap<>();
 
-                card.put("source-id", personCard.getType().toString().toLowerCase());
-                card.put("id", personCard.getId());
+                card.put("source_id", personCard.getType().toString().toLowerCase());
+                card.put("id", personCard.getId().getId());
 
                 card.put("name", NC.toString(personCard.getName()));
                 card.put("surname", NC.toString(personCard.getSurname()));
@@ -252,7 +252,7 @@ public class FrontendServlet extends HttpServlet {
                 JSONObject cardObject = deletedCards.getJSONObject(i);
 
                 int id = cardObject.getInt("id");
-                int source_id = cardObject.getInt("source-id");
+                int source_id = cardObject.getInt("source_id");
 
                 ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(id).toUpperCase());
                 deletedCardsList.add(new PersonId(type, id));
@@ -271,7 +271,7 @@ public class FrontendServlet extends HttpServlet {
                     JSONObject cardObject = mergeObject.getJSONObject(i);
 
                     int id = cardObject.getInt("id");
-                    int source_id = cardObject.getInt("source-id");
+                    int source_id = cardObject.getInt("source_id");
 
                     ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(id).toUpperCase());
                     mergeList.add(new PersonId(type, id));

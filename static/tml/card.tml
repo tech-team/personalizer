@@ -1,4 +1,4 @@
-<div class="card" data-source-id="${source-id}" data-id="${id}">
+<div class="card" data-source_id="${source_id}" data-id="${id}">
     <div class="card-header">
         <span class="card-content-name">${name}&nbsp;${surname}</span>
         <span class="pull-right card-content-birthday">
