@@ -11,7 +11,7 @@ var Locations = {
     //AJAX
     GET_PERSON_LIST: "/api/get_person_list",
     GET_RESULT_CARDS: "/api/get_result_cards",
-    POST_FILTER_CARDS: "/api/filter_cards"
+    POST_FILTER_CARDS: "/api/post_filter_cards"
 };
 
 var ApiRequestStatus = {

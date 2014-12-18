@@ -8,10 +8,12 @@ $(document).ready(function() {
 
         var $persons = $(".destinations .person");
 
-        $persons.each(function(i, $person) {
+        $persons.each(function(i, person) {
             var merge = [];
 
-            $person.each(function(j, $card) {
+            var $person = $(person);
+            $person.find(".card").each(function(j, card) {
+                var $card = $(card);
                 merge.push({
                     "id": $card.data('id'),
                     "source_id": $card.data('source_id')
