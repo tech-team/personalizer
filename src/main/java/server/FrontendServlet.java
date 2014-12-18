@@ -263,6 +263,8 @@ public class FrontendServlet extends HttpServlet {
             //handle merged cards
             JSONArray mergedCards = jsonRequest.getJSONArray("mergedCards");
 
+            List<PersonIdsTuple> tuplesToMerge = new LinkedList<>();
+
             for (int i = 0; i < mergedCards.length(); i++) {
                 JSONArray mergeObject = mergedCards.getJSONArray(i);
                 List<PersonId> mergeList = new ArrayList<>();
@@ -271,14 +273,18 @@ public class FrontendServlet extends HttpServlet {
                     JSONObject cardObject = mergeObject.getJSONObject(i);
 
                     int id = cardObject.getInt("id");
-                    int source_id = cardObject.getInt("source_id");
+                    String source_id = cardObject.getString("source_id");
 
-                    ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(id).toUpperCase());
+                    ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(source_id).toUpperCase());
                     mergeList.add(new PersonId(type, id));
                 }
 
-                cp.merge(new PersonIdsTuple(mergeList));
+                if (mergeList.size() > 0) {
+                    tuplesToMerge.add(new PersonIdsTuple(mergeList));
+                }
             }
+
+            cp.merge(tuplesToMerge);
         }
         catch (InterruptedException e) {
             JSONObject json = new JSONObject();

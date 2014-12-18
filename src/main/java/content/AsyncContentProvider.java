@@ -3,6 +3,7 @@ package content;
 import server.ContentReceiver;
 import util.ThreadPool;
 
+import java.util.Collection;
 import java.util.List;
 
 public class AsyncContentProvider implements IContentProvider {
@@ -32,9 +33,9 @@ public class AsyncContentProvider implements IContentProvider {
     }
 
     @Override
-    public void merge(PersonIdsTuple tuple) throws InterruptedException {
+    public void merge(Collection<PersonIdsTuple> tuples) throws InterruptedException {
         threadPool.execute(() -> {
-            contentProvider.merge(tuple);
+            contentProvider.merge(tuples);
         });
     }
 }

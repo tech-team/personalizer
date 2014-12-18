@@ -6,6 +6,7 @@ import server.ContentReceiver;
 import util.MyLogger;
 import util.ThreadPool;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class ContentProvider implements IContentProvider {
     private ThreadPool threadPool = new ThreadPool();
 
     private Map<ContentSource, PersonList> sources = new HashMap<>();
-    private PersonList mergedList = new PersonList(ContentSource.Type.NONE);
+    private PersonList mergedList = new PersonList(ContentSource.Type.MERGED);
     private PersonList fullList;
 
     private Logger logger = MyLogger.getLogger(this.getClass().getName());
@@ -82,15 +83,17 @@ public class ContentProvider implements IContentProvider {
     }
 
     @Override
-    public void merge(PersonIdsTuple tuple) {
+    public void merge(Collection<PersonIdsTuple> tuples) {
 
-        List<PersonId> ids = tuple.getIds();
-        PersonCard mergedCard = fullList.getPerson(ids.get(0)).copy();
-        for (int i = 1; i < tuple.getIds().size(); ++i) {
-            PersonId id = ids.get(i);
-            PersonCard p = fullList.getPerson(id);
-            mergedCard.linkWith(p);
-            mergedList.addPerson(mergedCard);
+        for (PersonIdsTuple tuple : tuples) {
+            List<PersonId> ids = tuple.getIds();
+            PersonCard mergedCard = fullList.getPerson(ids.get(0)).copy();
+            for (int i = 1; i < tuple.getIds().size(); ++i) {
+                PersonId id = ids.get(i);
+                PersonCard p = fullList.getPerson(id);
+                mergedCard.linkWith(p);
+                mergedList.addPerson(mergedCard);
+            }
         }
 
         frontend.postResults(mergedList);
