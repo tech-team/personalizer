@@ -252,9 +252,9 @@ public class FrontendServlet extends HttpServlet {
                 JSONObject cardObject = deletedCards.getJSONObject(i);
 
                 int id = cardObject.getInt("id");
-                int source_id = cardObject.getInt("source_id");
+                String source_id = cardObject.getString("source_id");
 
-                ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(id).toUpperCase());
+                ContentSource.Type type = Enum.valueOf(ContentSource.Type.class, String.valueOf(source_id).toUpperCase());
                 deletedCardsList.add(new PersonId(type, id));
             }
 

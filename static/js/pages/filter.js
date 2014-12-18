@@ -28,10 +28,10 @@ $(document).ready(function() {
             contentType: "application/json",
             url: Locations.POST_FILTER_CARDS,
             dataType: "json",
-            data: {
+            data: JSON.stringify({
                 deletedCards: deletedCards,
                 mergedCards: mergedCards
-            }
+            })
         })
             .done(function(msg) {
                 window.location.href = Locations.RESULTS;
@@ -101,7 +101,7 @@ function sendPersonListRequestDelayed() {
 }
 
 function handlePersonList(source, cards) {
-    alert("Recieved " + cards.length + " cards from " + source);
+    alert("Received " + cards.length + " cards from " + source);
 
     $vk_column = $(".column[data-source_id='" + source.toLowerCase() + "']");
 
