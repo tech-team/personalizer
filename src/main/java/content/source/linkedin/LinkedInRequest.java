@@ -1,5 +1,6 @@
 package content.source.linkedin;
 
+import content.PersonCard;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import util.net.*;
@@ -7,7 +8,13 @@ import util.net.*;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import static content.source.linkedin.Parser.getPersonByLink;
+import static content.source.linkedin.Parser.getPersonUrls;
 import static util.net.HttpDownloader.httpGet;
 import static util.net.HttpDownloader.httpPost;
 
@@ -50,6 +57,8 @@ public class LinkedInRequest {
     }
 
     public HttpResponse makeFindRequest(String name, String lastName) {
+        if (name == null || lastName == null)
+            return null;
         try {
             name = URLEncoder.encode(name, "UTF-8");
             lastName = URLEncoder.encode(lastName, "UTF-8");
@@ -72,6 +81,15 @@ public class LinkedInRequest {
         HttpResponse response = null;
         try {
             response = httpGet(request);
+            if(response.getResponseCode() == 301) {
+                Headers headers = response.getHeaders();
+                String location = headers.getHeader("Location").getValue();
+                int parametersIndex = location.indexOf('?');
+                if(parametersIndex > 0) {
+                    location = location.substring(0, parametersIndex);
+                }
+                response = httpGet(new HttpRequest(location, null, makeHeaders()));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,6 +109,42 @@ public class LinkedInRequest {
             e.printStackTrace();
         }
         return response;
+    }
+
+    public static LinkedInRequest login(LinkedInRequest request) {
+        HttpResponse response = request.getMainPage();
+        CookieManager manager = response.getCookieManager();
+        request.setCookie(manager);
+        response = request.makeLoginRequest();
+        response.getCookieManager().addExtra(manager);
+        manager = response.getCookieManager();
+        request.setCookie(manager);
+        return request;
+    }
+
+    public static  LinkedList<LinkedInPerson> getPersons(LinkedInRequest request, PersonCard card) {
+        LinkedList<LinkedInPerson> persons = new LinkedList<>();
+        Map<String, String> names = getNames(card.getName());
+        List<String> urls = getPersonUrls(request.makeFindRequest(names.get("first"), names.get("last")));
+        for(String url: urls) {
+            LinkedInPerson person = getPersonByLink(request.makePersonRequest(url));
+            persons.add(person);
+        }
+        return persons;
+    }
+
+    private static Map<String, String> getNames(String name) {
+        Map<String, String> names = new HashMap<>();
+        if(name != null) {
+            int delimeterIndex = name.indexOf(" ");
+            if(delimeterIndex > 0) {
+                String lastName = name.substring(0, delimeterIndex);
+                String firstName = name.substring(delimeterIndex + 1, name.length());
+                names.put("last", lastName);
+                names.put("first", firstName);
+            }
+        }
+        return names;
     }
 
 }

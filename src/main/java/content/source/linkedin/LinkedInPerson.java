@@ -140,6 +140,17 @@ public class LinkedInPerson {
         public void setPosition(String position) {
             this.position = position;
         }
+
+        @Override
+        public String toString() {
+            return "Job{" +
+                    "company='" + company + '\'' +
+                    ", dateFrom='" + dateFrom + '\'' +
+                    ", dateTo='" + dateTo + '\'' +
+                    ", region='" + region + '\'' +
+                    ", position='" + position + '\'' +
+                    '}';
+        }
     }
 
     public static class Education {
@@ -188,5 +199,7 @@ public class LinkedInPerson {
         public void setDateTo(Integer dateTo) {
             this.dateTo = dateTo;
         }
+
+
     }
 }

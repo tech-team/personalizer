@@ -10,7 +10,6 @@ import util.net.CookieManager;
 import util.net.Headers;
 import util.net.HttpResponse;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,28 +17,26 @@ public class Parser {
 
     public static List<String> getPersonUrls(HttpResponse response) {
         List<String> urls = new LinkedList<>();
-        switch (response.getResponseCode()) {
-            case 200:
-                Document doc = Jsoup.parse(response.getBody());
-                Elements elements = doc.select(".vcard");
-                for (Element element : elements) {
-                    String link = element.select("h2 a").attr("href");
-                    urls.add(link);
-                }
-                break;
-
-            case 302:
-                Headers headers = response.getHeaders();
-                String location = headers.getHeader("Location").getValue();
-                int parametersIndex = location.indexOf('?');
-                if(parametersIndex > 0) {
-                    location = location.substring(0, parametersIndex);
-                }
-                urls.add(location);
-                break;
-        }
-
-
+        if(response != null)
+            switch (response.getResponseCode()) {
+                case 200:
+                    Document doc = Jsoup.parse(response.getBody());
+                    Elements elements = doc.select(".vcard");
+                    for (Element element : elements) {
+                        String link = element.select("h2 a").attr("href");
+                        urls.add(link);
+                    }
+                    break;
+                case 302:
+                    Headers headers = response.getHeaders();
+                    String location = headers.getHeader("Location").getValue();
+                    int parametersIndex = location.indexOf('?');
+                    if(parametersIndex > 0) {
+                        location = location.substring(0, parametersIndex);
+                    }
+                    urls.add(location);
+                    break;
+            }
         return urls;
     }
 
@@ -60,7 +57,6 @@ public class Parser {
     }
 
     public static void main(String[] args) {
-        Date date = new Date();
         LinkedInRequest request = new LinkedInRequest();
         HttpResponse response = request.getMainPage();
         CookieManager manager = response.getCookieManager();
@@ -69,7 +65,7 @@ public class Parser {
         response.getCookieManager().addExtra(manager);
         manager = response.getCookieManager();
         request.setCookie(manager);
-        List<String> urls = getPersonUrls(request.makeFindRequest("person", "personalizer"));
+        List<String> urls = getPersonUrls(request.makeFindRequest("Сергей", "Спиридонов"));
         for(String url: urls) {
             System.out.println(url);
             LinkedInPerson person = getPersonByLink(request.makePersonRequest(url));

@@ -1,6 +1,7 @@
 package content;
 
 import content.source.ContentSource;
+import content.source.linkedin.LinkedIn;
 import content.source.vk.VK;
 import server.ContentReceiver;
 import util.MyLogger;
@@ -30,7 +31,7 @@ public class ContentProvider implements IContentProvider {
         ContentSource[] sources = {
                 new VK(),
 //                new Facebook(),
-//                new LinkedIn()
+                new LinkedIn()
         };
         for (ContentSource s : sources) {
             this.sources.put(s, new PersonList(s.getType()));
@@ -60,7 +61,7 @@ public class ContentProvider implements IContentProvider {
 
         if (autoMerge) {
             logger.info("Started auto merge");
-            automaticMerge();
+//            automaticMerge();
             logger.info("Finished auto merge");
         }
 
