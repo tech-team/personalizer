@@ -143,13 +143,30 @@ public class LinkedInPerson {
 
         @Override
         public String toString() {
-            return "Job{" +
-                    "company='" + company + '\'' +
-                    ", dateFrom='" + dateFrom + '\'' +
-                    ", dateTo='" + dateTo + '\'' +
-                    ", region='" + region + '\'' +
-                    ", position='" + position + '\'' +
-                    '}';
+            StringBuilder builder = new StringBuilder();
+            builder.append("\n\n");
+            if (company != null) {
+                builder.append("\n\r в компании ")
+                        .append(company);
+            }
+            if (position != null){
+                builder.append("\n\r на позиции ")
+                        .append(position);
+            }
+            if (dateFrom != null){
+                builder.append("\n\r с ")
+                        .append(dateFrom);
+            }
+            if (dateTo != null){
+                builder.append("\n\r по ")
+                        .append(dateTo);
+            }
+            if (region != null){
+                builder.append("\n\r местоположение: ")
+                        .append(region);
+            }
+
+            return builder.toString();
         }
     }
 

@@ -34,7 +34,7 @@ public class VKResponseParser {
         PersonCard person = new PersonCard();
         person.setPersonLink(new SocialLink(SocialLink.LinkType.VK,
                 String.valueOf(item.getInt("id")),
-                String.valueOf(item.getInt("id"))));
+                String.valueOf("http://vk.com/id" + item.getInt("id"))));
 
         if (!item.optString("first_name").equals("")){
             person.setName(item.getString("first_name"));
@@ -115,18 +115,18 @@ public class VKResponseParser {
         if (!item.optString("skype").equals("")){
             String skype = item.getString("skype");
             personCard.addSocialLink(SocialLink.LinkType.SKYPE,
-                    new SocialLink(SocialLink.LinkType.SKYPE, skype, skype));
+                    new SocialLink(SocialLink.LinkType.SKYPE, skype, "skype:" + skype));
         }
         if (!item.optString("facebook").equals("")){
             String facebook = item.getString("facebook");
             personCard.addSocialLink(SocialLink.LinkType.FB,
-                    new SocialLink(SocialLink.LinkType.FB, facebook, facebook));
+                    new SocialLink(SocialLink.LinkType.FB, facebook, "http://fb.com/" + facebook));
 
         }
         if (!item.optString("twitter").equals("")){
             String twitter = item.getString("twitter");
             personCard.addSocialLink(SocialLink.LinkType.TWITTER,
-                    new SocialLink(SocialLink.LinkType.TWITTER, twitter, twitter));
+                    new SocialLink(SocialLink.LinkType.TWITTER, twitter, "http://twitter.com/" + twitter));
         }
     }
 
