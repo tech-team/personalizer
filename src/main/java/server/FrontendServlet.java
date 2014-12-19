@@ -250,46 +250,46 @@ public class FrontendServlet extends HttpServlet {
         Session session = sessions.get(qid);
         BufferedContentReceiver receiver = session.getCP().getContentReceiver();
 
-        //TODO: MEEEEERGE
-        PersonList personList =  receiver.getPostedResults();
+        Collection<MergedPersonCard> personList =  receiver.getPostedResults();
 
         if (personList != null) {
             JSONObject json = new JSONObject();
             json.put("status", ApiRequestStatus.OK);
-            json.put("source", personList.getType().toString());
 
-            for (PersonCard personCard: personList.getPersons().values()) {
-                HashMap<String, Object> card = new HashMap<>();
+            for (MergedPersonCard mergedPersonCard: personList) {
+                List<String> mergedCards = new ArrayList<>();
 
-                card.put("source_id", personCard.getType().toString().toLowerCase());
-                card.put("id", personCard.getId().getId());
+                for (PersonCard personCard : mergedPersonCard.getList()) {
+                    HashMap<String, Object> card = new HashMap<>();
 
-                card.put("name", NC.toString(personCard.getName()));
-                card.put("surname", NC.toString(personCard.getSurname()));
-                card.put("birthdate", NC.toString(personCard.getBirthDate()));
-                card.put("age", NC.toString(personCard.getAge()));
+                    card.put("source_id", personCard.getType().toString().toLowerCase());
+                    card.put("id", personCard.getId().getId());
 
-                card.put("avatars", personCard.getAvatars());
+                    card.put("name", NC.toString(personCard.getName()));
+                    card.put("surname", NC.toString(personCard.getSurname()));
+                    card.put("birthdate", NC.toString(personCard.getBirthDate()));
+                    card.put("age", NC.toString(personCard.getAge()));
 
-                card.put("country", NC.toString(personCard.getCountry()));
-                card.put("city", NC.toString(personCard.getCity()));
-                card.put("phone", NC.toString(personCard.getMobilePhone()));
+                    card.put("avatars", personCard.getAvatars());
 
-                card.put("socialLinks", personCard.getSocialLinks().values());
-                card.put("universities", personCard.getUniversities());
-                card.put("jobs", personCard.getJobs());
+                    card.put("country", NC.toString(personCard.getCountry()));
+                    card.put("city", NC.toString(personCard.getCity()));
+                    card.put("phone", NC.toString(personCard.getMobilePhone()));
 
-                json.append("data", PageGenerator.getTemplatePage(Templates.CARD, card));
+                    card.put("socialLinks", personCard.getSocialLinks().values());
+                    card.put("universities", personCard.getUniversities());
+                    card.put("jobs", personCard.getJobs());
+
+                    mergedCards.add(PageGenerator.getTemplatePage(Templates.CARD, card));
+                }
+
+                json.append("data", mergedCards);
             }
 
             response.getWriter().println(json.toString());
         } else {
             JSONObject json = new JSONObject();
-
-            if (receiver.isFinishedListsRetrieval())
-                json.put("status", ApiRequestStatus.FINISHED);
-            else
-                json.put("status", ApiRequestStatus.WAIT);
+            json.put("status", ApiRequestStatus.WAIT);
 
             response.getWriter().println(json.toString());
         }

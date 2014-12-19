@@ -101,7 +101,7 @@ function sendPersonListRequestDelayed() {
 }
 
 function handlePersonList(source, cards) {
-    alert("Received " + cards.length + " cards from " + source);
+    console.log("Received " + cards.length + " cards from " + source);
 
     $vk_column = $(".column[data-source_id='" + source.toLowerCase() + "']");
 
