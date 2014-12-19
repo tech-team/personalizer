@@ -341,7 +341,7 @@ public class FrontendServlet extends HttpServlet {
                 List<PersonId> mergeList = new ArrayList<>();
 
                 for (int j = 0; j < mergeObject.length(); j++) {
-                    JSONObject cardObject = mergeObject.getJSONObject(i);
+                    JSONObject cardObject = mergeObject.getJSONObject(j);
 
                     int id = cardObject.getInt("id");
                     String source_id = cardObject.getString("source_id");
