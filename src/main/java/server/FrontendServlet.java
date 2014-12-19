@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 //NB: Locations and ApiRequestStatus classes
 // should be same as in static/js/common.js
@@ -82,7 +83,7 @@ public class FrontendServlet extends HttpServlet {
                 return;
 
             case Locations.GET_RESULT_CARDS:
-                getPersonListHandler(request, response);
+                getResultPersonListHandler(request, response);
                 return;
 
             default:
@@ -181,6 +182,76 @@ public class FrontendServlet extends HttpServlet {
         BufferedContentReceiver receiver = session.getCP().getContentReceiver();
 
         PersonList personList =  receiver.getNextPersonList();
+
+        if (personList != null) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.OK);
+            json.put("source", personList.getType().toString());
+
+            for (PersonCard personCard: personList.getPersons().values()) {
+                HashMap<String, Object> card = new HashMap<>();
+
+                card.put("source_id", personCard.getType().toString().toLowerCase());
+                card.put("id", personCard.getId().getId());
+
+                card.put("name", NC.toString(personCard.getName()));
+                card.put("surname", NC.toString(personCard.getSurname()));
+                card.put("birthdate", NC.toString(personCard.getBirthDate()));
+                card.put("age", NC.toString(personCard.getAge()));
+
+                card.put("avatars", personCard.getAvatars());
+
+                card.put("country", NC.toString(personCard.getCountry()));
+                card.put("city", NC.toString(personCard.getCity()));
+                card.put("phone", NC.toString(personCard.getMobilePhone()));
+
+                List<String> allLinks = new ArrayList<>();
+                allLinks.add(personCard.getPersonLink().getUrl());
+                allLinks.addAll(personCard.getSocialLinks().values().stream().map(SocialLink::getUrl).collect(Collectors.toList()));
+
+                card.put("socialLinks", allLinks);
+                card.put("universities", personCard.getUniversities());
+                card.put("jobs", personCard.getJobs());
+
+                json.append("data", PageGenerator.getTemplatePage(Templates.CARD, card));
+            }
+
+            response.getWriter().println(json.toString());
+        } else {
+            JSONObject json = new JSONObject();
+
+            if (receiver.isFinishedListsRetrieval())
+                json.put("status", ApiRequestStatus.FINISHED);
+            else
+                json.put("status", ApiRequestStatus.WAIT);
+
+            response.getWriter().println(json.toString());
+        }
+    }
+
+
+    private void getResultPersonListHandler(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException  {
+        response.addHeader("Cache-Control", "no-cache");
+        response.setContentType("application/json");
+
+        String qid = getQueryId(request);
+
+        if (qid == null) {
+            JSONObject json = new JSONObject();
+            json.put("status", ApiRequestStatus.ERROR);
+            json.put("data", "No QID cookie provided");
+            response.getWriter().println(json.toString());
+
+            return;
+        }
+
+        //obtain new cards from CP
+        Session session = sessions.get(qid);
+        BufferedContentReceiver receiver = session.getCP().getContentReceiver();
+
+        //TODO: MEEEEERGE
+        PersonList personList =  receiver.getPostedResults();
 
         if (personList != null) {
             JSONObject json = new JSONObject();
