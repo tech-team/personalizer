@@ -1,7 +1,12 @@
 
 var deletedCards = [];
+var currentRow = 1;
+
 
 $(document).ready(function() {
+
+    addRow();
+    $('#add_row').click(addRow);
 
     $('#continue_button').click(function() {
         var mergedCards = [];
@@ -56,14 +61,6 @@ $(document).ready(function() {
             if ($card.data('source_id') != $column.data('source_id'))
                 $(ui.sender).sortable("cancel");
         }
-    });
-
-    $(".destinations .person").sortable({
-        connectWith: ".sources .column, .destinations .person",
-        handle: ".card-header",
-        cancel: ".card-remove",
-        placeholder: "card-placeholder ui-corner-all",
-        floating: true
     });
 });
 
@@ -124,5 +121,20 @@ function handlePersonList(source, cards) {
         });
 
         $card.appendTo($vk_column);
+    });
+}
+
+function addRow() {
+    var row = '<tr><td class="merge-id"><h4>&nbsp;' + currentRow++ + '&nbsp;</h4></td><td class="merge-content"><div class="person thumbnail"></div></td></tr>';
+    var $row = $(row);
+
+    $row.appendTo($('.merge-table'));
+
+    $row.find(".person").sortable({
+        connectWith: ".sources .column, .destinations .person",
+        handle: ".card-header",
+        cancel: ".card-remove",
+        placeholder: "card-placeholder ui-corner-all",
+        floating: true
     });
 }
