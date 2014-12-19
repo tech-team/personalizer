@@ -1,5 +1,6 @@
 package content;
 
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -38,5 +39,9 @@ public class MergedPersonCard {
 
     public void addOnPersonId(MergedPersonCard card) {
         card.idToPersons.values().forEach(this::add);
+    }
+
+    public Collection<PersonCard> getList() {
+        return idToPersons.values();
     }
 }
