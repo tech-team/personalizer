@@ -39,26 +39,27 @@ public class FBRequest {
         HttpRequest request = new HttpRequest(loginUrl, loginParams);
         request.setFollowRedirects(false);
 
-        try {
-            String location = HttpDownloader.httpGet(request).getHeaders().getHeader("Location").getValue();
-
-            request = new HttpRequest(location);
-            request.setFollowRedirects(false);
-            String response = HttpDownloader.httpGet(location).getUrl().toString();
-
-            //TODO: Добиться редиректа
-            String accessToken = new URL(response).getQuery().split("=")[1];
-            accessToken = "CAAWPmd7EBPYBADUarDMVfbFX5CSBDZB9huGncj9YSUZAK8Fn1ZBknQqDqL1t2waS7WSSZAGZBqxl6NUwuCu88dKCXtz8fifA1630LNOmEH2rCPdleBQFGBcZAG61iNMUOT7kx4xq1sgLYMM9x4YguiHRgg4vBTTZAQaaXv25WtTQguiwg0utvs5FcYzPQAqZC5n33jvJk6l8Sgvg4X5ywKgreFzQ19PSP6wZD";
+//        try {
+//            String location = HttpDownloader.httpGet(request).getHeaders().getHeader("Location").getValue();
+//
+//            request = new HttpRequest(location);
+//            request.setFollowRedirects(false);
+//            String response = HttpDownloader.httpGet(location).getUrl().toString();
+//
+//            //TODO: Добиться редиректа
+//            String accessToken = new URL(response).getQuery().split("=")[1];
+            String accessToken = "CAACEdEose0cBAH8gwZCSLqnejLjiYjQJC663I6sItQcnB1ZCqzY8T0K3L0GPNsBiadLVUPdl99Jobv10rdc8ZAEWoyUpbtbYnWBISiLlZB6HIlzUubAbDdGvnufjs4oTQZCDKRzBYDwCn6LBuCzZATIZBK30WmdUKBJrc1ZAywCaZBcnhgMBcFZCYaxSjpsu1ddOsbZCBzn5VnU7jTJ6ZBuWf6DXicOJ6BCykQ4ZD";
 
             params.add("access_token", accessToken);
             searchParams.add("access_token", accessToken);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     void search(String name, PersonList dest) throws IOException {
+
         searchParams.add("q", name);
 
         HttpRequest request = new HttpRequest( baseUrl + "search", searchParams);

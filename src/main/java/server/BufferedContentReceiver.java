@@ -1,9 +1,11 @@
 package server;
 
+import content.MergedPersonCard;
 import content.PersonCard;
 import content.PersonList;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class BufferedContentReceiver implements ContentReceiver {
@@ -13,7 +15,7 @@ public class BufferedContentReceiver implements ContentReceiver {
     private List<PersonList> postedPersonLists = new ArrayList<>();
     private int postedPersonListsReadPos = 0;
 
-    private PersonList postedResults = null;
+    private Collection<MergedPersonCard> postedResults = null;
 
     private boolean finishedListsRetrieval;
     private boolean finishedAutomaticMerge;
@@ -31,7 +33,7 @@ public class BufferedContentReceiver implements ContentReceiver {
     }
 
     @Override
-    public void postResults(PersonList list) {
+    public void postResults(Collection<MergedPersonCard> list) {
         postedResults = list;
     }
 
@@ -90,11 +92,11 @@ public class BufferedContentReceiver implements ContentReceiver {
             return postedPersonLists.subList(postedPersonListsReadPos, postedPersonLists.size());
     }
 
-    public PersonList getPostedResults() {
+    public Collection<MergedPersonCard> getPostedResults() {
         return postedResults;
     }
 
-    public void setPostedResults(PersonList postedResults) {
+    public void setPostedResults(Collection<MergedPersonCard> postedResults) {
         this.postedResults = postedResults;
     }
 
