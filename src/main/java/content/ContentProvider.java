@@ -58,11 +58,7 @@ public class ContentProvider implements IContentProvider {
             fullList.addAll(sources.get(cs).getPersons());
         }
 
-        if (autoMerge) {
-            logger.info("Started auto merge");
-            automaticMerge();
-            logger.info("Finished auto merge");
-        }
+        automaticMerge(autoMerge);
 
         frontend.onFinishedListsRetrieval();
     }
@@ -117,29 +113,32 @@ public class ContentProvider implements IContentProvider {
     }
 
 
-    private void automaticMerge() {
+    private void automaticMerge(boolean doAutoMerge) {
 
         for (Map.Entry<PersonId, PersonCard> entry : fullList.getPersons().entrySet()) {
             PersonCard card = entry.getValue();
             linkList.put(card.getPersonLink(), new MergedPersonCard(card));
         }
 
-        for (Map.Entry<SocialLink, MergedPersonCard> entry : linkList.entrySet()) {
-            SocialLink link = entry.getKey();
-            MergedPersonCard card = entry.getValue();
+        if (doAutoMerge) {
+            logger.info("Started auto merge");
+            for (Map.Entry<SocialLink, MergedPersonCard> entry : linkList.entrySet()) {
+                SocialLink link = entry.getKey();
+                MergedPersonCard card = entry.getValue();
 
-            Collection<SocialLink> links = card.get(link.getLinkType()).getSocialLinks().values();
+                Collection<SocialLink> links = card.get(link.getLinkType()).getSocialLinks().values();
 
-            for (SocialLink link1 : links) {
-                MergedPersonCard card1 = linkList.get(link1);
-                if (card1 != null) {
-                    card.add(card1);
-                    linkList.remove(link1);
-                    linkList.put(link1, card);
+                for (SocialLink link1 : links) {
+                    MergedPersonCard card1 = linkList.get(link1);
+                    if (card1 != null) {
+                        card.add(card1);
+                        linkList.remove(link1);
+                        linkList.put(link1, card);
+                    }
                 }
             }
+            logger.info("Finished auto merge");
         }
-
 
         for (Map.Entry<SocialLink, MergedPersonCard> entry : linkList.entrySet()) {
             MergedPersonCard card = entry.getValue();
