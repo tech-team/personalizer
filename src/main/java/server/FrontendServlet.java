@@ -276,7 +276,11 @@ public class FrontendServlet extends HttpServlet {
                     card.put("city", NC.toString(personCard.getCity()));
                     card.put("phone", NC.toString(personCard.getMobilePhone()));
 
-                    card.put("socialLinks", personCard.getSocialLinks().values());
+                    List<String> allLinks = new ArrayList<>();
+                    allLinks.add(personCard.getPersonLink().getUrl());
+                    allLinks.addAll(personCard.getSocialLinks().values().stream().map(SocialLink::getUrl).collect(Collectors.toList()));
+
+                    card.put("socialLinks", allLinks);
                     card.put("universities", personCard.getUniversities());
                     card.put("jobs", personCard.getJobs());
 

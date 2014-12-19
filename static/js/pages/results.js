@@ -35,13 +35,13 @@ function sendPersonListRequestDelayed() {
 }
 
 function handlePersonList(source, persons) {
-    alert("Received " + persons.length + " persons from " + source);
+    console.log("Received " + persons.length + " persons from " + source);
 
     $column = $(".column .results");
     $persons = $(".persons");
 
-    _.each(persons, function(person) {
-        $person = $('<tr><td class="merge-id"><h4>&nbsp;1&nbsp;</h4></td><td class="merge-content"><div class="person thumbnail"></div></td></tr>');
+    _.each(persons, function(person, i) {
+        $person = $('<tr><td class="merge-id"><h4>&nbsp;' + (i + 1) + '&nbsp;</h4></td><td class="merge-content"><div class="person"></div></td></tr>');
 
         _.each(person, function(card) {
             var $card = $(card);
@@ -57,7 +57,7 @@ function handlePersonList(source, persons) {
                 $card.remove();
             });
 
-            $card.appendTo($person);
+            $card.appendTo($person.find(".person"));
         });
 
         $person.appendTo($persons);

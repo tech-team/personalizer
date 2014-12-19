@@ -48,7 +48,7 @@ public class FBRequest {
 //
 //            //TODO: Добиться редиректа
 //            String accessToken = new URL(response).getQuery().split("=")[1];
-            String accessToken = "CAACEdEose0cBAH8gwZCSLqnejLjiYjQJC663I6sItQcnB1ZCqzY8T0K3L0GPNsBiadLVUPdl99Jobv10rdc8ZAEWoyUpbtbYnWBISiLlZB6HIlzUubAbDdGvnufjs4oTQZCDKRzBYDwCn6LBuCzZATIZBK30WmdUKBJrc1ZAywCaZBcnhgMBcFZCYaxSjpsu1ddOsbZCBzn5VnU7jTJ6ZBuWf6DXicOJ6BCykQ4ZD";
+            String accessToken = "CAACEdEose0cBAAp4G7WzZB5WlPh09U3AuocZBC8fo9xE5LZB2x5KBciuanE4gqeVvNiVO8AJYcAzYeml63E3v6OVZCzKtgjP0NIHG4fdSZCQDj0Wq1xpRZBsbAUpPxyZC49dzRFernYn9WwoSGZCwUqi8ruBTrdK8347kANdkTiWBxsslVa8XWbF5ztsT96SiDdDdI4DIko3ann1SFYZAmRQrLXPPa5bL08kZD";
 
             params.add("access_token", accessToken);
             searchParams.add("access_token", accessToken);

@@ -15,11 +15,15 @@
                     <img class="card-content-avatar" src="${avatars?first!"http://floraldreams.ru/images/misc/unknown.gif"}" />
                     <div class="card-content-section">Контакты</div>
                     <#list socialLinks as link>
-                        <div class="card-content-value"><a href="${link}">${link}</a></div>
+                        <#if link?length gt 33>
+                            <div class="card-content-value"><a href="${link}">${link?substring(0, 30)}...</a></div>
+                        <#else>
+                            <div class="card-content-value"><a href="${link}">${link}</a></div>
+                        </#if>
                     </#list>
                 </td>
                 <td>
-                    <div class="card-content-section">Родной город</div>
+                    <div class="card-content-section">Адрес</div>
                     <div class="card-content-value">${city}</div>
                     <div class="card-content-section">Учёба</div>
                     <#list universities as university>

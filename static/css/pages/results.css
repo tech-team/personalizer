@@ -1,0 +1,54 @@
+.card {
+    margin: 0 1em 1em 0;
+    padding: 0.3em;
+
+    display: inline-block;
+    float: left;
+    /*width: 100%;*/
+}
+
+.card table tr td {
+    padding-left: 1em;
+    vertical-align: top;
+}
+
+.card-header {
+    padding: 0.2em 0.3em;
+    margin-bottom: 0.5em;
+    position: relative;
+}
+
+.card-content-section {
+    font-weight: bold;
+}
+
+.card-content-value {
+    margin-left: 1em;
+}
+
+.card-remove {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    margin-top: -8px;
+}
+
+.card-content {
+    padding: 0.4em;
+}
+
+.card-content-birthday {
+    margin-right: 2em;
+}
+
+.merge-table {
+    width: 100%;
+}
+
+.merge-content {
+    width: 100%;
+}
+
+.card-content-avatar {
+    margin: 1em;
+}
