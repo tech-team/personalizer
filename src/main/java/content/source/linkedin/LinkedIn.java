@@ -33,6 +33,10 @@ public class LinkedIn implements ContentSource {
             card.setUniversities(getUniversityFromEducation(person.getEducations()));
             card.setJobs(getJobs(person.getJobs()));
             card.addSocialLink(SocialLink.LinkType.LINKED_IN, new SocialLink(SocialLink.LinkType.LINKED_IN, null, person.getUrl()));
+            card.setCity(person.getCountry());
+            card.setName(person.getFirstName());
+            card.setSurname(person.getLastName());
+            card.setPersonLink(new SocialLink(SocialLink.LinkType.LINKED_IN, null, person.getUrl()));
             list.addPerson(card);
         }
     }
