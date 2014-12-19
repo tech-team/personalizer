@@ -22,7 +22,7 @@ public class LinkedIn implements ContentSource {
 
     @Override
     public Type getType() {
-        return Type.LINKED_IN;
+        return Type.LI;
     }
 
 

@@ -9,7 +9,7 @@ public interface ContentSource {
         MERGED,
         VK,
         FB,
-        LINKED_IN
+        LI
     }
     void retrieve(PersonCard card, PersonList dest);
     Type getType();
