@@ -1,6 +1,7 @@
 package content;
 
 import content.source.ContentSource;
+import content.source.fb.Facebook;
 import content.source.linkedin.LinkedIn;
 import content.source.vk.VK;
 import server.ContentReceiver;
@@ -28,7 +29,7 @@ public class ContentProvider implements IContentProvider {
 
         ContentSource[] sources = {
                 new VK(),
-//                new Facebook(),
+                new Facebook(),
                 new LinkedIn()
         };
         for (ContentSource s : sources) {

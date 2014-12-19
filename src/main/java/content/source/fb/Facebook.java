@@ -12,7 +12,7 @@ public class Facebook implements ContentSource {
 
         FBRequest request = new FBRequest();
         try {
-            request.search(personCard.getName() + " " + personCard.getSurname(), dest);
+            request.search(personCard.getName(), dest);
         }
         catch (IOException e) {
             e.printStackTrace();
