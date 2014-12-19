@@ -89,7 +89,7 @@ public class CookieManager {
             // check cookie to ensure path matches  and cookie is not expired
             // if all is cool, add cookie to header string
             if (!checkCookieData || comparePaths(cookie.getData(PATH), path) /* && isNotExpired(cookie.getData(EXPIRES)) */) {
-                System.out.println(cookieName);
+//                System.out.println(cookieName);
                 cookieSB.append(cookieName);
                 cookieSB.append("=");
                 cookieSB.append(cookie.getValue());
