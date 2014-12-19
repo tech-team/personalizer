@@ -59,7 +59,7 @@ public class ContentProvider implements IContentProvider {
 
         if (autoMerge) {
             logger.info("Started auto merge");
-//            automaticMerge();
+            automaticMerge();
             logger.info("Finished auto merge");
         }
 
@@ -84,9 +84,35 @@ public class ContentProvider implements IContentProvider {
     @Override
     public void merge(Collection<PersonIdsTuple> tuples) {
 
+        for (PersonIdsTuple tuple : tuples) {
 
-//        frontend.postResults(mergedList);
+            List<PersonId> ids = tuple.getIds();
+
+            MergedPersonCard merged = new MergedPersonCard();
+            for (PersonId id : ids) {
+                MergedPersonCard card = findCard(mergedList, id);
+                mergedList.remove(card);
+                merged.addOnPersonId(card);
+            }
+            mergedList.add(merged);
+
+
+        }
+
+        frontend.postResults(mergedList);
         frontend.onFinishedMerge();
+    }
+
+    private MergedPersonCard findCard(Collection<MergedPersonCard> collection, PersonId id) {
+        MergedPersonCard res = null;
+        for (MergedPersonCard card : collection) {
+            PersonCard personCard = card.get(id);
+            if (personCard != null) {
+                res = card;
+                break;
+            }
+        }
+        return res;
     }
 
 
@@ -113,10 +139,13 @@ public class ContentProvider implements IContentProvider {
             }
         }
 
+
         for (Map.Entry<SocialLink, MergedPersonCard> entry : linkList.entrySet()) {
             MergedPersonCard card = entry.getValue();
-
-//            linkList.put(card.getPersonLink(), new MergedPersonCard(card));
+            if (!mergedList.contains(card)) {
+                card.cleanLinkMap();
+                mergedList.add(card);
+            }
         }
 
 //        for (PersonCard card : fullList.getPersons().values()) {
@@ -138,6 +167,7 @@ public class ContentProvider implements IContentProvider {
 //            }
 //        }
     }
+
 
     public static void main(String[] args) throws InterruptedException {
         ContentProvider cp = new ContentProvider(null);
