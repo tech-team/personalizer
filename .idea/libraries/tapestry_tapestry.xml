@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="tapestry-tapestry">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/tapestry5-annotations.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/commons-codec.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/log4j.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/stax2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tapestry-ioc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/wstx-asl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/javassist.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/antlr-runtime.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/tapestry-core.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
